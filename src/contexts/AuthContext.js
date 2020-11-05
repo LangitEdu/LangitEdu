@@ -35,8 +35,8 @@ export function AuthProvider({ children }) {
             console.log(err);
         })
     }
-    function login(email,password){
-        return auth.signInWithEmailAndPassword(email,password)
+    function login(data){
+        return auth.signInWithEmailAndPassword(data.email,data.password)
     }
     function updateProfile(name) {
         return currentUser.updateProfile({

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 import {Link, useHistory} from "react-router-dom";
+import ErrorAlert from '../component/Alert/Error';
 import BtnPrimary from '../component/Buttons/BtnPrimary';
 import RouteName from '../config/Route';
 import {useAuth} from '../contexts/AuthContext'
@@ -36,7 +37,7 @@ export default function Register() {
             setLoading(false)
             history.push(RouteName.dashboard)
         }catch(err){
-            setError(err)
+            setError(err.message)
         }
     }
 
@@ -44,12 +45,7 @@ export default function Register() {
         <div className="container d-flex align-items-center justify-content-center flex-column vh-100">
             <h1>Register</h1>
             {error &&
-                <div className="alert alert-danger alert-dismissible fade show">
-                    {error}
-                    <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={()=>{setError(false)}}>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                <ErrorAlert error={error} onClick={()=>{setError(false)}} />
             }
             <div className="card w-75 mt-3 p-md-3">
                 <div className="card-body">

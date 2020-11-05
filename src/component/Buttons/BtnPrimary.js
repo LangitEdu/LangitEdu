@@ -3,7 +3,7 @@ const BtnPrimary = (props)=>{
         <button type={props.type} className={props.customClass ? "btn btn-primary "+props.customClass : "btn btn-primary"  } disabled={props.loading}>
             {props.loading ? 
             <>
-            <div class="spinner-border text-light spinner-border-sm mr-2" role="status">
+            <div className="spinner-border text-light spinner-border-sm mr-2" role="status">
             </div>
             Loading....
             </>
