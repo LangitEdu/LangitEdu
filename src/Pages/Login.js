@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import {Link, useHistory} from "react-router-dom";
-import ErrorAlert from '../component/Alert/Error';
+import Dismissible from '../component/Alert/Dismissible';
 import BtnPrimary from '../component/Buttons/BtnPrimary';
 import RouteName from '../config/Route';
 import {useAuth} from '../contexts/AuthContext'
@@ -37,7 +37,7 @@ export default function Login() {
         <div className="container d-flex align-items-center justify-content-center flex-column vh-100">
             <h1>Login</h1>
             {error &&
-                <ErrorAlert error={error} onClick={()=>{setError(false)}} />
+                <Dismissible type="danger" message={error} onClick={()=>{setError(false)}} />
             }
             <div className="card w-75 mt-3 p-md-3">
                 <div className="card-body">

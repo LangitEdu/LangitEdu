@@ -25,6 +25,9 @@ export function AuthProvider({ children }) {
                 
             })
     }
+    async function SendEmailVerification() {
+        return currentUser.sendEmailVerification()
+    }
     async function signInWithGoogle(){
         googleProvider.addScope('profile');
         googleProvider.addScope('email');
@@ -68,7 +71,8 @@ export function AuthProvider({ children }) {
         logout,
         resetPassword,
         updateProfile,
-        signInWithGoogle
+        signInWithGoogle,
+        SendEmailVerification
     }
 
     return (
