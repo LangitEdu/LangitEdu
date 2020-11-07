@@ -6,16 +6,26 @@ import { db, FieldValue } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
 
 export default function ListKomunitas() {
+
+    const [Error, setError] = useState(false)
+
     const {currentUser} = useAuth()
     const [ListKomunitas, setListKomunitas] = useState("Loading...")
+    const [bakcupListKomunitas, setBakcupListKomunitas] = useState()
     const [Chat, setChat] = useState('Loading...')
     const [onChat, setOnChat] = useState(false)
     const [chatAble, setChatAble] = useState(false)
     const [pesan, setPesan] = useState()
     const [komunitasUID, setKomunitasUID] = useState()
+    const [onSerach, setOnSearch] = useState(false)
+    const [ShowModal, setShowModal] = useState(false)
     const searchKomunitas = useRef()
     const dummy = useRef()
     const PesanRef = useRef()
+    
+    const namaKomunitasRef = useRef()
+    const idKomunitasRef = useRef()
+    const deskripsiKomunitasRef = useRef()
 
     async function LiatChat(e, langsungUID=false, komUid=null){
         setOnChat(true)
@@ -136,21 +146,30 @@ export default function ListKomunitas() {
 
     async function handleSearchKomunitas(e){
         e.preventDefault()
+        setListKomunitas("Loading....")
         let KomunitasId = searchKomunitas.current.value
-        let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId)
-        docRef.get().then((querySnapshot)=>{
-            if(querySnapshot.docs.length === 0 ){
-                setListKomunitas("Belum ada obrolan")
-                return;
-            }
-            setListKomunitas(querySnapshot.docs.map(doc=>{
-                return (
-                    <Komunitas  {...doc.data()} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
-                )
-            }))
-        })
+        if(KomunitasId.length > 0){
+            let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId)
+            setOnSearch(true)
+            docRef.get().then((querySnapshot)=>{
+                if(querySnapshot.docs.length === 0 ){
+                    setListKomunitas("Komunitas yang km cari tidak ada")
+                    return;
+                }
+                setListKomunitas(querySnapshot.docs.map(doc=>{
+                    return (
+                        <Komunitas  {...doc.data()} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
+                    )
+                }))
+            })
+        }
+        return ;
     }
-
+    function cancelSearch() {
+        searchKomunitas.current.value = ''
+        setOnSearch(false)
+        setListKomunitas(bakcupListKomunitas)
+    }
     useEffect(() => {
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
         docRef.onSnapshot(function(querySnapshot) {
@@ -158,23 +177,64 @@ export default function ListKomunitas() {
                     setListKomunitas("Belum ada obrolan")
                     return;
                 }
-                setListKomunitas(querySnapshot.docs.map(doc=>{
+                let listKomunitas = querySnapshot.docs.map(doc=>{
                     return (
                         <Komunitas  {...doc.data()} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
                     )
-                }))
+                })
+                setListKomunitas(listKomunitas)
+                setBakcupListKomunitas(listKomunitas)
             },(err)=>{
                 console.log(err);
                 setListKomunitas("Error X_x")
             })
         
     }, [currentUser])
+    async function AddKomunitas(e) {
+        e.preventDefault()
+        setError()
+        setShowModal(false)
+        let idKomunitas = idKomunitasRef.current.value
+        let namaKomunitas = namaKomunitasRef.current.value
+        let dekskripsiKomunitas = deskripsiKomunitasRef.current.value
+        // Data ga boleh kosong
+        if(idKomunitas.length <= 0 || namaKomunitas.length <=0 || dekskripsiKomunitas.length <= 0){
+            setError("Data tidak boleh ada yang kosong")
+            return;
+        }
 
+        // Id ga boleh ada whitespace
+        let patt = /\W\s/g
+        if(patt.test(idKomunitas)){
+            setError("Id tidak boleh mengantuk karanter non word atau white space")
+            return
+        }
+        let checkId = await db.collection("Komunitas").where("id", "==", '@'+idKomunitas.toLowerCase()).get()
+        if(checkId.empty){
+            let add = await db.collection("Komunitas").add({
+                deskripsi: dekskripsiKomunitas,
+                id: '@'+idKomunitas.toLowerCase(),
+                lastChat : new Date().getTime(),
+                nama:namaKomunitas,
+                photoUrl : `https://ui-avatars.com/api/?size=128&background=random&name=${namaKomunitas.replace(/\s/g,"+")}`,
+                member : [currentUser.uid]
+            })
+            console.log(add);
+        }else{
+            console.log("udah ga bisa");
+            setError("id komunitas sudah dipakai")
+            return
+        }
+    }  
     return (
         <>
         <NavbarUser />
         <div className="container">
-
+            {Error &&
+                <div className="alert alert-danger">
+                {Error}
+                </div>
+            }
             <div className="content-wrapper">
 
                 <div className="row gutters">
@@ -188,17 +248,69 @@ export default function ListKomunitas() {
                                     <div className="users-container">
                                         <div className="chat-search-box">
                                             <form className="input-group" onSubmit={handleSearchKomunitas}>
+                                                {onSerach && 
+                                                <div className="input-group-btn">
+                                                    <button type="button" className="btn btn-warning text-white" onClick={cancelSearch} >
+                                                        <i className="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                                }
                                                 <input ref={searchKomunitas} className="form-control" placeholder="Search" />
                                                 <div className="input-group-btn">
-                                                    <button type="submit" className="btn btn-info">
+                                                    <button type="submit" className="btn btn-info" id="btnSearch">
                                                         <i className="fa fa-search"></i>
                                                     </button>
                                                 </div>
                                             </form>
                                         </div>
-                                        <ul className="users">
+                                        <ul className="users position-relative">
                                             {ListKomunitas}
                                         </ul>
+                                       {ShowModal &&
+                                       <> 
+                                        <div className="overflow" onClick={()=>{setShowModal(false)}} ></div>
+                                        <div className="modal d-block" tabIndex="1">
+                                            <div className="modal-dialog">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                <h5 className="modal-title">Buat Komunitas</h5>
+                                                <button type="button" className="close" onClick={()=>{setShowModal(false)}} aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                </div>
+                                                <form onSubmit={AddKomunitas}>
+                                                <div className="modal-body">
+                                                    <div className="form-group">
+                                                        <label> Nama Komunitas</label>
+                                                        <input ref={namaKomunitasRef} className="form-control" type="text" required/>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>ID Komunitas</label>
+                                                        <div className="input-group mb-2 mr-sm-2">
+                                                        <div className="input-group-prepend">
+                                                            <div className="input-group-text">@</div>
+                                                            </div>
+                                                            <input ref={idKomunitasRef} type="text" className="form-control" required />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Deskripsi</label>
+                                                        <textarea ref={deskripsiKomunitasRef} className="form-control" rows="10" required></textarea>
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                <button type="button" className="btn btn-secondary" onClick={()=>{setShowModal(false)}}>Close</button>
+                                                <button type="submit" className="btn btn-primary">Buat Komunitas</button>
+                                                </div>
+                                                </form>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </>
+                                       }
+                                        <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModal(true);setError()}}>
+                                            <i className="fas fa-plus"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div className="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">

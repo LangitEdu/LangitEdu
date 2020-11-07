@@ -1,19 +1,17 @@
-body{margin-top:20px;}
-/*************** 1.Variables ***************/
-
-
-/* ------------------ Color Pallet ------------------ */
-
-
-/*************** 2.Mixins ***************/
-
-
-/************************************************
-    ************************************************
-										Search Box
-	************************************************
-************************************************/
-
+.modal{
+    z-index: 9999;
+}
+.overflow{
+    width: 100vw;
+    height: 100vh;
+    background: #0000004d;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+}
 .chat-search-box {
     -webkit-border-radius: 3px 0 0 0;
     -moz-border-radius: 3px 0 0 0;
@@ -282,6 +280,14 @@ body{margin-top:20px;}
     font-weight: 300;
     position: relative;
     width: fit-content;
+}
+
+.tombolBuat {
+    position: absolute;
+    bottom: 30px;
+    left: 40px;
+    border-radius: 100%;
+    padding: 14px 20px;
 }
 
 .chat-container li .chat-text:before {
