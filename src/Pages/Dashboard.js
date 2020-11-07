@@ -55,7 +55,7 @@ export default function Dashboard() {
                     <>
                     Harap Verifikasi Email anda, jika email tidak masuk silahkan mengajukan kirim ulang
                     <br />
-                    <a href="#" onClick={hendleResendEmailVerify}>Kirim Ulang</a>
+                    <Link to="#" onClick={hendleResendEmailVerify}>Kirim Ulang</Link>
                     </>
                 } customClass="mt-4" />
             }
