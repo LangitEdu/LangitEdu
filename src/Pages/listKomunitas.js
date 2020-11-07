@@ -18,6 +18,7 @@ export default function ListKomunitas() {
     const [pesan, setPesan] = useState()
     const [komunitasUID, setKomunitasUID] = useState()
     const [onSerach, setOnSearch] = useState(false)
+    const [CanSearch, setCanSearch] = useState(false)
     const [ShowModal, setShowModal] = useState(false)
     const searchKomunitas = useRef()
     const dummy = useRef()
@@ -26,10 +27,13 @@ export default function ListKomunitas() {
     const namaKomunitasRef = useRef()
     const idKomunitasRef = useRef()
     const deskripsiKomunitasRef = useRef()
-
+    
+    
     async function LiatChat(e, langsungUID=false, komUid=null){
         setOnChat(true)
         setChat("loding..")
+        document.getElementById('idRoom').innerHTML = "Loading..."
+        document.getElementById('JudulRoom').innerHTML = "Loading..."
         searchKomunitas.current.value = ""
         function getKomunitasUID(target) {
             let komuniastUID;
@@ -43,9 +47,10 @@ export default function ListKomunitas() {
         }
         let komuniastUID = langsungUID ? komUid : getKomunitasUID(e.target)
         setKomunitasUID(komuniastUID)
-        let namaKomunitas = document.getElementById(`namaRoom_${komuniastUID}`).innerHTML
-        document.getElementById('JudulRoom').innerHTML = namaKomunitas
-        
+        let {photoUrl, nama, id} = (await db.collection('Komunitas').doc(komuniastUID).get()).data()
+        document.getElementById('JudulRoom').innerHTML = nama
+        document.getElementById('avaGroup').src = photoUrl
+        document.getElementById('idRoom').innerHTML = id
         let docRef = db.collection(`Komunitas`).doc(komuniastUID).collection("Pesan").orderBy("timestamp", "desc")
         
         docRef.onSnapshot((querySnapshot)=>{
@@ -102,7 +107,7 @@ export default function ListKomunitas() {
         setKomunitasUID(NewkomunitasUID)
         setChat("Loading....")
         setOnChat(true)
-
+        cancelSearch()
         await db.collection('Komunitas').doc(NewkomunitasUID).update({
             member: FieldValue.arrayUnion(currentUser.uid)
         })
@@ -128,11 +133,21 @@ export default function ListKomunitas() {
             member: FieldValue.arrayRemove(currentUser.uid)
         })
         .then(async () => {
+            let currentKom = await db.collection('Komunitas').doc(komunitasUID).get()
+            if(currentKom.data().member.length === 0){
+                db.collection('Komunitas').doc(komunitasUID).delete()
+                .then(()=>{
+                    console.log("Berhasil menghapus");
+                }).catch((err)=>{
+                    console.log(err);
+                })
+            }
             await db.collection('Profile').doc(currentUser.uid).update({
                 komunitas: FieldValue.arrayRemove(komunitasUID)
             }).then(() => {
                 setOnChat(false)
                 document.getElementById('JudulRoom').innerHTML = ""
+                document.getElementById('idRoom').innerHTML = ""
             }).catch((err) => {
                 console.log(err);
                 return;
@@ -143,13 +158,20 @@ export default function ListKomunitas() {
         });
 
     }
-
+    async function handleSearchTextChange(){
+        if(searchKomunitas.current.value.length > 0){
+            setCanSearch(true)
+        }else{
+            setCanSearch(false)
+            cancelSearch()
+        }
+    }
     async function handleSearchKomunitas(e){
         e.preventDefault()
         setListKomunitas("Loading....")
         let KomunitasId = searchKomunitas.current.value
         if(KomunitasId.length > 0){
-            let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId)
+            let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId.toLowerCase())
             setOnSearch(true)
             docRef.get().then((querySnapshot)=>{
                 if(querySnapshot.docs.length === 0 ){
@@ -172,7 +194,7 @@ export default function ListKomunitas() {
     }
     useEffect(() => {
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
-        docRef.onSnapshot(function(querySnapshot) {
+        let unsub =  docRef.onSnapshot(function(querySnapshot) {
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas("Belum ada obrolan")
                     return;
@@ -188,7 +210,7 @@ export default function ListKomunitas() {
                 console.log(err);
                 setListKomunitas("Error X_x")
             })
-        
+        return unsub
     }, [currentUser])
     async function AddKomunitas(e) {
         e.preventDefault()
@@ -255,9 +277,9 @@ export default function ListKomunitas() {
                                                     </button>
                                                 </div>
                                                 }
-                                                <input ref={searchKomunitas} className="form-control" placeholder="Search" />
+                                                <input ref={searchKomunitas} className="form-control" placeholder="Search" onChange={handleSearchTextChange} />
                                                 <div className="input-group-btn">
-                                                    <button type="submit" className="btn btn-info" id="btnSearch">
+                                                    <button type="submit" className="btn btn-info" id="btnSearch" disabled={!CanSearch}>
                                                         <i className="fa fa-search"></i>
                                                     </button>
                                                 </div>
@@ -292,6 +314,7 @@ export default function ListKomunitas() {
                                                             </div>
                                                             <input ref={idKomunitasRef} type="text" className="form-control" required />
                                                         </div>
+                                                        <small class="form-text text-muted">Id komunitas hanya dapat berupa kombinasi angka dan huruf dan akan secara otomatis dibuat ke lowecase</small>
                                                     </div>
                                                     <div className="form-group">
                                                         <label>Deskripsi</label>
@@ -315,7 +338,17 @@ export default function ListKomunitas() {
                                 </div>
                                 <div className="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
                                     <div className="selected-user d-flex justify-content-between flex-wrap align-items-center">
-                                        <span className="name" id="JudulRoom"></span>
+                                        <div className="d-flex">
+                                            {onChat && 
+                                            <div className="chat-avatar d-none d-lg-block mr-3">
+                                                <img className="img-fluid" src='#' alt="" id="avaGroup"/>
+                                            </div>
+                                            }
+                                            <div className="d-flex flex-column mt-lg-4">
+                                                <span className="name mb-1" id="JudulRoom"></span>
+                                                <span className="idRoom" id="idRoom"></span>
+                                            </div>
+                                        </div>
                                         {onChat && <button className="btn btn-danger" onClick={handleExitGroup}>Exit <i className="fas fa-external-link-alt" style={{fontSize:".8rem"}}></i></button>}
                                     </div>
                                     <div className="chat-container">

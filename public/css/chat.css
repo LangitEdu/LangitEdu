@@ -1,6 +1,19 @@
 .modal{
     z-index: 9999;
 }
+.selected-user .chat-avatar {
+    overflow: hidden;
+    border-radius: 130%;
+    position: relative;
+    width: 70px;
+    margin: 10px;
+}
+.selected-user .idRoom{
+    font-weight: 400;
+}
+#JudulRoom{
+    font-size: 1.3rem;
+}
 .overflow{
     width: 100vw;
     height: 100vh;
