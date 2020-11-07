@@ -33,11 +33,12 @@ export default function Register() {
                 email : emailRef.current.value,
                 password : passwordRef.current.value,
                 name : nameRef.current.value
+            }).then(()=>{
+                history.push(RouteName.dashboard)
             })
-            setLoading(false)
-            history.push(RouteName.dashboard)
         }catch(err){
             setError(err.message)
+            setLoading(false)
         }
     }
 

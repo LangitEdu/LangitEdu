@@ -1,5 +1,5 @@
 import React,{ useContext,useState, useEffect } from 'react'
-import { auth, googleProvider } from '../config/Firebase';
+import { auth, googleProvider, db } from '../config/Firebase';
 
 const AuthContext = React.createContext()
 
@@ -21,12 +21,27 @@ export function AuthProvider({ children }) {
                 }).then(()=>{
                     user.sendEmailVerification()
                     setCurrentUser(auth.currentUser);
+                    db.collection("Profile").doc(auth.currentUser.uid).set({
+                        topik: [],
+                        komunitas: [],
+                        progress: [],
+                    })
+                    .then(function() {
+                        console.log("Document successfully written!");
+                    })
                 })
-                
             })
     }
     async function SendEmailVerification() {
         return currentUser.sendEmailVerification()
+    }
+    async function getDashboardData(UserUid){
+        let docRef = db.collection("Profile").doc(UserUid);
+        let resDoc
+        await docRef.get().then(function(doc) {
+            resDoc = doc
+        })
+        return resDoc
     }
     async function signInWithGoogle(){
         googleProvider.addScope('profile');
@@ -72,7 +87,8 @@ export function AuthProvider({ children }) {
         resetPassword,
         updateProfile,
         signInWithGoogle,
-        SendEmailVerification
+        SendEmailVerification,
+        getDashboardData
     }
 
     return (

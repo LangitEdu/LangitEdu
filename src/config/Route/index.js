@@ -5,6 +5,8 @@ const RouteName = {
     home:'/',
     forgetPassword : '/forgot-password',
     editProfile : '/edit-profile/:uid',
+    gotoTopik : '/topik/:topik_uid',
+    listKomunitas : '/komunitas'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{

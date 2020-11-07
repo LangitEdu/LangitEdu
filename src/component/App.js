@@ -13,6 +13,7 @@ import Login from '../Pages/Login';
 import ForgotPassword from '../Pages/ForgotPassword';
 import EditProfile from "../Pages/EditProfile";
 import Home from '../Pages/Home'
+import ListKomunitas from "../Pages/listKomunitas";
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
           <GuestOnlyRoute path={RouteName.forgetPassword} component={ForgotPassword} />
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
+          <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
+          <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <Route exact path={RouteName.home} component={Home} />
         </Switch>
       </Router>

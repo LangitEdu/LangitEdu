@@ -30,7 +30,7 @@ const NavbarUser =(props)=>{
                             <Link className="nav-link" to={RouteName.home}>Home</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="#">Link</Link>
+                            <Link className="nav-link" to={RouteName.listKomunitas}>Komunitas</Link>
                         </li>
                     </ul>
                     {currentUser &&
