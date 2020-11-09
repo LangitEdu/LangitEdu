@@ -1,15 +1,24 @@
-import React, { useState } from 'react'
-import Styled from '@emotion/styled'
-import { useAuth } from '../../contexts/AuthContext'
+import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import './navbar.css'
-import RouteName, { routeSet } from '../../config/Route'
+import Styled from '@emotion/styled'
 import OutsideClickHandler from 'react-outside-click-handler'
+import RouteName, { routeSet } from '../../config/Route'
+
+import './navbar.css'
+import NavbarMobile from './NavbarMobile'
+import { useAuth } from '../../contexts/AuthContext'
 
 const Navbar = ({SetError}) => {
+    const [screen, setScreen] = useState(undefined)
     const [openAction, setopenAction] = useState(false)
     const {currentUser, logout} = useAuth()
     const history = useHistory()
+    const handleWindowSizeChange = () => setScreen(window.innerWidth)
+    
+    useEffect(() => {
+        setScreen(window.innerWidth);
+        window.addEventListener('resize', handleWindowSizeChange);
+    }, [])
     
     const handleLogout = async (e) => {
         e.preventDefault()
@@ -21,10 +30,11 @@ const Navbar = ({SetError}) => {
         }
     }
 
+    if (screen > 1100) {
     return (
         <Wrapper currentUser={currentUser} openAction={openAction}>
             <nav>
-                <div className="contain-size">
+                <div className="contain-size-sp">
                     <Link to={RouteName.home} className="logo-cont">
                         <div className="logo"></div>
                     </Link>
@@ -63,12 +73,18 @@ const Navbar = ({SetError}) => {
                 </div>
             </nav>
         </Wrapper>
+    )}
+    else{
+    return (
+        <NavbarMobile currentUser={currentUser} openAction={openAction} setopenAction={setopenAction} handleLogout={handleLogout} />
     )
+    }
 }
     
 const Wrapper = Styled.div(({currentUser, openAction}) =>`
     position: sticky;
     top: 0;
+    z-index: 100;
 
     nav{
         width: 100%;
@@ -78,12 +94,13 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 0 ${currentUser ? "32px" : ""};
         
-        div.contain-size{
+        div.contain-size-sp{
             width: 100%;
             height: 100%;
-            max-width: 1100px;
-            padding: 0 32px;
+            max-width: 1200px;
+            padding: 0 ${currentUser ? 0 : "32px"} 0 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -93,6 +110,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                 width: 170px;
                 min-width: 170px;
                 height: 100%;  
+                margin-left: 50px;
 
                 .logo{
                     width: 100%;
@@ -108,7 +126,6 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                ${currentUser ? "" : "margin-right: -44px;"}
 
                 .link{
                     font-family: Oxygen;
@@ -122,6 +139,11 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                     /* tosca */
 
                     color: #209FBC;
+
+                    &:hover{
+                        text-decoration: none;
+                        color: #FFA252;
+                    }
                 }
                 .orange-btn{
                     font-family: Raleway;
@@ -130,6 +152,12 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                     border-radius: 100px;
                     background: #FFA252;
                     color: white;
+
+                    &:hover{
+                        text-decoration: none;
+                        background: #d88238;
+                        color: white;
+                    }
                 }
             }
             
@@ -142,7 +170,6 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                 border: 1px solid #BCBCBC;
                 box-sizing: border-box;
                 border-radius: 12px;
-                margin-right: -100px;
                 display: flex;
                 justify-content: flex-start;
                 padding: 0 12px;
@@ -173,7 +200,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                     display: ${openAction ? "flex" : "none"};
                     justify-content: flex-start;
                     align-items: center;
-                    padding-left: 12px;
+                    padding-left: 16px;
                     background: #F5F5F5;
                     z-index: 10;
 
@@ -185,6 +212,8 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                         color: white;
                         margin: 0 4px;
                         background: #FFA252;
+
+                        
                     }
                     .c-red{
                         background: #d9534f;
