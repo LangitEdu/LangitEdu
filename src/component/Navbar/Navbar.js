@@ -2,8 +2,7 @@ import React, { useState } from 'react'
 import Styled from '@emotion/styled'
 import { useAuth } from '../../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
-import './navbar.css'
-import RouteName, { routeSet } from '../../config/Route'
+import RouteName from '../../config/Route'
 import OutsideClickHandler from 'react-outside-click-handler'
 
 const Navbar = ({SetError}) => {
@@ -54,7 +53,7 @@ const Navbar = ({SetError}) => {
                                 </div>
 
                                 <div className="actions">
-                                    <Link className="btn-action" to={routeSet.editProfile({uid:currentUser.uid})}>UBAH</Link>
+                                    <Link className="btn-action" to={RouteName.editProfile}>UBAH</Link>
                                     <Link className="btn-action c-red" to="#" onClick={handleLogout}>LOGOUT</Link>
                                 </div>
                             </div>

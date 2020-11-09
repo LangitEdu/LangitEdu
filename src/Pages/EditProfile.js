@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {useAuth} from '../contexts/AuthContext'
-import {storage, EmailAuthProvider} from '../config/Firebase'
+import {storage, EmailAuthProvider, db} from '../config/Firebase'
 import Navbar from '../component/Navbar/Navbar'
+import FormGroup from '../component/EditProfile/FormGroup'
 
 export default function EditProfile() {
     const {currentUser} = useAuth()
@@ -9,9 +10,42 @@ export default function EditProfile() {
     const namaRef = useRef('')
     const emailRef = useRef('')
     const profilePicRef = useRef('')
+    const newPasswordRef = useRef('')
+    const confirmNewPasswordRef = useRef('')
     const [Loading, setLoading] = useState(false)
     const [newError, setError] = useState(false)
     const [Sukses, setSukses] = useState('')
+    let FormGroupArr = [
+        {
+            lebel:'Nama',
+            refer: namaRef,
+            defaultValue:currentUser.displayName,
+        },
+        {
+            lebel:'Email',
+            refer: emailRef,
+            defaultValue:currentUser.email,
+            type:'email'
+        },
+        {
+            label:'New Password',
+            refer: newPasswordRef,
+            type:'password'
+        },
+        {
+            label:'Confirm New Password',
+            refer: confirmNewPasswordRef,
+            type:'password'
+        },
+        {
+            label:'Password *',
+            refer:passwordRef,
+            type:'password'
+        }
+    ]
+    FormGroupArr = FormGroupArr.map((data,i)=>{
+        return <FormGroup {...data} key={i} />
+    })
     const reAuth = async (e)=>{
         e.preventDefault()
         setLoading(true)
@@ -37,12 +71,24 @@ export default function EditProfile() {
         const changeEmail = async()=>{
             currentUser.updateEmail(emailRef.current.value).then(function() {
                 currentUser.sendEmailVerification()
-            }).catch(function(error) {
+            })
+            .catch(function(error) {
                 setError(error);
                 throw new Error(error)
-            });
+              });
         }
-
+        const ChangePassword = async()=>{
+            console.log("kjkasacka");
+            if(newPasswordRef.current.value !== confirmNewPasswordRef.current.value){
+                throw new Error("Password dan Confirm Passowrd tidak sama")
+            }
+            currentUser.updatePassword(newPasswordRef.current.value).then(function() {
+                currentUser.sendEmailVerification()
+              }).catch(function(error) {
+                setError(error);
+                throw new Error(error)
+              });
+        }
         const updateProfile = async (gantiProfilePic, gantiDisplayName)=>{
             if(gantiProfilePic){
                 userdata.photoURL = await uploadProfilePic(profilePicRef.current.files[0])
@@ -50,25 +96,30 @@ export default function EditProfile() {
             if(gantiDisplayName){
                 userdata.displayName = namaRef.current.value
             }
-            await currentUser.updateProfile(userdata)
-                    .catch(function(error) {
-                        setError(error);
-                        throw new Error(error)
-                    });
+            await db.collection('Profile').doc(currentUser.uid).update(userdata)
+            .catch(function(error) {
+                setError(error);
+                throw new Error(error)
+              });
+            currentUser.updateProfile(userdata)
+            .catch(function(error) {
+                setError(error);
+                throw new Error(error)
+              });
         }
         const uploadProfilePic = async(file)=>{
             let extention = file.name.split('.').pop();
             let res = await storage.ref('ProfilePic')
-                    .child(currentUser.uid+extention).put(file)
+                    .child(currentUser.uid+"."+extention).put(file)
+                    .catch(function(error) {
+                        setError(error);
+                        throw new Error(error)
+                      });
             let url = res.ref.getDownloadURL()
             return url
         }
         if(emailRef.current.value !== currentUser.email){
-            const credential = {
-                email : currentUser.email,
-                password : passwordRef.current.value
-            }
-            promise.push(changeEmail(credential))
+            promise.push(changeEmail())
         }
         if(profilePicRef.current.files.length > 0){
             gantiProfilePic = true
@@ -79,12 +130,19 @@ export default function EditProfile() {
         if(gantiDisplayName || gantiProfilePic){
             promise.push(updateProfile(gantiProfilePic,gantiDisplayName))
         }
+        if(newPasswordRef.current.value !== ''){
+            promise.push(ChangePassword())
+        }
         Promise.all(promise).then(()=>{
             setSukses({message:'Berhasil mengupdate Profile'})
             passwordRef.current.value = ''
+            confirmNewPasswordRef.current.value = ''
+            newPasswordRef.current.value = ''
             setLoading(false)
-        }).catch(err=>{
+        })
+        .catch(err=>{
             setLoading(false)
+            console.log(err);
             setError(err);
         })
     }
@@ -147,7 +205,8 @@ export default function EditProfile() {
                                 <label id="labelNewProfilePic" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
                             </div>
                         </div>
-                        <div className="form-group">
+                        {FormGroupArr}
+                        {/* <div className="form-group">
                             <label htmlFor="nama">Nama</label>
                             <input ref={namaRef} type="text" className="form-control" defaultValue={currentUser.displayName} />
                         </div>
@@ -158,7 +217,7 @@ export default function EditProfile() {
                         <div className="form-group">
                             <label htmlFor="nama">Password</label>
                             <input ref={passwordRef} type="password" className="form-control"/>
-                        </div>
+                        </div> */}
                         <button id="btnSubmit" className="btn btn-primary" type="submit" disabled={Loading}>Submit</button>
                     </form>
                 </div>
