@@ -108,6 +108,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                ${currentUser ? "" : "margin-right: -44px;"}
 
                 .link{
                     font-family: Oxygen;
