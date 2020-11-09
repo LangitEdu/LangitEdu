@@ -1,10 +1,10 @@
 import React from 'react'
-import NavbarUser from '../component/Navbar/NavbarUser'
+import Navbar from '../component/Navbar/Navbar'
 
 export default function EditProfile() {
     return (
         <>
-        <NavbarUser/>
+        <Navbar />
         <div>
             <h1>Edit Profile</h1>
         </div>

@@ -14,6 +14,7 @@ import ForgotPassword from '../Pages/ForgotPassword';
 import EditProfile from "../Pages/EditProfile";
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas";
+import Admin from "../Pages/Admin";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
           <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
+          <UserRoute exact path={RouteName.admin} component={Admin} />
           <Route exact path={RouteName.home} component={Home} />
         </Switch>
       </Router>

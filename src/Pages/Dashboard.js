@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Dismissible from '../component/Alert/Dismissible';
 import NotDismissible from '../component/Alert/NotDismissible';
-import NavbarUser from '../component/Navbar/NavbarUser'
+import Navbar from '../component/Navbar/Navbar'
 import {useAuth} from '../contexts/AuthContext'
 import { db } from '../config/Firebase';
 import {routeSet} from '../config/Route'
@@ -43,7 +43,7 @@ export default function Dashboard() {
     
     return (
         <>
-        <NavbarUser/>
+        <Navbar />
         <div className="container mt-5">
             <h1>Dashboard</h1>
             <h3>Hello {currentUser.displayName} </h3>
