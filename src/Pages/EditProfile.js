@@ -14,7 +14,7 @@ export default function EditProfile() {
     const confirmNewPasswordRef = useRef('')
     const [Loading, setLoading] = useState(false)
     const [newError, setError] = useState(false)
-    const [Sukses, setSukses] = useState('')
+    const [Sukses, setSukses] = useState(false)
     let FormGroupArr = [
         {
             lebel:'Nama',
@@ -50,6 +50,7 @@ export default function EditProfile() {
         e.preventDefault()
         setLoading(true)
         setError(false)
+        setSukses(false)
         let promise = []
         let userdata = {
             displayName: currentUser.displayName,
