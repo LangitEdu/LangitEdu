@@ -70,7 +70,7 @@ export default function EditProfile() {
         }
         const changeEmail = async()=>{
             currentUser.updateEmail(emailRef.current.value).then(function() {
-                currentUser.sendEmailVerification()
+                // currentUser.sendEmailVerification()
             })
             .catch(function(error) {
                 setError(error);
