@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import NavbarUser from '../component/Navbar/NavbarUser'
 import {useAuth} from '../contexts/AuthContext'
 import {storage, EmailAuthProvider} from '../config/Firebase'
+import Navbar from '../component/Navbar/Navbar'
 
 export default function EditProfile() {
     const {currentUser} = useAuth()
@@ -122,7 +122,7 @@ export default function EditProfile() {
 
     return (
         <>
-        <NavbarUser/>
+        <Navbar />
         <div className="container mt-4">
             <h1>Edit Profile</h1>
             {newError && 

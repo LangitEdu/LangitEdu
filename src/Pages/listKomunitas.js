@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ChatBubble from '../component/Chat/ChatBubble';
 import Komunitas from '../component/Chat/Komunitas';
-import NavbarUser from '../component/Navbar/NavbarUser'
+import Navbar from '../component/Navbar/Navbar'
 import { db, FieldValue } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
 
@@ -250,7 +250,7 @@ export default function ListKomunitas() {
     }  
     return (
         <>
-        <NavbarUser />
+        <Navbar />
         <div className="container">
             {Error &&
                 <div className="alert alert-danger">
