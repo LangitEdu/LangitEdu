@@ -11,11 +11,15 @@ export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
     const [success, setSuccess] = useState(false)
     const [topikCard, setTopikCard] = useState(()=>{ return(<><div className="spinner-border mr-1 spinner-border-md" role="status"></div>Loadding...</>)})
-
+    const [Error, setError] = useState()
     const hendleResendEmailVerify =async (e)=>{
         e.preventDefault()
         setSuccess(false)
-        await SendEmailVerification()
+        try{
+            await SendEmailVerification()
+        }catch(err){
+            setError(err.message)
+        }
         setSuccess(true)
     }
 
@@ -49,6 +53,9 @@ export default function Dashboard() {
             <h3>Hello {currentUser.displayName} </h3>
             {success &&
             <Dismissible type="success" message="Email berhasil dikirim, silahkan cek inbox anda" />
+            }
+            {Error &&
+            <Dismissible type="danger" message={Error} />
             }
             {!currentUser.emailVerified &&
                 <NotDismissible type="warning" message={

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ChatBubble from '../component/Chat/ChatBubble';
 import Komunitas from '../component/Chat/Komunitas';
+import ModalAddKomunitas from '../component/Chat/ModalAddKomunitas';
 import Navbar from '../component/Navbar/Navbar'
 import { db, FieldValue } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
@@ -35,6 +36,7 @@ export default function ListKomunitas() {
         document.getElementById('idRoom').innerHTML = "Loading..."
         document.getElementById('JudulRoom').innerHTML = "Loading..."
         searchKomunitas.current.value = ""
+        let dataMember = []
         function getKomunitasUID(target) {
             let komuniastUID;
             if(target.dataset.chat === undefined){
@@ -47,24 +49,30 @@ export default function ListKomunitas() {
         }
         let komuniastUID = langsungUID ? komUid : getKomunitasUID(e.target)
         setKomunitasUID(komuniastUID)
-        let {photoUrl, nama, id} = (await db.collection('Komunitas').doc(komuniastUID).get()).data()
+        let {photoUrl, nama, id,member} = (await db.collection('Komunitas').doc(komuniastUID).get()).data()
         document.getElementById('JudulRoom').innerHTML = nama
         document.getElementById('avaGroup').src = photoUrl
         document.getElementById('idRoom').innerHTML = id
-        let docRef = db.collection(`Komunitas`).doc(komuniastUID).collection("Pesan").orderBy("timestamp", "desc")
-        
-        docRef.onSnapshot((querySnapshot)=>{
-            if(!querySnapshot.empty){
-                setChat(querySnapshot.docs.map((doc)=>{
-                    return <ChatBubble {...doc.data()} key={doc.id} />
-                }))
-            }else{
-                setChat("Masih belum ada pesan dari room")
-            }
-            
-        },(err)=>{
-            console.log(err);
+
+        await db.collection('Profile').where('uid','in',member).get().then(res=>{
+            res.forEach(doc=>{
+                dataMember[doc.id] = doc.data()
+            })
+            let docRef = db.collection(`Komunitas`).doc(komuniastUID).collection("Pesan").orderBy("timestamp", "desc")
+            docRef.onSnapshot((querySnapshot)=>{
+                if(!querySnapshot.empty){
+                    setChat(querySnapshot.docs.map((doc)=>{
+                        return <ChatBubble {...doc.data()} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
+                    }))
+                }else{
+                    setChat("Masih belum ada pesan dari room")
+                }
+                
+            },(err)=>{
+                console.log(err);
+            })
         })
+
     }
 
     function handleFormPesan(e) {
@@ -80,8 +88,6 @@ export default function ListKomunitas() {
         e.preventDefault();
         await db.collection('Komunitas').doc(komunitasUID).collection('Pesan').add({
             sender_uid: currentUser.uid,
-            sender_name: currentUser.displayName,
-            sender_photoURL : currentUser.photoURL,
             timestamp:new Date().getTime(),
             body:pesan
           });
@@ -195,6 +201,7 @@ export default function ListKomunitas() {
     useEffect(() => {
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
+                console.log(querySnapshot.docChanges()[0].doc.data())
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas("Belum ada obrolan")
                     return;
@@ -288,48 +295,14 @@ export default function ListKomunitas() {
                                         <ul className="users position-relative">
                                             {ListKomunitas}
                                         </ul>
-                                       {ShowModal &&
-                                       <> 
-                                        <div className="overflow" onClick={()=>{setShowModal(false)}} ></div>
-                                        <div className="modal d-block" tabIndex="1">
-                                            <div className="modal-dialog">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                <h5 className="modal-title">Buat Komunitas</h5>
-                                                <button type="button" className="close" onClick={()=>{setShowModal(false)}} aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                </div>
-                                                <form onSubmit={AddKomunitas}>
-                                                <div className="modal-body">
-                                                    <div className="form-group">
-                                                        <label> Nama Komunitas</label>
-                                                        <input ref={namaKomunitasRef} className="form-control" type="text" required/>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>ID Komunitas</label>
-                                                        <div className="input-group mb-2 mr-sm-2">
-                                                        <div className="input-group-prepend">
-                                                            <div className="input-group-text">@</div>
-                                                            </div>
-                                                            <input ref={idKomunitasRef} type="text" className="form-control" required />
-                                                        </div>
-                                                        <small class="form-text text-muted">Id komunitas hanya dapat berupa kombinasi angka dan huruf dan akan secara otomatis dibuat ke lowecase</small>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Deskripsi</label>
-                                                        <textarea ref={deskripsiKomunitasRef} className="form-control" rows="10" required></textarea>
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer">
-                                                <button type="button" className="btn btn-secondary" onClick={()=>{setShowModal(false)}}>Close</button>
-                                                <button type="submit" className="btn btn-primary">Buat Komunitas</button>
-                                                </div>
-                                                </form>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </>
+                                       {ShowModal && 
+                                       <ModalAddKomunitas 
+                                            onClick={()=>{setShowModal(false)}}
+                                            onSubmit={AddKomunitas}
+                                            namaKomunitasRef={namaKomunitasRef}
+                                            idKomunitasRef = {idKomunitasRef}
+                                            deskripsiKomunitasRef={deskripsiKomunitasRef}
+                                       /> 
                                        }
                                         <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModal(true);setError()}}>
                                             <i className="fas fa-plus"></i>

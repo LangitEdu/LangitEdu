@@ -22,6 +22,9 @@ export function AuthProvider({ children }) {
                     user.sendEmailVerification()
                     setCurrentUser(auth.currentUser);
                     db.collection("Profile").doc(auth.currentUser.uid).set({
+                        uid : user.uid,
+                        displayName : data.name,
+                        photoURL : `https://ui-avatars.com/api/?size=128&background=random&name=${data.name.replace(/\s/g,"+")}`,
                         topik: [],
                         komunitas: [],
                         progress: [],

@@ -64,7 +64,7 @@ const Navbar = ({SetError}) => {
                                 </div>
 
                                 <div className="actions">
-                                    <Link className="btn-action" to={routeSet.editProfile({uid:currentUser.uid})}>UBAH</Link>
+                                    <Link className="btn-action" to={RouteName.editProfile}>UBAH</Link>
                                     <Link className="btn-action c-red" to="#" onClick={handleLogout}>LOGOUT</Link>
                                 </div>
                             </div>

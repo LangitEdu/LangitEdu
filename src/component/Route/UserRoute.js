@@ -6,13 +6,13 @@ import RouteName from '../../config/Route';
 export default function UserRoute({component : Component, ...rest}) {
 
     const { currentUser } = useAuth();
-    let uid = rest.computedMatch.params.uid;
-    if(uid && uid !== currentUser.uid){
+    // let uid = rest.computedMatch.params.uid;
+    if(!currentUser){
         return (
             <Route
             {...rest}
-            render = {()=>{
-               return <Redirect to={RouteName.login} />
+            render = {props=>{
+               return <Redirect {...props} to={RouteName.login} />
             }}
             ></Route>
         )

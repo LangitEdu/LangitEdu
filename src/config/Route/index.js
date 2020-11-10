@@ -4,7 +4,7 @@ const RouteName = {
     register:'/register',
     home:'/',
     forgetPassword : '/forgot-password',
-    editProfile : '/edit-profile/:uid',
+    editProfile : '/edit-profile/',
     topik: '/topik',
     gotoTopik : '/topik/:topik_uid',
     listKomunitas : '/komunitas',
