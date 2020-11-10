@@ -1,6 +1,5 @@
 import moment from 'moment'
 import parse from 'html-react-parser';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 const ChatRight = (props)=>{
     return (

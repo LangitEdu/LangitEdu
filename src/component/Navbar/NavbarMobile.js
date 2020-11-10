@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Styled from '@emotion/styled'
 import RouteName, { routeSet } from '../../config/Route'
     
