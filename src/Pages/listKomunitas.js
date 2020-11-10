@@ -5,18 +5,18 @@ import ModalAddKomunitas from '../component/Chat/ModalAddKomunitas';
 import Navbar from '../component/Navbar/Navbar'
 import { db, FieldValue } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function ListKomunitas() {
 
     const [Error, setError] = useState(false)
-
     const {currentUser} = useAuth()
     const [ListKomunitas, setListKomunitas] = useState("Loading...")
     const [bakcupListKomunitas, setBakcupListKomunitas] = useState()
     const [Chat, setChat] = useState('Loading...')
     const [onChat, setOnChat] = useState(false)
     const [chatAble, setChatAble] = useState(false)
-    const [pesan, setPesan] = useState()
+    const [pesan, setPesan] = useState('')
     const [komunitasUID, setKomunitasUID] = useState()
     const [onSerach, setOnSearch] = useState(false)
     const [CanSearch, setCanSearch] = useState(false)
@@ -62,7 +62,7 @@ export default function ListKomunitas() {
             docRef.onSnapshot((querySnapshot)=>{
                 if(!querySnapshot.empty){
                     setChat(querySnapshot.docs.map((doc)=>{
-                        return <ChatBubble {...doc.data()} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
+                        return <ChatBubble {...doc.data()} docid={doc.id} komuniastUID={komuniastUID} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
                     }))
                 }else{
                     setChat("Masih belum ada pesan dari room")
@@ -76,8 +76,8 @@ export default function ListKomunitas() {
     }
 
     function handleFormPesan(e) {
-        if(e.target.value.length>0){
-            setPesan(e.target.value)
+        setPesan(e)
+        if(e.length>0){
             setChatAble(true)
         }else{
             setChatAble(false)
@@ -85,13 +85,24 @@ export default function ListKomunitas() {
     }
 
     async function kirimPesan(e) {
-        e.preventDefault();
+        if(e){
+            e.preventDefault();
+        }
+        setError('')
+        const PesanYangDikirim = PesanRef.current.value
+        const patt = /((<script.*?>|<script>).*?<\/script>)/
+        if(patt.test(PesanYangDikirim)){
+            setError('Dilarang Mengirimkan script text')
+            setPesan('')
+            return;
+        }
+        
         await db.collection('Komunitas').doc(komunitasUID).collection('Pesan').add({
             sender_uid: currentUser.uid,
             timestamp:new Date().getTime(),
-            body:pesan
+            body:PesanYangDikirim
           });
-        PesanRef.current.value = ""
+        
         dummy.current.scrollIntoView({behavior : 'smooth'})
         db.collection('Komunitas').doc(komunitasUID).update({
             lastChat: new Date().getTime()
@@ -201,7 +212,6 @@ export default function ListKomunitas() {
     useEffect(() => {
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
-                console.log(querySnapshot.docChanges()[0].doc.data())
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas("Belum ada obrolan")
                     return;
@@ -240,7 +250,7 @@ export default function ListKomunitas() {
         }
         let checkId = await db.collection("Komunitas").where("id", "==", '@'+idKomunitas.toLowerCase()).get()
         if(checkId.empty){
-            let add = await db.collection("Komunitas").add({
+            await db.collection("Komunitas").add({
                 deskripsi: dekskripsiKomunitas,
                 id: '@'+idKomunitas.toLowerCase(),
                 lastChat : new Date().getTime(),
@@ -248,7 +258,6 @@ export default function ListKomunitas() {
                 photoUrl : `https://ui-avatars.com/api/?size=128&background=random&name=${namaKomunitas.replace(/\s/g,"+")}`,
                 member : [currentUser.uid]
             })
-            console.log(add);
         }else{
             console.log("udah ga bisa");
             setError("id komunitas sudah dipakai")
@@ -336,11 +345,38 @@ export default function ListKomunitas() {
                                         </ul>
                                         {onChat &&
                                             <>
-                                            <form onSubmit={kirimPesan}>
-                                                <div className="d-flex flex-row">
-                                                <div className="form-group mt-3 mb-0 w-100 h-100">
+                                            <form onSubmit={(kirimPesan)} id="formPesan">
+                                                <div className="">
+                                                {/* <div className="form-group mt-3 mb-0 w-100 h-100">
                                                     <input ref={PesanRef} className="form-control" type="text" placeholder="ketik sesuatu"  onChange={handleFormPesan} />
-                                                </div>
+                                                </div> */}
+                                                <textarea className="d-none"  ref={PesanRef} value={pesan} id="myTextArea" readOnly></textarea>
+                                                <Editor
+                                                    initialValue=""
+                                                    apiKey='njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
+                                                    init={{
+                                                        min_height: 100,
+                                                        menubar: false,
+                                                        selector: 'textarea#myTextArea',
+                                                        setup: function (ed) {
+                                                            ed.on('change', function (e) {
+                                                                ed.save();
+                                                            });
+                                                            ed.on('keydown',function(e) {
+                                                                if(e.shiftKey && e.key === "Enter"){
+                                                                  ed.execCommand('mceInsertNewLine');
+                                                                  e.preventDefault();
+                                                                }
+                                                                else if(e.key === "Enter"){
+                                                                    e.preventDefault();
+                                                                    kirimPesan()
+                                                                }
+                                                            });
+                                                          },
+                                                    }}
+                                                    value={pesan}
+                                                    onEditorChange={handleFormPesan}
+                                                />
                                                 <button type="submit" className="btn btn-primary" disabled={!chatAble} >Kirim</button>
                                                 </div>
                                             </form>

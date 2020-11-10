@@ -15,6 +15,7 @@ import EditProfile from "../Pages/EditProfile";
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas";
 import Admin from "../Pages/Admin";
+import MultipleMenus from "../Pages/SimpleMenu";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <UserRoute exact path={RouteName.admin} component={Admin} />
           <Route exact path={RouteName.home} component={Home} />
+          <Route exact path={RouteName.coba} component={MultipleMenus} />
         </Switch>
       </Router>
     </AuthProvider>

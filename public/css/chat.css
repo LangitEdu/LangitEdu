@@ -314,10 +314,6 @@
     border-color: transparent #ffffff transparent transparent;
 }
 
-.chat-container li.chat-right > div .chat-text {
-    text-align: right;
-}
-
 .chat-container li.chat-right > div .chat-text:before {
     right: -20px;
     border-color: transparent transparent transparent #ffffff;

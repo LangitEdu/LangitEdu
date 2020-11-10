@@ -8,7 +8,8 @@ const RouteName = {
     topik: '/topik',
     gotoTopik : '/topik/:topik_uid',
     listKomunitas : '/komunitas',
-    admin : '/admin'
+    admin : '/admin',
+    coba :'/coba'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{
