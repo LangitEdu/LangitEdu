@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import Styled from '@emotion/styled'
 import OutsideClickHandler from 'react-outside-click-handler'
-import RouteName, { routeSet } from '../../config/Route'
+import RouteName from '../../config/Route'
 
-import './navbar.css'
 import NavbarMobile from './NavbarMobile'
 import { useAuth } from '../../contexts/AuthContext'
 
