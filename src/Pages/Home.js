@@ -10,6 +10,7 @@ const Home = () => {
     <>
         <Navbar />
         <Wrapper>
+
             <div className="supertron">
                 <div className="contain-size">
                     <img src="/img/ilus/study.svg" alt=""/>
@@ -19,12 +20,47 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+
+            <div className="supersecond">
+                <div className="contain-size">
+                    <h2>Membuat belajar bersama teman lebih menyenangkan</h2>
+                    <img src="/img/ilus/bersama.svg" alt=""/>
+                </div>
+            </div>
         </Wrapper>
     </>
     );
 }
     
 const Wrapper = Styled.div(() =>`
+
+    .supersecond{
+        height: 408px;
+        box-shadow: inset 0px -24px 20px -12px rgba(0, 0, 0, 0.12);
+        margin-bottom: 100px;
+        
+        background-image: url('/img/deco/bubbles.svg');
+        background-size: contain;
+        background-position: left bottom;
+        background-repeat: no-repeat;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        h2{
+            max-width: 482px;
+            font-family: Raleway;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 43px;
+            line-height: 50px;
+
+            /* tosca */
+
+            color: #209FBC;
+        }
+    }
 
     .supertron{
         width: 100%;
@@ -40,10 +76,17 @@ const Wrapper = Styled.div(() =>`
         justify-content: center;
         align-items: center;
 
+        box-shadow: 0px 0px 20px 8px rgba(0, 0, 0, 0.25);
+
+
         .contain-size{
             display: flex;
             justify-content: space-between;
             align-items: center;
+
+            a{                
+                z-index: 0; 
+            }
 
             img{
                 margin-left: -32px;
@@ -64,6 +107,8 @@ const Wrapper = Styled.div(() =>`
             }
         }
     }    
+
+ 
 `)
     
 export default Home

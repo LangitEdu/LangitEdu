@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&family=Raleway:wght@400;500;600;700;800&display=swap');
 
+body{
+    background: #FAFAFA;
+}
+
 h1,h2,h3,h4,h5,p{
     margin: 0;
 }
@@ -8,6 +12,10 @@ h1,h2,h3,h4,h5,p{
     height: 100%;
     max-width: 1100px;
     padding: 0 32px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .btn-bordered{
     padding: 12px 24px;
@@ -26,4 +34,16 @@ h1,h2,h3,h4,h5,p{
     /* white */
 
     color: #FFFFFF;
+
+}
+.btn-bordered:hover{
+    background: #d88238;
+    text-decoration: none;
+    color: white;
+}
+a:hover{
+    text-decoration: none;
+}
+button:focus{
+    outline: none;
 }
