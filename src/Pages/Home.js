@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Navbar from '../component/Navbar/Navbar'
+import Navbar from '../component/Navbar/NavbarBig'
 import RouteName from '../config/Route'
 import Styled from '@emotion/styled'
 
