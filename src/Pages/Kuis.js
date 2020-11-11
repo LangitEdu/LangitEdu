@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../contexts/AuthContext'
+// import { useAuth } from '../contexts/AuthContext'
 import Navbar from '../component/Navbar/Navbar'
 
-import { db } from '../config/Firebase'
+import { db, functions } from '../config/Firebase'
 import Styled from '@emotion/styled'
     
 const Kuis = ({match}) => {
@@ -10,27 +10,64 @@ const Kuis = ({match}) => {
     const [questions, setquestions] = useState([])
     const [quiz, setquiz] = useState({})
     const [answer, setanswer] = useState([])
+    const [kuncis, setkuncis] = useState([])
 
     useEffect(() => {
         db.collection('Kuis').doc(kuisID).get().then(function(doc) {
             setquiz(doc.data())
-        });
+        })
         db.collection('Kuis').doc(kuisID).collection('Questions').get().then(function(querySnapshot) {
             let available = []
+            let filler = []          
             querySnapshot.forEach(function(doc) {     
-                available.push(doc.data())            
+                available.push(doc.data())
+                filler.push("")          
             })
             setquestions(available)
-        });
+            setanswer(filler)
+            console.log(answer)
+        })
     }, [kuisID])
-
     
-    const {currentUser} = useAuth()
-
+    
+    // const {currentUser} = useAuth()
+    
     const changeAnswer = (value, i) => {
-        let data = [...answer]
+        let data = answer
         data[i] = value
         setanswer(data)
+        console.log(answer)
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+
+        console.log("trying to submit");
+
+        var corrector = functions.httpsCallable('corrector')
+
+        corrector({ 
+            kuisID : kuisID, 
+            answers : answer
+        }).then(function(result) {
+            // Read result of the Cloud Function.
+            var sanitizedMessage = result.data.text
+            console.log(sanitizedMessage)
+        }).catch(err => console.log(err))
+
+        // const requestOptions = {
+        //     method: 'POST',
+        //     body: JSON.stringify({ 
+        //         kuisID : kuisID,
+        //         answers : answer
+        //     })
+        // }
+
+        // fetch('http://localhost:5001/langit-edu/us-central1/corrector', requestOptions)
+        //     .then(response => response.json())
+        //     .then(data => console.log(data))
+        //     .catch( err => console.log(err))
+
     }
 
     return (
@@ -38,6 +75,8 @@ const Kuis = ({match}) => {
         <Navbar />
         <Wrapper>
             <h1>{quiz.Nama}</h1>
+            <form onSubmit={(e)=> handleSubmit(e)}>
+
             {questions.map((q, i)=>(
                 <div className="question-card" key={i}>
                     <h2 key={i}>{q.body}</h2>   
@@ -47,9 +86,11 @@ const Kuis = ({match}) => {
                     <div className="options"><input type="radio" name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</div>
                 </div >
             ))}
+            <button type="submit" className="btn-bordered">SELESAI</button>
+            </form>
         </Wrapper>
     </>
-    );
+    )
 }
     
 const Wrapper = Styled.div(() =>`
@@ -58,18 +99,25 @@ const Wrapper = Styled.div(() =>`
     align-items: center;
     flex-direction: column;
     
-    .question-card{
-        width: 90%;
-        max-width: 600px;
-        min-width: 340px;
-        padding: 24px;
-        margin: 12px 0;
+    form{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
 
-        /* fafafa */
-
-        background: #FAFAFA;
-        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
-        border-radius: 16px;
+        .question-card{
+            width: 90%;
+            max-width: 600px;
+            min-width: 340px;
+            padding: 24px;
+            margin: 12px 0;
+            
+            /* fafafa */
+            
+            background: #FAFAFA;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+        }
     }
 `)
     

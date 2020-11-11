@@ -3,6 +3,8 @@ import 'firebase/analytics';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/storage';
+import 'firebase/functions';
+// Required for side-effects
 
 const firebaseConfig = {
   apiKey: "AIzaSyADdV20RUzhl30KtRkQnJUVin-0scEZaRw",
@@ -24,4 +26,5 @@ export const FieldValue = firebase.firestore.FieldValue;
 export const storage = app.storage();
 export const googleProvider = new firebase.auth.GoogleAuthProvider()
 export const EmailAuthProvider = firebase.auth.EmailAuthProvider
+export const functions = firebase.functions();
 export default app;

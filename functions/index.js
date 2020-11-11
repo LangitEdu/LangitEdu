@@ -1,5 +1,12 @@
 const functions = require('firebase-functions')
 const admin = require('firebase-admin')
+// const { log } = require('firebase-functions/lib/logger')
+
+const express = require("express");
+const app = express();
+const cors = require("cors");
+app.use(cors());
+
 admin.initializeApp()
 
 exports.addAdminRole = functions.https.onCall((data, context) => {
@@ -17,6 +24,37 @@ exports.addAdminRole = functions.https.onCall((data, context) => {
     })
 })
 
+exports.corrector = functions.https.onRequest(async (req, res) => {
+    if(req.method !== "POST")return res.status(400).json({message: "Not Allowed"})
+    
+    let { answers, kuisID } = req.body
+
+    admin.firestore().collection('Kuis').doc(kuisID).collection('Answers').doc('kunci').get().then(function(doc) {
+        let kunciArr = []
+        kunciArr = doc.data().body
+
+        let hasilUser = []
+        kunciArr.forEach((kcr, i) => {
+            hasilUser.push(typeof answers[i] !== 'undefined' ? answers[i] === kcr : false)
+        })
+        
+        let nilai = 0
+        hasilUser.forEach(hsl => {
+            if(hsl) nilai++
+        })
+
+        nilai = (nilai/kunciArr.length) * 100
+
+        res.status(200).json({
+            message : "Hello World!",
+            isi : req.body,
+            kunci : kunciArr,
+            hasilUser: hasilUser,
+            nilai: nilai
+        })
+    })
+
+})
 
 
 
