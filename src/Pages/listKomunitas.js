@@ -5,7 +5,7 @@ import ModalAddKomunitas from '../component/Chat/ModalAddKomunitas';
 import Navbar from '../component/Navbar/Navbar'
 import { db, FieldValue } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
-import { Editor } from '@tinymce/tinymce-react';
+import RichForm from '../component/Chat/RichForm';
 
 export default function ListKomunitas() {
 
@@ -62,7 +62,7 @@ export default function ListKomunitas() {
             docRef.onSnapshot((querySnapshot)=>{
                 if(!querySnapshot.empty){
                     setChat(querySnapshot.docs.map((doc)=>{
-                        return <ChatBubble {...doc.data()} docid={doc.id} komuniastUID={komuniastUID} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
+                        return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} docid={doc.id} komuniastUID={komuniastUID} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
                     }))
                 }else{
                     setChat("Masih belum ada pesan dari room")
@@ -89,25 +89,27 @@ export default function ListKomunitas() {
             e.preventDefault();
         }
         setError('')
-        const PesanYangDikirim = PesanRef.current.value
-        const patt = /((<script.*?>|<script>).*?<\/script>)/
-        if(patt.test(PesanYangDikirim)){
-            setError('Dilarang Mengirimkan script text')
+        if(PesanRef.current.value.length > 0){
+            const PesanYangDikirim = PesanRef.current.value
+            const patt = /((<script.*?>|<script>).*?<\/script>)/
+            if(patt.test(PesanYangDikirim)){
+                setError('Dilarang Mengirimkan script text')
+                setPesan('')
+                return;
+            }
+            
+            await db.collection('Komunitas').doc(komunitasUID).collection('Pesan').add({
+                sender_uid: currentUser.uid,
+                timestamp: FieldValue.serverTimestamp(),
+                body:PesanYangDikirim
+              });
+            
+            dummy.current.scrollIntoView({behavior : 'smooth'})
+            db.collection('Komunitas').doc(komunitasUID).update({
+                lastChat: FieldValue.serverTimestamp()
+            })
             setPesan('')
-            return;
         }
-        
-        await db.collection('Komunitas').doc(komunitasUID).collection('Pesan').add({
-            sender_uid: currentUser.uid,
-            timestamp:new Date().getTime(),
-            body:PesanYangDikirim
-          });
-        
-        dummy.current.scrollIntoView({behavior : 'smooth'})
-        db.collection('Komunitas').doc(komunitasUID).update({
-            lastChat: new Date().getTime()
-        })
-        setPesan('')
     }
     async function joinKomunitas(e) {
         e.preventDefault();
@@ -197,7 +199,7 @@ export default function ListKomunitas() {
                 }
                 setListKomunitas(querySnapshot.docs.map(doc=>{
                     return (
-                        <Komunitas  {...doc.data()} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
+                        <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
                     )
                 }))
             })
@@ -218,7 +220,7 @@ export default function ListKomunitas() {
                 }
                 let listKomunitas = querySnapshot.docs.map(doc=>{
                     return (
-                        <Komunitas  {...doc.data()} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
+                        <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
                     )
                 })
                 setListKomunitas(listKomunitas)
@@ -253,7 +255,7 @@ export default function ListKomunitas() {
             await db.collection("Komunitas").add({
                 deskripsi: dekskripsiKomunitas,
                 id: '@'+idKomunitas.toLowerCase(),
-                lastChat : new Date().getTime(),
+                lastChat : FieldValue.serverTimestamp(),
                 nama:namaKomunitas,
                 photoUrl : `https://ui-avatars.com/api/?size=128&background=random&name=${namaKomunitas.replace(/\s/g,"+")}`,
                 member : [currentUser.uid]
@@ -346,38 +348,14 @@ export default function ListKomunitas() {
                                         {onChat &&
                                             <>
                                             <form onSubmit={(kirimPesan)} id="formPesan">
-                                                <div className="">
-                                                {/* <div className="form-group mt-3 mb-0 w-100 h-100">
-                                                    <input ref={PesanRef} className="form-control" type="text" placeholder="ketik sesuatu"  onChange={handleFormPesan} />
-                                                </div> */}
-                                                <textarea className="d-none"  ref={PesanRef} value={pesan} id="myTextArea" readOnly></textarea>
-                                                <Editor
-                                                    initialValue=""
-                                                    apiKey='njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
-                                                    init={{
-                                                        min_height: 100,
-                                                        menubar: false,
-                                                        selector: 'textarea#myTextArea',
-                                                        setup: function (ed) {
-                                                            ed.on('change', function (e) {
-                                                                ed.save();
-                                                            });
-                                                            ed.on('keydown',function(e) {
-                                                                if(e.shiftKey && e.key === "Enter"){
-                                                                  ed.execCommand('mceInsertNewLine');
-                                                                  e.preventDefault();
-                                                                }
-                                                                else if(e.key === "Enter"){
-                                                                    e.preventDefault();
-                                                                    kirimPesan()
-                                                                }
-                                                            });
-                                                          },
-                                                    }}
-                                                    value={pesan}
-                                                    onEditorChange={handleFormPesan}
-                                                />
                                                 <button type="submit" className="btn btn-primary" disabled={!chatAble} >Kirim</button>
+                                                <div className="">
+                                                <RichForm 
+                                                    reference={PesanRef}
+                                                    pesan={pesan}
+                                                    onEditorChange={handleFormPesan}
+                                                    kirimPesan={kirimPesan}
+                                                />
                                                 </div>
                                             </form>
                                             </>
