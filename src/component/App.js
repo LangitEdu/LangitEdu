@@ -15,6 +15,7 @@ import EditProfile from "../Pages/EditProfile";
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas";
 import Admin from "../Pages/Admin";
+import Kuis from "../Pages/Kuis";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <UserRoute exact path={RouteName.admin} component={Admin} />
+          <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <Route exact path={RouteName.home} component={Home} />
         </Switch>
       </Router>

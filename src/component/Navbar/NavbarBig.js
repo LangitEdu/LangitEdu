@@ -89,7 +89,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
 
     nav{
         width: 100%;
-        height: 80px;
+        height: 118px;
         background: #FAFAFA;
         box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.2);
         display: flex;
@@ -107,9 +107,9 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
             align-items: center;
             
             .logo-cont{
-                max-width: 132px;
-                width: 132px;
-                min-width: 132px;
+                max-width: 170px;
+                width: 170px;
+                min-width: 170px;
                 height: 100%;  
                 margin-left: 50px;
 
@@ -165,7 +165,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
             .user-info{
                 position: relative;
                 width: 293px;
-                height: 64px;
+                height: 85px;
 
                 background: #F5F5F5;
                 border: 1px solid #BCBCBC;
@@ -222,12 +222,12 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                 }
 
                 .ava{
-                    min-width: 48px;
-                    min-height: 48px;
-                    max-width: 48px;
-                    max-height: 48px;
-                    width: 48px;
-                    height: 48px;
+                    min-width: 62px;
+                    min-height: 62px;
+                    max-width: 62px;
+                    max-height: 62px;
+                    width: 62px;
+                    height: 62px;
 
                     background: white url('${currentUser ? currentUser.photoURL : ""}');
                     background-size: cover;
@@ -265,8 +265,8 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                         font-family: Oxygen;
                         font-style: normal;
                         font-weight: bold;
-                        font-size: 14px;
-                        line-height: 12px;
+                        font-size: 16px;
+                        line-height: 20px;
                         
                         /* Gray 4 */
                         
