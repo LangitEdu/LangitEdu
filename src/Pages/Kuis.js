@@ -6,7 +6,7 @@ import { db, functions } from '../config/Firebase'
 import Styled from '@emotion/styled'
     
 const Kuis = ({match}) => {
-    const [kuisID, setkuisID] = useState(match.params.kuisID)
+    const [kuisID] = useState(match.params.kuisID)
     const [questions, setquestions] = useState([])
     const [quiz, setquiz] = useState({})
     const [answer, setanswer] = useState([])
@@ -26,7 +26,7 @@ const Kuis = ({match}) => {
             setanswer(filler)
             console.log(answer)
         })
-    }, [kuisID, answer])
+    }, [kuisID])
     
     
     // const {currentUser} = useAuth()
