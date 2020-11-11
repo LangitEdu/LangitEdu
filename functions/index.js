@@ -53,6 +53,11 @@ exports.corrector = functions.https.onRequest(async (req, res) => {
             nilai: nilai
         })
     })
+    .catch(err => {
+        res.status(400).json({
+            body : `failed with error : ${err}`
+        })
+    })
 
 })
 

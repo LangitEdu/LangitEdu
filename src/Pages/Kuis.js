@@ -10,7 +10,6 @@ const Kuis = ({match}) => {
     const [questions, setquestions] = useState([])
     const [quiz, setquiz] = useState({})
     const [answer, setanswer] = useState([])
-    const [kuncis, setkuncis] = useState([])
 
     useEffect(() => {
         db.collection('Kuis').doc(kuisID).get().then(function(doc) {
@@ -27,7 +26,7 @@ const Kuis = ({match}) => {
             setanswer(filler)
             console.log(answer)
         })
-    }, [kuisID])
+    }, [kuisID, answer])
     
     
     // const {currentUser} = useAuth()
@@ -43,17 +42,23 @@ const Kuis = ({match}) => {
         e.preventDefault()
 
         console.log("trying to submit");
-
+        
         var corrector = functions.httpsCallable('corrector')
-
-        corrector({ 
+        
+        const data = { 
             kuisID : kuisID, 
             answers : answer
-        }).then(function(result) {
+        }
+
+        corrector(data).then(function(result) {
+            console.log("submitted");
             // Read result of the Cloud Function.
             var sanitizedMessage = result.data.text
             console.log(sanitizedMessage)
-        }).catch(err => console.log(err))
+        }).catch(err => {
+            console.log(err)
+            console.log("cannot");
+        })
 
         // const requestOptions = {
         //     method: 'POST',
