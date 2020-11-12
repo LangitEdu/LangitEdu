@@ -1,7 +1,9 @@
 import moment from 'moment'
 import parse from 'html-react-parser';
+import { ContextMenuTrigger } from "react-contextmenu";
 
 const ChatRight = (props)=>{
+    const MENU_TYPE = props.docid;
     return (
         <>
         <li className={"chat chat-right d-flex flex-row-reverse"}>
@@ -13,10 +15,12 @@ const ChatRight = (props)=>{
                     {props.dataMember ? props.dataMember.displayName : 'unknown' }
                 </div>
                 <div className={"d-flex flex-row-reverse"}>
+                    <ContextMenuTrigger id={MENU_TYPE} holdToDisplay={1000}>
                     <div className="chat-text">
                         {parse(props.body)}
                     </div>
-                    <div className={"chat-hour mr-2 align-self-end"}>{moment(props.timestamp).format("HH:mm")}</div>
+                    </ContextMenuTrigger>
+                    <div className={"chat-hour mr-2 align-self-end"}>{moment.unix(props.timestamp.seconds).format("HH:mm")}</div>
                 </div>
             </div>
         </li>

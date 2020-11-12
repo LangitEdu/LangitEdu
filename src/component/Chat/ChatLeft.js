@@ -15,7 +15,7 @@ const ChatLeft = (props)=>{
                     <div className="chat-text">
                         {parse(props.body)}
                     </div>
-                    <div className={"chat-hour ml-2 align-self-end"}>{moment(props.timestamp).format("HH:mm")}</div>
+                    <div className={"chat-hour ml-2 align-self-end"}>{moment.unix(props.timestamp.seconds).format("HH:mm")}</div>
                 </div>
             </div>
         </li>

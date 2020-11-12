@@ -1,7 +1,7 @@
 import {useAuth} from '../../contexts/AuthContext'
 import ChatRight from './ChatRight';
 import ChatLeft from './ChatLeft';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import { ContextMenu, MenuItem } from "react-contextmenu";
 import {db} from '../../config/Firebase'
 
 const ChatBubble = (props)=>{
@@ -16,9 +16,7 @@ const ChatBubble = (props)=>{
     return (
         props.sender_uid === currentUser.uid ?
         <> 
-        <ContextMenuTrigger id={MENU_TYPE} holdToDisplay={1000}>
             <ChatRight {...props} /> 
-        </ContextMenuTrigger>
         <ContextMenu id={MENU_TYPE}>
             <MenuItem onClick={handleHapus}>Hapus</MenuItem>
         </ContextMenu>
