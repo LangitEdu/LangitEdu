@@ -18,7 +18,7 @@ const Kuis = ({match}) => {
     useEffect(() => {
         
         db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get().then(function(doc) {
-            
+            console.log("read1");
             if(!doc.exists){
                 db.collection('Kuis').doc(kuisID).get().then(function(doc) {
                     setkuis(doc.data())
@@ -30,7 +30,7 @@ const Kuis = ({match}) => {
                         available.push(doc.data())
                         filler.push("")          
                     })
-                    document.getElementById('form').reset()
+                    if(isElementExists(document.getElementById('form'))) document.getElementById('form').reset()
                     setquestions(available)
                     setanswer(filler)
                     setallowSession("allow")
@@ -43,7 +43,14 @@ const Kuis = ({match}) => {
             }
         })
     }, [kuisID, allowSession, currentUser])
-        
+
+    const isElementExists = (element) => {
+        if(typeof(element) != 'undefined' && element != null){
+            return true
+        } else{
+            return false
+        }
+    }        
     
     const changeAnswer = (value, i) => {
         let data = answer
