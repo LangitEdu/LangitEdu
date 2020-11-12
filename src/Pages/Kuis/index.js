@@ -11,17 +11,20 @@ const Kuis = ({match}) => {
     const [allowSession, setallowSession] = useState("load")
     const [questions, setquestions] = useState([])
     const [kuis, setkuis] = useState({})
-    const [answer, setanswer] = useState([]) 
     const [isSaved, setisSaved] = useState(false)
     const [showPopup, setshowPopup] = useState(false)
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
+    const [answer, setanswer] = useState(() => {
+
+        if(localStorage.getItem('savedAnswer') !== null && localStorage.getItem('savedKuisID') === kuisID){
+            return localStorage.getItem('savedAnswer').split(",")
+        }else{
+            return []
+        }
+    }) 
 
     useEffect(() => {
-        console.log(answer)
-        console.log(localStorage.getItem('savedAnswer'))
-        // setanswer(localStorage.getItem('savedAnswer').split(","))
-        console.log(answer)
         db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get().then(function(doc) {
             
             if(!doc.exists){
@@ -65,6 +68,7 @@ const Kuis = ({match}) => {
         data[i] = value
         setanswer(data)
         localStorage.setItem('savedAnswer', answer.join(","))
+        localStorage.setItem('savedKuisID', kuisID)
         console.log(answer) 
     }
 
@@ -81,9 +85,12 @@ const Kuis = ({match}) => {
           })
           .then(function (res) {
             console.log(res.data.message)
-            setisSaved(res.data.body)
+            if (res.data.body){
+                setisSaved(true)
+                resetIfExist("form")
+                localStorage.removeItem('savedAnswer')
+            }
             setshowPopup(true)
-            resetIfExist("form")
             setallowSession("done")
         })
         .catch(function (err) {
@@ -104,10 +111,10 @@ const Kuis = ({match}) => {
                 {questions.map((q, i)=>(
                     <div className="question-card" key={i}>
                         <h2 key={i}>{q.body}</h2>   
-                        <div className="options"><input type="radio" name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>{q.options[0].body}</div>
-                        <div className="options"><input type="radio" name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>{q.options[1].body}</div>
-                        <div className="options"><input type="radio" name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>{q.options[2].body}</div>
-                        <div className="options"><input type="radio" name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</div>
+                        <div className="options"><input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>{q.options[0].body}</div>
+                        <div className="options"><input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>{q.options[1].body}</div>
+                        <div className="options"><input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>{q.options[2].body}</div>
+                        <div className="options"><input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</div>
                     </div >
                 ))}
                 <button type="submit" className="btn-bordered">SELESAI</button>
@@ -138,11 +145,15 @@ const Kuis = ({match}) => {
     )
 }
     
-const Wrapper = Styled.div(({}) =>`
+const Wrapper = Styled.div(() =>`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+
+    .checked{
+        color: red !important;
+    }
     
     .popup-cont{
         position: fixed;
