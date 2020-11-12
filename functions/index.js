@@ -35,21 +35,15 @@ const db = admin.firestore()
                     hasilUser: hasilUser
                 
                 }).then(() => {
-                    return 'tersimpan'
-                }).catch(err => {
-                    return `gagal menyimpan err : ${err}`
+                    return true
+                }).catch(() => {
+                    return false
                 })
                 
         
                 res.status(200).json({
-                    
-                    message : "Hello World!",
-                    isi : req.body,
-                    kunci : kunciArr,
-                    hasilUser: hasilUser,
-                    nilai: nilai,
-                    userID : userID,
-                    isSaved: isSaved
+                    message: "Data successfully stored",
+                    body: isSaved
                 })
             })
             .catch(err => {

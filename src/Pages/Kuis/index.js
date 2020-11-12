@@ -1,28 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useAuth } from '../contexts/AuthContext'
-import Navbar from '../component/Navbar/Navbar'
-import Spinner from '../component/Spinner/Spin1'
+import { useAuth } from '../../contexts/AuthContext'
+import Navbar from '../../component/Navbar/Navbar'
+import Spinner from '../../component/Spinner/Spin1'
 
-import { db } from '../config/Firebase'
+import { db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
     
 const Kuis = ({match}) => {
-    const [allowSession, setallowSession] = useState("load");
+    const [allowSession, setallowSession] = useState("load")
     const [questions, setquestions] = useState([])
     const [kuis, setkuis] = useState({})
     const [answer, setanswer] = useState([]) 
+    const [isSaved, setisSaved] = useState(false)
+    const [showPopup, setshowPopup] = useState(false)
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
 
     useEffect(() => {
-        
+        console.log(answer)
+        console.log(localStorage.getItem('savedAnswer'))
+        // setanswer(localStorage.getItem('savedAnswer').split(","))
+        console.log(answer)
         db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get().then(function(doc) {
-            console.log("read1");
+            
             if(!doc.exists){
                 db.collection('Kuis').doc(kuisID).get().then(function(doc) {
                     setkuis(doc.data())
                 })
+
                 db.collection('Kuis').doc(kuisID).collection('Questions').get().then(function(querySnapshot) {
                     let available = []
                     let filler = []          
@@ -30,25 +36,27 @@ const Kuis = ({match}) => {
                         available.push(doc.data())
                         filler.push("")          
                     })
-                    if(isElementExists(document.getElementById('form'))) document.getElementById('form').reset()
+                    resetIfExist("form")
                     setquestions(available)
-                    setanswer(filler)
+                    if(answer.length === 0) setanswer(filler)
                     setallowSession("allow")
                 })
+
             }else{
                 db.collection('Kuis').doc(kuisID).get().then(function(doc) {
                     setkuis(doc.data())
                 })
                 setallowSession("disallow")
+                
             }
         })
-    }, [kuisID, allowSession, currentUser])
+    }, [kuisID, currentUser.uid])
 
-    const isElementExists = (element) => {
+    const resetIfExist = (id) => {
+        const element = document.getElementById(id)
+
         if(typeof(element) != 'undefined' && element != null){
-            return true
-        } else{
-            return false
+            element.reset()
         }
     }        
     
@@ -56,13 +64,14 @@ const Kuis = ({match}) => {
         let data = answer
         data[i] = value
         setanswer(data)
+        localStorage.setItem('savedAnswer', answer.join(","))
         console.log(answer) 
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
 
-        console.log("trying to submit");
+        console.log("submiting . . .")
     
         axios.post('http://localhost:5001/langit-edu/us-central1/api/submit', {
             kuisID : kuisID,
@@ -71,19 +80,26 @@ const Kuis = ({match}) => {
             userID : currentUser.uid
           })
           .then(function (res) {
-            console.log(res.data);
-          })
-          .catch(function (err) {
-            console.log(err);
+            console.log(res.data.message)
+            setisSaved(res.data.body)
+            setshowPopup(true)
+            resetIfExist("form")
+            setallowSession("done")
+        })
+        .catch(function (err) {
+            console.log(err)
+            setshowPopup(true)
           })
     }
 
     return (
     <>
         <Navbar />
-        <Wrapper allowSession={allowSession}>
-            <h1>{kuis.Nama}</h1>
+        <Wrapper>
+
             {allowSession === "allow" &&
+            <>
+                <h1>{kuis.Nama}</h1>
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
                 {questions.map((q, i)=>(
                     <div className="question-card" key={i}>
@@ -96,27 +112,62 @@ const Kuis = ({match}) => {
                 ))}
                 <button type="submit" className="btn-bordered">SELESAI</button>
                 </form>
+            </>
             }
+
             {allowSession === "disallow" &&
                 <h2>MAAF KUIS {kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
             }
 
-            <div className="loader">
-                <Spinner />
-            </div>
+            {allowSession === "load" && 
+                <div className="loader">
+                    <Spinner />
+                </div>
+            }
+
+            {showPopup && 
+                <div className="popup-cont">
+                    <div className="popup-postsubmit">
+                        <p>{isSaved ? "KUIS BERHASIL DIKUMPULKAN" : "MAAF TERJADI KESALAHAN"}</p>
+                    </div>
+                </div>
+            }
+
         </Wrapper>
     </>
     )
 }
     
-const Wrapper = Styled.div(({allowSession}) =>`
+const Wrapper = Styled.div(({}) =>`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    
+    .popup-cont{
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .popup-postsubmit{
+            max-width: 450px;
+            width: 90%;
+            min-width: 350px;
+            height: 200px;
+            background: #FAFAFA;
+            border-radius: 12px;
+            box-shadow: 0 0 12px 0 rgba(0,0,0,0.3);
+        }   
+    }
 
     .loader{
-        display: ${allowSession === "load" ? "flex" : "none"};
+        display: flex;
         justify-content: center;
         align-items: center;
         position: fixed;
@@ -125,7 +176,7 @@ const Wrapper = Styled.div(({allowSession}) =>`
         top: 0;
         left: 0;
         background: #FAFAFA;
-        z-index: 10;
+        z-index: 11;
     }
     
     form{
