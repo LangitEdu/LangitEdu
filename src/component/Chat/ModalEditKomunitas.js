@@ -4,7 +4,6 @@ import NotDismissible from "../Alert/NotDismissible"
 const ModalEditKomunitas = (props)=>{
     const [Error, setError] = useState(false)
     const [SubmitAble, setSubmitAble] = useState(true)
-    const [ProfileTempUrl, setProfileTempUrl] = useState('')
     const handleInputChange = (e)=>{
         // Id ga boleh ada whitespace
         setError()
@@ -108,7 +107,7 @@ const ModalEditKomunitas = (props)=>{
                         </div>
                         <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" onClick={props.onClick}>Close</button>
-                        <button type="submit" className="btn btn-primary" disabled={Error || !SubmitAble || props.Loading} >Buat Komunitas</button>
+                        <button type="submit" className="btn btn-primary" disabled={Error || !SubmitAble || props.Loading} >Simpan Perubahan</button>
                         </div>
                     </div>
                 </div>

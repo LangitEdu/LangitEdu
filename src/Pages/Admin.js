@@ -64,6 +64,28 @@ const Admin = () => {
                     </div>
                 </div>
             </div>
+
+            <div className="container mt-4">
+                <h2>Buat Topik</h2>
+                <div className="card">
+                    <div className="card-body">
+                        <form >
+                            <div className="form-group">
+                                <label htmlFor="namaTopik">Nama Topik</label>
+                                <input type="text" className="form-control" id="namaTopik"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="deskripsiTopik">Deskripsi Topik</label>
+                                <textarea className="form-control" id="deskripsiTopik" cols="30" rows="10"></textarea>
+                            </div>
+                            <button className="btn btn-primary" >Buat Topik</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div className="container mt-3">
+                
+            </div>
         </Wrapper>
     );
 }
