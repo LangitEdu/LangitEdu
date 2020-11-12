@@ -24,7 +24,6 @@ const Kuis = ({match}) => {
             })
             setquestions(available)
             setanswer(filler)
-            console.log(answer)
         })
     }, [kuisID])
     

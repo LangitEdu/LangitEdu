@@ -1,26 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ChatBubble from '../component/Chat/ChatBubble';
 import Komunitas from '../component/Chat/Komunitas';
-import ModalAddKomunitas from '../component/Chat/ModalAddKomunitas';
+import ModalKomunitas from '../component/Chat/ModalKomunitas';
 import Navbar from '../component/Navbar/Navbar'
-import { db, FieldValue } from '../config/Firebase';
+import { db, FieldValue, storage } from '../config/Firebase';
 import {useAuth} from '../contexts/AuthContext'
 import RichForm from '../component/Chat/RichForm';
+import ModalEditKomunitas from '../component/Chat/ModalEditKomunitas';
 
 export default function ListKomunitas() {
 
     const [Error, setError] = useState(false)
-    const {currentUser} = useAuth()
+    const {currentUser, IsAdmin} = useAuth()
     const [ListKomunitas, setListKomunitas] = useState("Loading...")
     const [bakcupListKomunitas, setBakcupListKomunitas] = useState()
     const [Chat, setChat] = useState('Loading...')
     const [onChat, setOnChat] = useState(false)
     const [chatAble, setChatAble] = useState(false)
     const [pesan, setPesan] = useState('')
-    const [komunitasUID, setKomunitasUID] = useState()
+    const [CurrentKomunitas, setCurrentKomunitas] = useState()
     const [onSerach, setOnSearch] = useState(false)
     const [CanSearch, setCanSearch] = useState(false)
-    const [ShowModal, setShowModal] = useState(false)
+    const [ShowModalAddKomunitas, setShowModalAddKomunitas] = useState(false)
+    const [ShowModalEditKomunitas, setShowModalEditKomunitas] = useState(false)
     const searchKomunitas = useRef()
     const dummy = useRef()
     const PesanRef = useRef()
@@ -28,41 +30,47 @@ export default function ListKomunitas() {
     const namaKomunitasRef = useRef()
     const idKomunitasRef = useRef()
     const deskripsiKomunitasRef = useRef()
-    
-    
+    const ProfileKomPicRef = useRef()
+    const [Loadng, setLoading] = useState(false)
+
     async function LiatChat(e, langsungUID=false, komUid=null){
-        setOnChat(true)
         setChat("loding..")
         document.getElementById('idRoom').innerHTML = "Loading..."
         document.getElementById('JudulRoom').innerHTML = "Loading..."
         searchKomunitas.current.value = ""
         let dataMember = []
         function getKomunitasUID(target) {
-            let komuniastUID;
+            let currentKom;
             if(target.dataset.chat === undefined){
-                komuniastUID = getKomunitasUID(target.parentNode)
+                currentKom = getKomunitasUID(target.parentNode)
             }else{
-                komuniastUID = target.dataset.chat
+                currentKom = target.dataset.chat
             }
     
-            return komuniastUID;
+            return currentKom;
         }
-        let komuniastUID = langsungUID ? komUid : getKomunitasUID(e.target)
-        setKomunitasUID(komuniastUID)
-        let {photoUrl, nama, id,member} = (await db.collection('Komunitas').doc(komuniastUID).get()).data()
+        let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
+        const currentKomunitas = await db.collection('Komunitas').doc(currentKom).get()
+        const currentKomunitasData = currentKomunitas.data()
+        setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData})   
+        let {photoUrl, nama, id,member} = currentKomunitasData
         document.getElementById('JudulRoom').innerHTML = nama
-        document.getElementById('avaGroup').src = photoUrl
         document.getElementById('idRoom').innerHTML = id
-
+        setOnChat(true)
+        document.getElementById('avaGroup').src = photoUrl
         await db.collection('Profile').where('uid','in',member).get().then(res=>{
             res.forEach(doc=>{
                 dataMember[doc.id] = doc.data()
             })
-            let docRef = db.collection(`Komunitas`).doc(komuniastUID).collection("Pesan").orderBy("timestamp", "desc")
+            let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
             docRef.onSnapshot((querySnapshot)=>{
                 if(!querySnapshot.empty){
                     setChat(querySnapshot.docs.map((doc)=>{
-                        return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} docid={doc.id} komuniastUID={komuniastUID} dataMember={dataMember[doc.data().sender_uid]} key={doc.id} />
+                        return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
+                                    docid={doc.id} 
+                                    komuniastUID={currentKom} 
+                                    dataMember={dataMember[doc.data().sender_uid]} 
+                                    key={doc.id} />
                     }))
                 }else{
                     setChat("Masih belum ada pesan dari room")
@@ -85,30 +93,31 @@ export default function ListKomunitas() {
     }
 
     async function kirimPesan(e) {
-        if(e){
+        let currentKomunitasUID;
+        if(!e.komunitasUID){
             e.preventDefault();
         }
+        currentKomunitasUID = CurrentKomunitas ? CurrentKomunitas.uid : e.KomunitasUID
         setError('')
         if(PesanRef.current.value.length > 0){
             const PesanYangDikirim = PesanRef.current.value
+            setPesan('')
             const patt = /((<script.*?>|<script>).*?<\/script>)/
             if(patt.test(PesanYangDikirim)){
                 setError('Dilarang Mengirimkan script text')
-                setPesan('')
                 return;
             }
             
-            await db.collection('Komunitas').doc(komunitasUID).collection('Pesan').add({
+            await db.collection('Komunitas').doc(currentKomunitasUID).collection('Pesan').add({
                 sender_uid: currentUser.uid,
                 timestamp: FieldValue.serverTimestamp(),
                 body:PesanYangDikirim
               });
             
             dummy.current.scrollIntoView({behavior : 'smooth'})
-            db.collection('Komunitas').doc(komunitasUID).update({
+            db.collection('Komunitas').doc(currentKomunitasUID).update({
                 lastChat: FieldValue.serverTimestamp()
             })
-            setPesan('')
         }
     }
     async function joinKomunitas(e) {
@@ -123,7 +132,7 @@ export default function ListKomunitas() {
             return komunitasUID;
         }
         let NewkomunitasUID = getKomunitasUID(e.target)
-        setKomunitasUID(NewkomunitasUID)
+        setCurrentKomunitas({uid:NewkomunitasUID})
         setChat("Loading....")
         setOnChat(true)
         cancelSearch()
@@ -147,14 +156,23 @@ export default function ListKomunitas() {
     }
 
     async function handleExitGroup(){
-        
-        await db.collection('Komunitas').doc(komunitasUID).update({
+        await db.collection('Komunitas').doc(CurrentKomunitas.uid).update({
             member: FieldValue.arrayRemove(currentUser.uid)
         })
         .then(async () => {
-            let currentKom = await db.collection('Komunitas').doc(komunitasUID).get()
-            if(currentKom.data().member.length === 0){
-                db.collection('Komunitas').doc(komunitasUID).delete()
+            let currentKom = await db.collection('Komunitas').doc(CurrentKomunitas.uid).get()
+            const data = currentKom.data()
+            if(data.member.length === 0){
+
+                if(data.profileRef){
+                    storage.ref().child(data.profileRef).then(res=>{
+                        console.log('berhasil menghapus foto profile');
+                    }).catch(err=>{
+                        console.log(err);
+                    })
+                }
+
+                db.collection('Komunitas').doc(CurrentKomunitas.uid).delete()
                 .then(()=>{
                     console.log("Berhasil menghapus");
                 }).catch((err)=>{
@@ -162,7 +180,7 @@ export default function ListKomunitas() {
                 })
             }
             await db.collection('Profile').doc(currentUser.uid).update({
-                komunitas: FieldValue.arrayRemove(komunitasUID)
+                komunitas: FieldValue.arrayRemove(CurrentKomunitas.uid)
             }).then(() => {
                 setOnChat(false)
                 document.getElementById('JudulRoom').innerHTML = ""
@@ -219,8 +237,12 @@ export default function ListKomunitas() {
                     return;
                 }
                 let listKomunitas = querySnapshot.docs.map(doc=>{
+                    const data = doc.data({serverTimestamps: 'estimate'})
+                    if(CurrentKomunitas && CurrentKomunitas.uid === doc.id){
+                        setCurrentKomunitas({...data,uid:doc.id})
+                    }
                     return (
-                        <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
+                        <Komunitas  {...data} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
                     )
                 })
                 setListKomunitas(listKomunitas)
@@ -230,46 +252,153 @@ export default function ListKomunitas() {
                 setListKomunitas("Error X_x")
             })
         return unsub
-    }, [currentUser])
+    }, [currentUser,CurrentKomunitas])
+
+    function makeid(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+     }
+
+
+    async function EditKomunitas(e){
+        e.preventDefault()
+        setError()
+        setLoading(true)
+        let KomProfilePicUrl ;
+        let file;
+        let extention;
+        let FileUID;
+        if(ProfileKomPicRef.current.files.length >0){
+            console.log('update profile pic');
+            if(CurrentKomunitas.profileRef){
+                storage.ref().child(CurrentKomunitas.profileRef).then(()=>{
+                    console.log('berhasil menghapus foto profile');
+                }).catch(err=>{
+                    console.log(err);
+                })
+            }
+            file = ProfileKomPicRef.current.files[0]
+            extention = file.name.split('.').pop();
+            FileUID = makeid(20)
+            await storage.ref('Komunitas').child(FileUID+"."+extention).put(file)
+                        .then((res)=>{
+                            return res.ref.getDownloadURL()
+                        })
+                        .then(res=>{
+                            console.log(res);
+                            KomProfilePicUrl = res
+                        })
+                        .catch(err=>{
+                            setError(err)
+                            return;
+                        })
+        }
+        let data = {
+            deskripsi: deskripsiKomunitasRef.current.value,
+            id: '@'+idKomunitasRef.current.value.toLowerCase(),
+            lastChat : FieldValue.serverTimestamp(),
+            nama:namaKomunitasRef.current.value,
+        }
+        if(KomProfilePicUrl){
+            data.photoUrl = KomProfilePicUrl
+            data.profileRef = 'Komunitas/'+FileUID+"."+extention
+
+        }
+
+        document.getElementById('JudulRoom').innerHTML = data.nama
+        document.getElementById('idRoom').innerHTML = data.id
+
+        return await db.collection('Komunitas').doc(CurrentKomunitas.uid).update(data)
+        .then((res)=>{
+            console.log('Berhasil update', res);
+            setLoading(false)
+            setShowModalEditKomunitas(false)
+            return;
+        })
+        .catch(err=>{
+            setError(err)
+            setShowModalEditKomunitas(false)
+            return;
+        })
+    }
+    
     async function AddKomunitas(e) {
         e.preventDefault()
         setError()
-        setShowModal(false)
+        setLoading(true)
         let idKomunitas = idKomunitasRef.current.value
         let namaKomunitas = namaKomunitasRef.current.value
         let dekskripsiKomunitas = deskripsiKomunitasRef.current.value
+        
         // Data ga boleh kosong
-        if(idKomunitas.length <= 0 || namaKomunitas.length <=0 || dekskripsiKomunitas.length <= 0){
+        if(idKomunitas.length <= 0 || namaKomunitas.length <=0){
             setError("Data tidak boleh ada yang kosong")
+            setShowModalAddKomunitas(false)
+            setLoading(false)
             return;
         }
 
-        // Id ga boleh ada whitespace
-        let patt = /\W\s/g
-        if(patt.test(idKomunitas)){
-            setError("Id tidak boleh mengantuk karanter non word atau white space")
-            return
-        }
         let checkId = await db.collection("Komunitas").where("id", "==", '@'+idKomunitas.toLowerCase()).get()
         if(checkId.empty){
-            await db.collection("Komunitas").add({
+            let KomProfilePicUrl ;
+            let file;
+            let extention;
+            let FileUID;
+            if(ProfileKomPicRef.current.files.length > 0){
+                file = ProfileKomPicRef.current.files[0]
+                extention = file.name.split('.').pop();
+                FileUID = makeid(20)
+                await storage.ref('Komunitas').child(FileUID+"."+extention).put(file)
+                            .then((res)=>{
+                                return res.ref.getDownloadURL()
+                            })
+                            .then(res=>{
+                                console.log(res);
+                                KomProfilePicUrl = res
+                            })
+                            .catch(err=>{
+                                setError(err)
+                                return;
+                            })
+                
+            }
+            let data = {
                 deskripsi: dekskripsiKomunitas,
                 id: '@'+idKomunitas.toLowerCase(),
                 lastChat : FieldValue.serverTimestamp(),
                 nama:namaKomunitas,
-                photoUrl : `https://ui-avatars.com/api/?size=128&background=random&name=${namaKomunitas.replace(/\s/g,"+")}`,
+                photoUrl : KomProfilePicUrl ? KomProfilePicUrl : `https://avatars.dicebear.com/api/identicon/${new Date().getTime()}.svg`,
                 member : [currentUser.uid]
+            }
+            if(KomProfilePicUrl){
+                data.profileRef = 'Komunitas/'+FileUID+"."+extention
+            }
+            await db.collection("Komunitas").add(data).catch(err=>{
+                setError(err)
+                setShowModalAddKomunitas(false)
+                setLoading(false)
+                return
             })
+
         }else{
             console.log("udah ga bisa");
             setError("id komunitas sudah dipakai")
+            setShowModalAddKomunitas(false)
+            setLoading(false)
             return
         }
+        setShowModalAddKomunitas(false)
+        setLoading(false)
     }  
     return (
         <>
         <Navbar />
-        <div className="container">
+        <div className="container mt-5">
             {Error &&
                 <div className="alert alert-danger">
                 {Error}
@@ -306,16 +435,7 @@ export default function ListKomunitas() {
                                         <ul className="users position-relative">
                                             {ListKomunitas}
                                         </ul>
-                                       {ShowModal && 
-                                       <ModalAddKomunitas 
-                                            onClick={()=>{setShowModal(false)}}
-                                            onSubmit={AddKomunitas}
-                                            namaKomunitasRef={namaKomunitasRef}
-                                            idKomunitasRef = {idKomunitasRef}
-                                            deskripsiKomunitasRef={deskripsiKomunitasRef}
-                                       /> 
-                                       }
-                                        <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModal(true);setError()}}>
+                                        <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModalAddKomunitas(true);setError()}}>
                                             <i className="fas fa-plus"></i>
                                         </button>
                                     </div>
@@ -324,8 +444,9 @@ export default function ListKomunitas() {
                                     <div className="selected-user d-flex justify-content-between flex-wrap align-items-center">
                                         <div className="d-flex">
                                             {onChat && 
+                                            CurrentKomunitas &&
                                             <div className="chat-avatar d-none d-lg-block mr-3">
-                                                <img className="img-fluid" src='#' alt="" id="avaGroup"/>
+                                                <img className="img-fluid" src={CurrentKomunitas.photoUrl} alt="Profile Komunitas" id="avaGroup"/>
                                             </div>
                                             }
                                             <div className="d-flex flex-column mt-lg-4">
@@ -333,7 +454,20 @@ export default function ListKomunitas() {
                                                 <span className="idRoom" id="idRoom"></span>
                                             </div>
                                         </div>
-                                        {onChat && <button className="btn btn-danger" onClick={handleExitGroup}>Exit <i className="fas fa-external-link-alt" style={{fontSize:".8rem"}}></i></button>}
+                                        <div>
+                                        {onChat && 
+                                        <>
+                                            {IsAdmin && 
+                                                <button className="btn btn-info mr-4" onClick={()=>{setShowModalEditKomunitas(true)}}>
+                                                    Edit <i className="far fa-edit" style={{fontSize:".8rem"}}></i>
+                                                </button>
+                                            }
+                                        <button className="btn btn-danger" onClick={handleExitGroup}>
+                                            Exit <i className="fas fa-external-link-alt" style={{fontSize:".8rem"}}></i>
+                                            </button>
+                                        </>
+                                        }
+                                        </div>
                                     </div>
                                     <div className="chat-container">
                                         <ul className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
@@ -348,14 +482,15 @@ export default function ListKomunitas() {
                                         {onChat &&
                                             <>
                                             <form onSubmit={(kirimPesan)} id="formPesan">
-                                                <button type="submit" className="btn btn-primary" disabled={!chatAble} >Kirim</button>
                                                 <div className="">
                                                 <RichForm 
                                                     reference={PesanRef}
                                                     pesan={pesan}
                                                     onEditorChange={handleFormPesan}
                                                     kirimPesan={kirimPesan}
+                                                    KomunitasUID={CurrentKomunitas.uid}
                                                 />
+                                                <button type="submit" className="btn btn-primary" disabled={!chatAble} >Kirim</button>
                                                 </div>
                                             </form>
                                             </>
@@ -371,6 +506,29 @@ export default function ListKomunitas() {
 
             </div>
         </div>
+        {ShowModalEditKomunitas && 
+            <ModalEditKomunitas 
+                    onClick={()=>{setShowModalEditKomunitas(false)}}
+                    onSubmit={EditKomunitas}
+                    namaKomunitasRef={namaKomunitasRef}
+                    idKomunitasRef = {idKomunitasRef}
+                    deskripsiKomunitasRef={deskripsiKomunitasRef}
+                    ProfileKomPicRef={ProfileKomPicRef}
+                    Loading={Loadng}
+                    defaultValue={CurrentKomunitas}
+            /> 
+        }
+        {ShowModalAddKomunitas && 
+        <ModalKomunitas 
+                onClick={()=>{setShowModalAddKomunitas(false)}}
+                onSubmit={AddKomunitas}
+                namaKomunitasRef={namaKomunitasRef}
+                idKomunitasRef = {idKomunitasRef}
+                deskripsiKomunitasRef={deskripsiKomunitasRef}
+                ProfileKomPicRef={ProfileKomPicRef}
+                Loading={Loadng}
+        /> 
+        }
     </>
     )
 }

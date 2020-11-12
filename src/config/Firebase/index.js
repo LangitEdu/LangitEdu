@@ -19,12 +19,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 firebase.analytics();
+// Auth
 firebase.auth().useDeviceLanguage();
-export const db = firebase.firestore();
 export const auth = app.auth();
-export const FieldValue = firebase.firestore.FieldValue;
-export const storage = app.storage();
-export const googleProvider = new firebase.auth.GoogleAuthProvider()
 export const EmailAuthProvider = firebase.auth.EmailAuthProvider
+// Firestore
+export const db = firebase.firestore();
+export const FieldValue = firebase.firestore.FieldValue;
+// Storage
+export const storage = app.storage();
+// Functions
 export const functions = firebase.functions();
 export default app;

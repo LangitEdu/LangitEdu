@@ -1,5 +1,5 @@
 import React,{ useContext,useState, useEffect } from 'react'
-import { auth, googleProvider, db } from '../config/Firebase';
+import { auth, db } from '../config/Firebase';
 
 const AuthContext = React.createContext()
 
@@ -10,7 +10,7 @@ export function useAuth(){
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true);
-
+    const [IsAdmin, setIsAdmin] = useState(false)
     async function signup(data){
         return auth.createUserWithEmailAndPassword(data.email,data.password)
             .then(async (res)=>{
@@ -46,16 +46,6 @@ export function AuthProvider({ children }) {
         })
         return resDoc
     }
-    async function signInWithGoogle(){
-        googleProvider.addScope('profile');
-        googleProvider.addScope('email');
-        return auth.signInWithPopup(googleProvider).then((result)=>{
-            console.log(result);
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
-    }
     function login(data){
         return auth.signInWithEmailAndPassword(data.email,data.password)
     }
@@ -76,6 +66,16 @@ export function AuthProvider({ children }) {
 
     useEffect(()=>{
         const unsubcribe =  auth.onAuthStateChanged(user=>{
+            if(user){
+                user.getIdTokenResult().then(res=>{
+                    if (res.claims.admin) {
+                        setIsAdmin(true)
+                    }else{
+                        setIsAdmin(false)
+                    }
+                })
+            }
+            setIsAdmin(false)
             setCurrentUser(user)
             setLoading(false)
         })
@@ -84,12 +84,12 @@ export function AuthProvider({ children }) {
 
     const value = {
         currentUser,
+        IsAdmin,
         signup,
         login,
         logout,
         resetPassword,
         updateProfile,
-        signInWithGoogle,
         SendEmailVerification,
         getDashboardData
     }

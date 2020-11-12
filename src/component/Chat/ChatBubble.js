@@ -5,7 +5,7 @@ import { ContextMenu, MenuItem } from "react-contextmenu";
 import {db} from '../../config/Firebase'
 
 const ChatBubble = (props)=>{
-    const {currentUser} = useAuth()
+    const {currentUser, IsAdmin} = useAuth()
     const MENU_TYPE = props.docid;
     const handleHapus = ()=>{
         db.collection('Komunitas').doc(props.komuniastUID).collection('Pesan').doc(props.docid).delete()
@@ -22,7 +22,14 @@ const ChatBubble = (props)=>{
         </ContextMenu>
         </>
         : 
-        
+        IsAdmin ?
+        <>
+        <ChatLeft {...props} IsAdmin={IsAdmin} />
+        <ContextMenu id={MENU_TYPE}>
+            <MenuItem onClick={handleHapus}>Hapus</MenuItem>
+        </ContextMenu>
+        </>
+        :
         <ChatLeft {...props} />
     )
 

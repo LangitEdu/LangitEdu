@@ -15,6 +15,14 @@ export default function EditProfile() {
     const [Loading, setLoading] = useState(false)
     const [newError, setError] = useState(false)
     const [Sukses, setSukses] = useState(false)
+    const [SubmitAble, setSubmitAble] = useState(false)
+    const handlePasswordChange = (e)=>{
+        if(e.target.value.length > 0){
+            setSubmitAble(true)
+        }else{
+            setSubmitAble(false)
+        }
+    }
     let FormGroupArr = [
         {
             lebel:'Nama',
@@ -40,7 +48,8 @@ export default function EditProfile() {
         {
             label:'Password *',
             refer:passwordRef,
-            type:'password'
+            type:'password',
+            onChange: handlePasswordChange
         }
     ]
     FormGroupArr = FormGroupArr.map((data,i)=>{
@@ -63,7 +72,7 @@ export default function EditProfile() {
             await currentUser.reauthenticateWithCredential(credential).catch(function(error) {
                 setError(error)
                 setLoading(false)
-                throw new Error(error)
+                throw new Error(error.message)
             });
         }catch(err){
             console.log(err);
@@ -75,7 +84,7 @@ export default function EditProfile() {
             })
             .catch(function(error) {
                 setError(error);
-                throw new Error(error)
+                throw new Error(error.message)
               });
         }
         const ChangePassword = async()=>{
@@ -87,7 +96,7 @@ export default function EditProfile() {
                 currentUser.sendEmailVerification()
               }).catch(function(error) {
                 setError(error);
-                throw new Error(error)
+                throw new Error(error.message)
               });
         }
         const updateProfile = async (gantiProfilePic, gantiDisplayName)=>{
@@ -100,12 +109,12 @@ export default function EditProfile() {
             await db.collection('Profile').doc(currentUser.uid).update(userdata)
             .catch(function(error) {
                 setError(error);
-                throw new Error(error)
+                throw new Error(error.message)
               });
             currentUser.updateProfile(userdata)
             .catch(function(error) {
                 setError(error);
-                throw new Error(error)
+                throw new Error(error.message)
               });
         }
         const uploadProfilePic = async(file)=>{
@@ -114,7 +123,7 @@ export default function EditProfile() {
                     .child(currentUser.uid+"."+extention).put(file)
                     .catch(function(error) {
                         setError(error);
-                        throw new Error(error)
+                        throw new Error(error.message)
                       });
             let url = res.ref.getDownloadURL()
             return url
@@ -158,13 +167,27 @@ export default function EditProfile() {
     }, [Loading])
 
     const handleProfileChange = (e)=>{
+        setError()
         if(e.target.files.length > 0){
             let name
             const file = e.target.files[0]
+            const AcceptAbleExtention = ['png','jpeg','jpg']
+            let extention = file.name.split('.').pop();
+            if(!AcceptAbleExtention.includes(extention.toLowerCase())){
+                setError({message:"anda mengupload file dengan ekstensi yang tidak diizinkan, silahkan upload file yang lain"});
+                document.getElementById('profilepic').src = currentUser.photoURL
+                return;
+            }
+            if(file.size > 5242880){
+                setError({message:'Ukuran file yang anda upload terlalu besar, harap upload file yang berukuran tidak lebih dari 5MB'})
+                document.getElementById('profilepic').src = currentUser.photoURL
+                return
+            }
+            
             if(file.name.length < 40){
                 name = file.name
             }else{
-                name = file.name.substring(0,20)+"...."
+                name = file.name.substring(0,40)+"...."
             }
             var reader = new FileReader();
     
@@ -183,14 +206,14 @@ export default function EditProfile() {
         <>
         <Navbar />
         <div className="container mt-4">
-            <h1>Edit Profile</h1>
+            <h1 className="mb-4">Edit Profile</h1>
             {newError && 
-            <div className="alert alert-danger">
+            <div className="alert alert-danger mb-4">
                 {newError.message}
             </div>
             }
             {Sukses && 
-            <div className="alert alert-success">
+            <div className="alert alert-success mb-4">
                 {Sukses.message}
             </div>
             }
@@ -207,19 +230,7 @@ export default function EditProfile() {
                             </div>
                         </div>
                         {FormGroupArr}
-                        {/* <div className="form-group">
-                            <label htmlFor="nama">Nama</label>
-                            <input ref={namaRef} type="text" className="form-control" defaultValue={currentUser.displayName} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="nama">E-mail</label>
-                            <input ref={emailRef} type="text" className="form-control" defaultValue={currentUser.email} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="nama">Password</label>
-                            <input ref={passwordRef} type="password" className="form-control"/>
-                        </div> */}
-                        <button id="btnSubmit" className="btn btn-primary" type="submit" disabled={Loading}>Submit</button>
+                        <button id="btnSubmit" className="btn btn-primary" type="submit" disabled={Loading || !SubmitAble || newError}>Submit</button>
                     </form>
                 </div>
             </div>

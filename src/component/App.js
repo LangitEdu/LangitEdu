@@ -5,7 +5,7 @@ import RouteName from '../config/Route'
 // Component
 import UserRoute from './Route/UserRoute'
 import GuestOnlyRoute from './Route/GuestOnlyRoute'
-
+import AdminRoute from './Route/AdminRoute'
 // Pages
 import Dashboard from '../Pages/Dashboard'
 import Register from '../Pages/Register'
@@ -30,7 +30,7 @@ function App() {
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
           <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
-          <UserRoute exact path={RouteName.admin} component={Admin} />
+          <AdminRoute exact path={RouteName.admin} component={Admin} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <Route exact path={RouteName.home} component={Home} />
           <Route exact path={RouteName.coba} component={MultipleMenus} />

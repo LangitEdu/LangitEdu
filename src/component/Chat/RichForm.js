@@ -22,7 +22,7 @@ export default function RichForm(props) {
                         }
                         else if(e.key === "Enter"){
                             e.preventDefault();
-                            props.kirimPesan()
+                            props.kirimPesan({komunitasUID:props.KomunitasUID})
                         }
                     });
                     },

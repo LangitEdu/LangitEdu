@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts/AuthContext'
 const Navbar = ({SetError}) => {
     const [screen, setScreen] = useState(undefined)
     const [openAction, setopenAction] = useState(false)
-    const {currentUser, logout} = useAuth()
+    const {currentUser, logout, IsAdmin} = useAuth()
     const history = useHistory()
     const handleWindowSizeChange = () => setScreen(window.innerWidth)
     
@@ -46,7 +46,7 @@ const Navbar = ({SetError}) => {
                         <Link to={RouteName.topik} className="link">TOPIK</Link>
                         {!currentUser && <Link to={RouteName.login} className="link">MASUK</Link>}
                         {!currentUser && <Link to={RouteName.register} className="link orange-btn">DAFTAR</Link>}
-                        {currentUser  && <Link to={RouteName.dashboard} className="link">ADMIN</Link>}
+                        {IsAdmin  && <Link to={RouteName.admin} className="link">ADMIN</Link>}
                     </div>
 
                     {currentUser &&  

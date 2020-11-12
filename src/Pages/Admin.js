@@ -1,55 +1,69 @@
 import React, { useRef, useState } from 'react'
 import Styled from '@emotion/styled'
-import speakeasy from 'speakeasy'
-import QRCode  from 'qrcode'
+import axios from 'axios';
+import {useAuth} from '../contexts/AuthContext'
+import Navbar from '../component/Navbar/NavbarBig';
 const Admin = () => {
-    const [UrlQR, setUrlQR] = useState('')
     const [Verify, setVerify] = useState(false)
-    const secret = speakeasy.generateSecret({
-        name:"Langit Edu"
-    });
-    const tokenRef = useRef()
-    const base32secret = secret.base32
-    function MakeQR() {
-            QRCode.toDataURL(secret.otpauth_url, function(err, data_url) {
-                setUrlQR(data_url)
-            });
-    }
+    const {currentUser, IsAdmin} = useAuth()
+    const emailRef = useRef()
+    const [Error, setError] = useState()
+    const [Loading, setLoading] = useState(false)
 
-    function verify(e) {
+    async function verify(e) {
         e.preventDefault()
-        setVerify(true)
-        const token = tokenRef.current.value
-        const data = {
-            secret: base32secret,
-            encoding: 'base32',
-            token: token
+        setVerify()
+        setLoading(true)
+        const tokenAdmin = await currentUser.getIdToken()
+        const email = emailRef.current.value
+        emailRef.current.value = ''
+        const data ={
+            email: email,
+            tokenAdmin : tokenAdmin
         }
-        const status=speakeasy.totp.verify(data)
-        setVerify(status)
+        axios.post('http://localhost:5001/langit-edu/asia-southeast2/api/make-admin',data)
+        .then((res)=>{
+            console.log(res.data);
+            setVerify(res.data)
+            setLoading(false)
+        })
+        .catch(err=>{
+            console.log(err);
+            setError(err)
+            setLoading(false)
+        })
     }   
 
     return (
         <Wrapper>
-            <h1>QR</h1>
-
-            {Verify && 
-            <div className="alert alert-success">
-                berhasil diverifikasi
-            </div>
-            }
-
-            {UrlQR && <img src={UrlQR} alt="Qr"/> }
-            <button className="btn btn-primary" onClick={MakeQR}>Make QR</button>
-
-            {UrlQR && 
-            <form onSubmit={verify}>
-                <div className="form-group">
-                    <input type="number" className='form-control' ref={tokenRef} />
+            <Navbar />
+            <div className="container mt-4 mb-4">
+                <h1>Set Admin</h1>
+                <h2>{IsAdmin ? 'Admin' : 'Bukan admin'}</h2>
+                {Verify && 
+                <div className="alert alert-success">
+                    {Verify.message}
+                </div>}
+                {Error && 
+                <div className="alert alert-danger">
+                    {Error} 
+                </div>}
+                <div className="card mt-4">
+                    <div className="card-body">
+                    <form onSubmit={verify}>
+                        {Loading &&
+                        <div className="mb-4">
+                        <div className="spinner-border spinner-border-sm mr-2" role="status"></div>Loading...
+                        </div>
+                        }
+                        <div className="form-group">
+                            <input type="email" className='form-control' ref={emailRef} />
+                        </div>
+                        <button className='btn btn-primary' disabled={Loading}>Make Admin</button>
+                    </form>
+                    </div>
                 </div>
-                <button className='btn btn-primary' >Cek</button>
-            </form>
-            }
+            </div>
         </Wrapper>
     );
 }
