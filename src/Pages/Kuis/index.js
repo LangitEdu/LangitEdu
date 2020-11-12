@@ -25,34 +25,35 @@ const Kuis = ({match}) => {
     }) 
 
     useEffect(() => {
-        db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get().then(function(doc) {
-            
-            if(!doc.exists){
-                db.collection('Kuis').doc(kuisID).get().then(function(doc) {
-                    setkuis(doc.data())
-                })
+        const FireAction = async () => {
+            const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
+            const userTopics = (await db.collection('Profile').doc(currentUser.uid).get()).data().topik
+            const kuisData = (await db.collection('Kuis').doc(kuisID).get()).data()
 
-                db.collection('Kuis').doc(kuisID).collection('Questions').get().then(function(querySnapshot) {
-                    let available = []
-                    let filler = []          
-                    querySnapshot.forEach(function(doc) {     
-                        available.push(doc.data())
-                        filler.push("")          
-                    })
-                    resetIfExist("form")
-                    setquestions(available)
-                    if(answer.length === 0) setanswer(filler)
-                    setallowSession("allow")
-                })
+            if (!userTopics.includes(kuisData.topikID)) setallowSession("unenrolled")
+            else if (userKuis.exists) setallowSession("disallow")
+            else proceedKuis()
 
-            }else{
-                db.collection('Kuis').doc(kuisID).get().then(function(doc) {
-                    setkuis(doc.data())
+            async function proceedKuis(){
+                setkuis(kuisData)
+                const questionData = await db.collection('Kuis').doc(kuisID).collection('Questions').get()
+                let questionArr = []
+                let filler = []
+                questionData.forEach( doc => {
+                    questionArr.push(doc.data())
+                    filler.push("")
                 })
-                setallowSession("disallow")
-                
+                setquestions(questionArr)
+                if(localStorage.getItem('savedAnswer') == null) setanswer(filler)
+
+                console.log("bolehin")
+                setallowSession("allowed")
             }
-        })
+
+        }
+        
+        FireAction()
+        
     }, [kuisID, currentUser.uid])
 
     const resetIfExist = (id) => {
@@ -89,6 +90,7 @@ const Kuis = ({match}) => {
                 setisSaved(true)
                 resetIfExist("form")
                 localStorage.removeItem('savedAnswer')
+                localStorage.removeItem('savedKuisID')
             }
             setshowPopup(true)
             setallowSession("done")
@@ -103,8 +105,9 @@ const Kuis = ({match}) => {
     <>
         <Navbar />
         <Wrapper>
+        <h1>{allowSession}</h1>
 
-            {allowSession === "allow" &&
+            {allowSession === "allowed" &&
             <>
                 <h1>{kuis.Nama}</h1>
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
