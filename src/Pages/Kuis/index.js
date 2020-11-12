@@ -16,45 +16,13 @@ const Kuis = ({match}) => {
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
     const [answer, setanswer] = useState(() => {
-
+        //TAKING IN ANSWER SAVED IN LOCAL STORAGE WITH CERTAIN CONTION
         if(localStorage.getItem('savedAnswer') !== null && localStorage.getItem('savedKuisID') === kuisID){
             return localStorage.getItem('savedAnswer').split(",")
         }else{
             return []
         }
     }) 
-
-    useEffect(() => {
-        const FireAction = async () => {
-            const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
-            const userTopics = (await db.collection('Profile').doc(currentUser.uid).get()).data().topik
-            const kuisData = (await db.collection('Kuis').doc(kuisID).get()).data()
-
-            if (!userTopics.includes(kuisData.topikID)) setallowSession("unenrolled")
-            else if (userKuis.exists) setallowSession("disallow")
-            else proceedKuis()
-
-            async function proceedKuis(){
-                setkuis(kuisData)
-                const questionData = await db.collection('Kuis').doc(kuisID).collection('Questions').get()
-                let questionArr = []
-                let filler = []
-                questionData.forEach( doc => {
-                    questionArr.push(doc.data())
-                    filler.push("")
-                })
-                setquestions(questionArr)
-                if(localStorage.getItem('savedAnswer') == null) setanswer(filler)
-
-                console.log("bolehin")
-                setallowSession("allowed")
-            }
-
-        }
-        
-        FireAction()
-        
-    }, [kuisID, currentUser.uid])
 
     const resetIfExist = (id) => {
         const element = document.getElementById(id)
@@ -77,15 +45,22 @@ const Kuis = ({match}) => {
         e.preventDefault()
 
         console.log("submiting . . .")
-    
+        
+        console.log( {
+            kuisID : kuisID,
+            kuis: kuis,
+            answers : answer,
+            userID : currentUser.uid
+          })
+
         axios.post('http://localhost:5001/langit-edu/us-central1/api/submit', {
             kuisID : kuisID,
             kuis: kuis,
             answers : answer,
             userID : currentUser.uid
           })
-          .then(function (res) {
-            console.log(res.data.message)
+        .then(function (res) {
+            console.log(res.data)
             if (res.data.body){
                 setisSaved(true)
                 resetIfExist("form")
@@ -96,19 +71,62 @@ const Kuis = ({match}) => {
             setallowSession("done")
         })
         .catch(function (err) {
+            console.log("hjdbjaj");
             console.log(err)
             setshowPopup(true)
           })
     }
 
-    return (
-    <>
-        <Navbar />
-        <Wrapper>
-        <h1>{allowSession}</h1>
 
-            {allowSession === "allowed" &&
+    useEffect(() => {
+        const FireAction = async () => {
+            const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
+            const userTopics = (await db.collection('Profile').doc(currentUser.uid).get()).data().topik
+            const kuisData = (await db.collection('Kuis').doc(kuisID).get()).data()
+            const paketKuis = (await db.collection('Topik').doc(kuisData.topikID).get()).data().kuislist
+            
+            setkuis(kuisData)
+            
+            let predeceDone = true
+            for (let i = 0; i < paketKuis.length; i++) {
+                if (paketKuis[i] === kuisID) break
+                const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i]).get()).exists
+                if (!eachKuis) predeceDone = false 
+                console.log(eachKuis)
+                
+            }
+
+            if (!userTopics.includes(kuisData.topikID)) setallowSession("unenrolled")
+            else if (userKuis.exists) setallowSession("disallow")
+            else if (!predeceDone) setallowSession("nopredecessor")
+            else proceedKuis()
+
+            async function proceedKuis(){
+                const questionData = await db.collection('Kuis').doc(kuisID).collection('Questions').get()
+                let questionArr = []
+                let filler = []
+                questionData.forEach( doc => {
+                    questionArr.push(doc.data())
+                    filler.push("")
+                })
+                setquestions(questionArr)
+                if(localStorage.getItem('savedAnswer') == null) setanswer(filler)
+
+                console.log("bolehin")
+                setallowSession("allowed")
+            }
+
+        }
+        
+        //RUN THE FIRESTORE QUERIES AND CHECK FOR ALLOWANCE
+        FireAction()
+        
+    }, [kuisID, currentUser.uid])
+
+    const Allowed = () => {
+        return (
             <>
+                <h1>{allowSession}</h1>
                 <h1>{kuis.Nama}</h1>
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
                 {questions.map((q, i)=>(
@@ -123,11 +141,34 @@ const Kuis = ({match}) => {
                 <button type="submit" className="btn-bordered">SELESAI</button>
                 </form>
             </>
-            }
+        )
+    }
 
-            {allowSession === "disallow" &&
-                <h2>MAAF KUIS {kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
-            }
+    const Disallow = () => {
+        return (
+            <h2>MAAF KUIS {kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
+            )
+        }
+    const Unenrolled = () => {
+        return (
+            <h2>AMBIL TOPIK {kuis.Nama} TERLEBIH DAHULU</h2>
+        )
+    }
+    const Nopredecessor = () => {
+        return (
+            <h2>AMBIL KUIS SEBELUMNYA TERLEBIH DAHULU</h2>
+        )
+    }
+
+    return (
+    <>
+        <Navbar />
+        <Wrapper>
+        <h1>{kuis.Nama}</h1>
+            {allowSession === "unenrolled" && <Unenrolled /> }
+            {allowSession === "disallow" && <Disallow /> }
+            {allowSession === "nopredecessor" && <Nopredecessor /> }
+            {allowSession === "allowed" && <Allowed /> }
 
             {allowSession === "load" && 
                 <div className="loader">
