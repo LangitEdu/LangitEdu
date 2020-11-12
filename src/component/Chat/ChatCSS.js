@@ -1,3 +1,4 @@
+export const ChatCSS = `
 .modal{
     z-index: 9999;
 }
@@ -398,3 +399,4 @@ ul {
     margin-bottom: 2rem;
     box-shadow: none;
 }
+`
