@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import useResize from 'use-resize'
 import { Link, useHistory } from 'react-router-dom'
 import Styled from '@emotion/styled'
