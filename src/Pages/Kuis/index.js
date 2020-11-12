@@ -8,11 +8,13 @@ import { db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
     
 const Kuis = ({match}) => {
+    const [currentKuisIndex, setcurrentKuisIndex] = useState("")
     const [allowSession, setallowSession] = useState("load")
-    const [questions, setquestions] = useState([])
-    const [kuis, setkuis] = useState({})
-    const [isSaved, setisSaved] = useState(false)
     const [showPopup, setshowPopup] = useState(false)
+    const [topik, settopik] = useState({})
+    const [questions, setquestions] = useState([])
+    const [isSaved, setisSaved] = useState(false)
+    const [kuis, setkuis] = useState({})
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
     const [answer, setanswer] = useState(() => {
@@ -45,13 +47,6 @@ const Kuis = ({match}) => {
         e.preventDefault()
 
         console.log("submiting . . .")
-        
-        console.log( {
-            kuisID : kuisID,
-            kuis: kuis,
-            answers : answer,
-            userID : currentUser.uid
-          })
 
         axios.post('http://localhost:5001/langit-edu/us-central1/api/submit', {
             kuisID : kuisID,
@@ -71,10 +66,9 @@ const Kuis = ({match}) => {
             setallowSession("done")
         })
         .catch(function (err) {
-            console.log("hjdbjaj");
-            console.log(err)
+            console.log(`API fetching ERROR : ${err}`)
             setshowPopup(true)
-          })
+        })
     }
 
 
@@ -83,13 +77,18 @@ const Kuis = ({match}) => {
             const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
             const userTopics = (await db.collection('Profile').doc(currentUser.uid).get()).data().topik
             const kuisData = (await db.collection('Kuis').doc(kuisID).get()).data()
-            const paketKuis = (await db.collection('Topik').doc(kuisData.topikID).get()).data().kuislist
+            const topikData = (await db.collection('Topik').doc(kuisData.topikID).get()).data()
+            const paketKuis = topikData.kuislist
             
             setkuis(kuisData)
+            settopik(topikData)
             
             let predeceDone = true
             for (let i = 0; i < paketKuis.length; i++) {
-                if (paketKuis[i] === kuisID) break
+                if (paketKuis[i] === kuisID){
+                    setcurrentKuisIndex(i + 1)
+                    break
+                }
                 const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i]).get()).exists
                 if (!eachKuis) predeceDone = false 
                 console.log(eachKuis)
@@ -123,27 +122,6 @@ const Kuis = ({match}) => {
         
     }, [kuisID, currentUser.uid])
 
-    const Allowed = () => {
-        return (
-            <>
-                <h1>{allowSession}</h1>
-                <h1>{kuis.Nama}</h1>
-                <form id="form" onSubmit={(e)=> handleSubmit(e)}>
-                {questions.map((q, i)=>(
-                    <div className="question-card" key={i}>
-                        <h2 key={i}>{q.body}</h2>   
-                        <div className="options"><input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>{q.options[0].body}</div>
-                        <div className="options"><input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>{q.options[1].body}</div>
-                        <div className="options"><input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>{q.options[2].body}</div>
-                        <div className="options"><input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</div>
-                    </div >
-                ))}
-                <button type="submit" className="btn-bordered">SELESAI</button>
-                </form>
-            </>
-        )
-    }
-
     const Disallow = () => {
         return (
             <h2>MAAF KUIS {kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
@@ -164,11 +142,30 @@ const Kuis = ({match}) => {
     <>
         <Navbar />
         <Wrapper>
-        <h1>{kuis.Nama}</h1>
             {allowSession === "unenrolled" && <Unenrolled /> }
             {allowSession === "disallow" && <Disallow /> }
             {allowSession === "nopredecessor" && <Nopredecessor /> }
-            {allowSession === "allowed" && <Allowed /> }
+
+            {allowSession === "allowed" && 
+            <>
+                <h1>{kuis.nama}</h1>
+                <h2>QUIZ {currentKuisIndex} &ensp;|&ensp; TOPIK : {topik.nama} &ensp;|&ensp; {questions.length} SOAL</h2>
+                <form id="form" onSubmit={(e)=> handleSubmit(e)}>
+                {questions.map((q, i)=>(
+                    <div className="question-card" key={i}>
+                        <p key={i}>{q.body}</p> 
+                        <div className="pilgan">
+                            <label htmlFor={`answer${i}A`} className={`options ${answer[i] === "A" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} id={`answer${i}A`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>{q.options[0].body}</label>
+                            <label htmlFor={`answer${i}B`} className={`options ${answer[i] === "B" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} id={`answer${i}B`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>{q.options[1].body}</label>
+                            <label htmlFor={`answer${i}C`} className={`options ${answer[i] === "C" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} id={`answer${i}C`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>{q.options[2].body}</label>
+                            <label htmlFor={`answer${i}D`} className={`options ${answer[i] === "D" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} id={`answer${i}D`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</label>
+                        </div>   
+                    </div >
+                ))}
+                <button type="submit" className="btn-bordered">SELESAI</button>
+                </form>
+            </>
+            }
 
             {allowSession === "load" && 
                 <div className="loader">
@@ -194,6 +191,43 @@ const Wrapper = Styled.div(() =>`
     justify-content: center;
     align-items: center;
     flex-direction: column;
+
+    
+    .checkedblue{
+        background: #209FBC !important;
+        box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+    }
+    
+    h1{
+        margin-top: 48px;
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 63px;
+        line-height: 74px;
+        text-align: center;
+        text-transform: capitalize;
+                
+        color: #444444;
+    }
+
+    h2{
+        font-family: Oxygen;
+        letter-spacing: 0.5px;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 17px;
+        line-height: 28px;
+        margin-bottom: 32px;
+        /* identical to box height */
+
+        text-align: center;
+
+        /* Gray 3 */
+
+        color: #828282;
+        text-transform: uppercase;
+    }
 
     .checked{
         color: red !important;
@@ -235,6 +269,7 @@ const Wrapper = Styled.div(() =>`
     }
     
     form{
+        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -242,9 +277,9 @@ const Wrapper = Styled.div(() =>`
 
         .question-card{
             width: 90%;
-            max-width: 600px;
+            max-width: 702px;
             min-width: 340px;
-            padding: 24px;
+            padding: 48px 4%;
             margin: 12px 0;
             
             /* fafafa */
@@ -252,6 +287,50 @@ const Wrapper = Styled.div(() =>`
             background: #FAFAFA;
             box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
             border-radius: 16px;
+            
+            .pilgan{
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                flex-direction: column;
+
+                .options{
+                    width: 100%;
+                    padding: 16px;
+                    margin: 8px 0;
+                    background: #FAFAFA;
+                    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.25);
+                    border-radius: 8px;
+                    
+                    font-family: Oxygen;
+                    font-style: normal;
+                    font-weight: normal;
+                    font-size: 26px;
+                    line-height: 33px;
+                    
+                    /* Gray 2 */
+                    
+                    color: #4F4F4F;
+
+                }
+            }
+
+            p{
+                font-family: Oxygen;
+                letter-spacing: 0.5px;
+                font-style: normal;
+                font-weight: 900;
+                font-size: 26px;
+                line-height: 33px;
+                margin-bottom: 36px;
+
+                color: #333333;
+
+                &:first-letter{
+                    text-transform: uppercase;
+                }
+            }
         }
     }
 `)
