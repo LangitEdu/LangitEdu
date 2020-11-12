@@ -53,7 +53,7 @@ const Kuis = ({match}) => {
                 
             }
         })
-    }, [kuisID, currentUser.uid])
+    }, [kuisID, currentUser.uid, answer.length])
 
     const resetIfExist = (id) => {
         const element = document.getElementById(id)
