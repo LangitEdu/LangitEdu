@@ -95,6 +95,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
             
             .link{
                 font-family: Oxygen;
+letter-spacing: 0.5px;
                 font-style: normal;
                 font-weight: bold;
                 font-size: 20px;

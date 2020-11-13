@@ -29,7 +29,7 @@ const db = admin.firestore()
                 const isSaved = await db.collection('Profile').doc(userID).collection('Kuis').doc(kuisID).set({
                     topikID: kuis.topikID,
                     kuisID: kuisID,
-                    namaKuis: kuis.Nama,
+                    namaKuis: kuis.nama,
                     body: nilai,
                     answers: answers,
                     hasilUser: hasilUser

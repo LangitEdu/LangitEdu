@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import useResize from 'use-resize'
 import { Link, useHistory } from 'react-router-dom'
 import Styled from '@emotion/styled'
 import OutsideClickHandler from 'react-outside-click-handler'
@@ -8,18 +9,11 @@ import NavbarMobile from './NavbarMobile'
 import { useAuth } from '../../contexts/AuthContext'
 
 const Navbar = ({SetError}) => {
-    const [screen, setScreen] = useState(undefined)
     const [openAction, setopenAction] = useState(false)
     const {currentUser, logout, IsAdmin} = useAuth()
     const history = useHistory()
-    const handleWindowSizeChange = () => setScreen(window.innerWidth)
-    
-    useEffect(() => {
-        setScreen(window.innerWidth)
-        return () => {
-            window.addEventListener('resize', handleWindowSizeChange);
-        };
-    }, [])
+    const screen = useResize().width
+
     
     const handleLogout = async (e) => {
         e.preventDefault()
@@ -39,7 +33,7 @@ const Navbar = ({SetError}) => {
                     <Link to={RouteName.home} className="logo-cont">
                         <div className="logo"></div>
                     </Link>
-
+                    
                     <div className="menu">
                         {currentUser  && <Link to={RouteName.dashboard} className="link">DASHBOARD</Link>}
                         <Link to={RouteName.listKomunitas} className="link">KOMUNITAS</Link>
@@ -130,6 +124,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
 
                 .link{
                     font-family: Oxygen;
+letter-spacing: 0.5px;
                     font-style: normal;
                     font-weight: bold;
                     font-size: 20px;
@@ -263,6 +258,7 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
                     }
                     p.halo{
                         font-family: Oxygen;
+letter-spacing: 0.5px;
                         font-style: normal;
                         font-weight: bold;
                         font-size: 14px;
