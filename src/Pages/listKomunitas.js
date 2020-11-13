@@ -286,7 +286,7 @@ export default function ListKomunitas() {
         if(ProfileKomPicRef.current.files.length >0){
             console.log('update profile pic');
             if(CurrentKomunitas.profileRef){
-                storage.ref().child(CurrentKomunitas.profileRef).then(()=>{
+                storage.ref().child(CurrentKomunitas.profileRef).delete().then(()=>{
                     console.log('berhasil menghapus foto profile');
                 }).catch(err=>{
                     console.log(err);

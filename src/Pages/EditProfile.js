@@ -80,7 +80,7 @@ export default function EditProfile() {
         }
         const changeEmail = async()=>{
             currentUser.updateEmail(emailRef.current.value).then(function() {
-                // currentUser.sendEmailVerification()
+                currentUser.sendEmailVerification()
             })
             .catch(function(error) {
                 setError(error);
@@ -93,7 +93,7 @@ export default function EditProfile() {
                 throw new Error("Password dan Confirm Passowrd tidak sama")
             }
             currentUser.updatePassword(newPasswordRef.current.value).then(function() {
-                currentUser.sendEmailVerification()
+                // currentUser.sendEmailVerification()
               }).catch(function(error) {
                 setError(error);
                 throw new Error(error.message)
@@ -101,7 +101,16 @@ export default function EditProfile() {
         }
         const updateProfile = async (gantiProfilePic, gantiDisplayName)=>{
             if(gantiProfilePic){
-                userdata.photoURL = await uploadProfilePic(profilePicRef.current.files[0])
+                const user  = await db.collection('Profile').doc(currentUser.uid).get()
+                if(user.data().profileRef){
+                    storage.ref().child(user.data().profileRef).delete().catch(err=>{
+                        setError(err)
+                        return ;
+                    })
+                }
+                const {url, ref} = await uploadProfilePic(profilePicRef.current.files[0])
+                userdata.photoURL = await url
+                userdata.profileRef = ref
             }
             if(gantiDisplayName){
                 userdata.displayName = namaRef.current.value
@@ -126,7 +135,8 @@ export default function EditProfile() {
                         throw new Error(error.message)
                       });
             let url = res.ref.getDownloadURL()
-            return url
+            
+            return {url:url, ref:'ProfilePic/'+currentUser.uid+"."+extention}
         }
         if(emailRef.current.value !== currentUser.email){
             promise.push(changeEmail())

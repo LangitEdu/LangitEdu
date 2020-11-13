@@ -70,7 +70,7 @@ const Navbar = ({SetError}) => {
     )}
     else{
     return (
-        <NavbarMobile currentUser={currentUser} openAction={openAction} setopenAction={setopenAction} handleLogout={handleLogout} />
+        <NavbarMobile currentUser={currentUser} openAction={openAction} setopenAction={setopenAction} handleLogout={handleLogout} IsAdmin={IsAdmin}/>
     )
     }
 }
