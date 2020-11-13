@@ -17,7 +17,6 @@ const Admin = () => {
     const TopikDeskripsiRef = useRef()
     const JurusanRef = useRef()
     const [ListTopik, setListTopik] = useState()
-    const [ShowModalBuatKuis, setShowModalBuatKuis] = useState(false)
     async function verify(e) {
         e.preventDefault()
         setVerify()
@@ -81,7 +80,6 @@ const Admin = () => {
                     key={doc.id}
                     docid={doc.id}
                     deleteFunction={handleDeleteTopik}
-                    ShowModalBuatKuis={()=>{setShowModalBuatKuis(true)}}
                 />
             }))
         })
