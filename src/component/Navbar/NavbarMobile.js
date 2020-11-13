@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Styled from '@emotion/styled'
 import RouteName, { routeSet } from '../../config/Route'
     
-const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout}) => {
+const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout, IsAdmin}) => {
     return (
         <Wrapper currentUser={currentUser} openAction={openAction}>
             <nav>
@@ -23,7 +23,7 @@ const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout}) =>
                     <Link to={RouteName.topik} className="link">TOPIK</Link>
                     {!currentUser && <Link to={RouteName.login} className="link">MASUK</Link>}
                     {!currentUser && <Link to={RouteName.register} className="link">DAFTAR</Link>}
-                    {currentUser  && <Link to={RouteName.dashboard} className="link">ADMIN</Link>}
+                    {IsAdmin  && <Link to={RouteName.admin} className="link">ADMIN</Link>}
 
                     {currentUser &&
                     <>
