@@ -5,7 +5,7 @@ import {routeSet} from '../../config/Route'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function TopikItem(props) {
-    const [kuislist, setkuislist] = useState()
+    const [ElementJourneyList, setElementJourneyList] = useState()
     const namaKuisRef = useRef()
     const {currentUser} = useAuth()
     const [Loading, setLoading] = useState(false)
@@ -20,18 +20,18 @@ export default function TopikItem(props) {
             setLoading(false)
             return ;
         }
-        db.collection('Kuis').add({
+        db.collection('Journey').add({
             name: namaKuis,
             created_by : {
                 name : currentUser.displayName,
-                uid : currentUser.uid
+                uid : currentUser.uid,
+                kuisList : []
             },
             created_at : FieldValue.serverTimestamp(),
             topikID : props.docid
         }).then(res=>{
-            console.log(res);
             db.collection('Topik').doc(props.docid).update({
-                kuislist : FieldValue.arrayUnion({nama:namaKuis, uid:res.id})
+                journeyList : FieldValue.arrayUnion({nama:namaKuis, uid:res.id})
             }).then(()=>{
                 setLoading(false)
                 namaKuisRef.current.value = ''
@@ -46,13 +46,36 @@ export default function TopikItem(props) {
             setError(err)
         })
     }
-
     useEffect(() => {
-        if(props.kuislist){
-            setkuislist(props.kuislist.map(data=>{
+        const handleDeleteJourney = (e)=>{
+            const data = {
+                nama: e.target.dataset.nama,
+                uid : e.target.dataset.uid
+            }
+            setLoading(true)
+            db.collection('Journey').doc(data.uid).delete().then(()=>{
+                db.collection('Topik').doc(props.docid).update({
+                    journeyList : FieldValue.arrayRemove(data)
+                }).then(()=>{
+                    setLoading(false)
+                }).catch(err=>{
+                    console.log(err);
+                    setLoading(false)
+                    setError(err)
+                })
+                return;
+            }).catch(err=>{
+                console.log(err);
+                setLoading(false)
+                setError(err)
+            })
+            return;
+        }
+        if(props.journeyList){
+            setElementJourneyList(props.journeyList.map(data=>{
                 return <li className="list-group-item d-flex justify-content-between" key={data.uid}>
-                    <Link to={routeSet.liatKuis({uid:data.uid})} >{data.nama}</Link>
-                    <button className="btn btn-danger" onClick={props.deleteFunction} data-uid={props.docid} >Delete</button>
+                    <Link to={routeSet.liatJourney({uid:data.uid})} >{data.nama}</Link>
+                    <button className="btn btn-danger" onClick={handleDeleteJourney} data-uid={data.uid} data-nama={data.nama}>Delete</button>
                     </li>
             }))
         }
@@ -96,7 +119,7 @@ export default function TopikItem(props) {
                                     </div>
                                 </form>
                             </li>
-                          {kuislist}
+                          {ElementJourneyList}
                         </ul>
                     </div>
                 </div>

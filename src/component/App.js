@@ -19,6 +19,7 @@ import Admin from "../Pages/Admin"
 import Kuis from "../Pages/Kuis"
 import KuisResult from "../Pages/Kuis/Result"
 import MultipleMenus from "../Pages/SimpleMenu"
+import Journey from "../Pages/Journey"
 
 function App() {
   return (
@@ -34,7 +35,7 @@ function App() {
           <UserRoute exact path={RouteName.gotoTopik} component={Topik} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <AdminRoute exact path={RouteName.admin} component={Admin} />
-          <AdminRoute exact path={RouteName.liatKuis} component={Home} />
+          <AdminRoute exact path={RouteName.liatJourney} component={Journey} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
           <Route exact path={RouteName.home} component={Home} />
