@@ -17,8 +17,9 @@ const Kuis = ({match}) => {
     const [showPopup, setshowPopup] = useState(false)
     const [questions, setquestions] = useState([])
     const [isSaved, setisSaved] = useState(false)
-    const [topik, settopik] = useState({})
-    const [kuis, setkuis] = useState({})
+    const [Journey, setJourney] = useState({})
+    const [Topik, setTopik] = useState({})
+    const [Kuis, setKuis] = useState({})
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
     const screen = useResize().width
@@ -55,11 +56,15 @@ const Kuis = ({match}) => {
         
         console.log("submiting . . .")
         
-        axios.post('http://localhost:5001/langit-edu/us-central1/api/submit', {
-            kuisID : kuisID,
-            kuis: kuis,
-            answers : answer,
-            userID : currentUser.uid
+        axios.post('http://localhost:5001/langit-edu/asia-southeast2/api/submit', {
+            kuis : {
+                kuisID : kuisID,
+                nama : Kuis.nama
+            },
+            journeyID : Kuis.journeyID,
+            topikID : Journey.topikID,
+            userID : currentUser.uid,
+            answer : answer
         })
         .then(function (res) {
             console.log(res.data)
@@ -75,6 +80,16 @@ const Kuis = ({match}) => {
         })
         .catch(function (err) {
             console.log(`API fetching ERROR : ${err}`)
+            console.log({
+                kuis : {
+                    kuisID : kuisID,
+                    nama : Kuis.nama
+                },
+                journeyID : Kuis.journeyID,
+                topikID : Journey.topikID,
+                userID : currentUser.uid,
+                answer : answer
+            });
             setshowPopup(true)
         })
     }
@@ -82,32 +97,39 @@ const Kuis = ({match}) => {
 
     useEffect(() => {
         const FireAction = async () => {
+            //CALLING FIRESTORE TO CHECK IF KUIS ALREADY TAKEN
             const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
-            const userTopics = (await db.collection('Profile').doc(currentUser.uid).get()).data().topik
+            
+            //CALLING ALL FIRESTORE NEEDED
+            const profileData = (await db.collection('Profile').doc(currentUser.uid).get()).data()
             const kuisData = (await db.collection('Kuis').doc(kuisID).get()).data()
-            const topikData = (await db.collection('Topik').doc(kuisData.topikID).get()).data()
-            const paketKuis = topikData.kuislist
+            const journeyData = (await db.collection('Journey').doc(kuisData.journeyID).get()).data()
+            const topikData = (await db.collection('Topik').doc(journeyData.topikID).get()).data()
             
-            setkuis(kuisData)
-            settopik(topikData)
+            const paketKuis = journeyData.kuisList
             
-            let predeceDone = true
+            //UPDATING STATE
+            setKuis(kuisData)
+            setJourney(journeyData)
+            setTopik(topikData)
+            
+            // let predeceDone = true
 
             for (let i = 0; i < paketKuis.length; i++) {
                 if (paketKuis[i].uid === kuisID){
                     setcurrentKuisIndex(i + 1)
                     break
                 }
-                const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i].uid).get()).exists
+            //     const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i].uid).get()).exists
                 
-                if (!eachKuis) predeceDone = false 
-                console.log(eachKuis)
+            //     if (!eachKuis) predeceDone = false 
+            //     console.log(eachKuis)
                 
             }
 
-            if (!userTopics.includes(kuisData.topikID)) setallowSession("unenrolled")
+            if (!profileData.topik.includes(journeyData.topikID)) setallowSession("unenrolled")
             else if (userKuis.exists) setallowSession("disallow")
-            else if (!predeceDone) setallowSession("nopredecessor")
+            // else if (!predeceDone) setallowSession("nopredecessor")
             else proceedKuis()
 
             async function proceedKuis(){
@@ -134,12 +156,12 @@ const Kuis = ({match}) => {
 
     const Disallow = () => {
         return (
-            <h2>MAAF KUIS {kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
+            <h2>MAAF KUIS {Kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
             )
         }
     const Unenrolled = () => {
         return (
-            <h2>AMBIL TOPIK {kuis.Nama} TERLEBIH DAHULU</h2>
+            <h2>AMBIL TOPIK {Kuis.Nama} TERLEBIH DAHULU</h2>
         )
     }
     const Nopredecessor = () => {
@@ -158,8 +180,8 @@ const Kuis = ({match}) => {
 
             {allowSession === "allowed" && 
             <>
-                <h1>{kuis.nama}</h1>
-                <h2>QUIZ {currentKuisIndex} &ensp;|&ensp; TOPIK : {topik.nama} &ensp;|&ensp; {questions.length} SOAL</h2>
+                <h1>{Kuis.nama}</h1>
+                <h2>QUIZ {currentKuisIndex} &ensp;|&ensp; {Topik.nama} : {Journey.nama} &ensp;|&ensp; {questions.length} SOAL</h2>
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
                 {questions.map((q, i)=>(
                     <div className="question-card" key={i}>

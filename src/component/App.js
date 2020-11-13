@@ -14,7 +14,7 @@ import ForgotPassword from '../Pages/ForgotPassword'
 import EditProfile from "../Pages/EditProfile"
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas"
-import GoToTopik from '../Pages/Topik/GoToTopik'
+import Topik from '../Pages/Topik'
 import Admin from "../Pages/Admin"
 import Kuis from "../Pages/Kuis"
 import KuisResult from "../Pages/Kuis/Result"
@@ -30,7 +30,8 @@ function App() {
           <GuestOnlyRoute path={RouteName.forgetPassword} component={ForgotPassword} />
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
-          <UserRoute exact path={RouteName.gotoTopik} component={GoToTopik} />
+          <UserRoute exact path={RouteName.topik} component={Topik} />
+          <UserRoute exact path={RouteName.gotoTopik} component={Topik} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <AdminRoute exact path={RouteName.admin} component={Admin} />
           <AdminRoute exact path={RouteName.liatKuis} component={Home} />

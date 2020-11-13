@@ -9,30 +9,31 @@ admin.initializeApp()
 const db = admin.firestore()
 
     const submit = (req, res) => {
-        const { answers, kuis, kuisID, userID } = req.body
-        db.collection('Kuis').doc(kuisID).collection('Answers').doc('kunci').get().then(
+        const { kuis, journeyID, topikID, userID, answer } = req.body
+        db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
                 let kunciArr = doc.data().body
-                let hasilUser = []
+                let correction = []
                 let nilai = 0
                 
                 kunciArr.forEach((kunci, i) => {
-                    hasilUser.push(typeof answers[i] !== 'undefined' ? answers[i] === kunci : false)
+                    correction.push(typeof answer[i] !== 'undefined' ? answer[i] === kunci : false)
                 })
                 
-                hasilUser.forEach(hasil => {
+                correction.forEach(hasil => {
                     if(hasil) nilai++
                 })
                 
                 nilai = (nilai/kunciArr.length) * 100
                 
-                const isSaved = await db.collection('Profile').doc(userID).collection('Kuis').doc(kuisID).set({
-                    topikID: kuis.topikID,
-                    kuisID: kuisID,
+                const isSaved = await db.collection('Profile').doc(userID).collection('Kuis').doc(kuis.kuisID).set({
+                    topikID: topikID,
+                    kuisID: kuis.kuisID,
+                    journeyID: journeyID,
                     namaKuis: kuis.nama,
                     body: nilai,
-                    answers: answers,
-                    hasilUser: hasilUser
+                    answer: answer,
+                    correction: correction
                 
                 }).then(() => {
                     return true
