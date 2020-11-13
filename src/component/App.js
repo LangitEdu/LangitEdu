@@ -31,6 +31,7 @@ function App() {
           <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <AdminRoute exact path={RouteName.admin} component={Admin} />
+          <AdminRoute exact path={RouteName.liatKuis} component={Home} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <Route exact path={RouteName.home} component={Home} />
           <Route exact path={RouteName.coba} component={MultipleMenus} />

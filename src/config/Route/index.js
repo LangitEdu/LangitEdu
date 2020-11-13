@@ -10,7 +10,8 @@ const RouteName = {
     listKomunitas : '/komunitas',
     admin : '/admin',
     kuis : '/kuis/:kuisID',
-    coba :'/coba'
+    coba :'/coba',
+    liatKuis : '/admin/list-kuis/:uid'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{

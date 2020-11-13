@@ -17,7 +17,7 @@ const Admin = () => {
     const TopikDeskripsiRef = useRef()
     const JurusanRef = useRef()
     const [ListTopik, setListTopik] = useState()
-
+    const [ShowModalBuatKuis, setShowModalBuatKuis] = useState(false)
     async function verify(e) {
         e.preventDefault()
         setVerify()
@@ -53,7 +53,8 @@ const Admin = () => {
                 nama : currentUser.displayName,
                 uid : currentUser.uid
             },
-            member : []
+            member : [],
+            kuislist:[]
         }).then(res=>{
             TopikNameRef.current.value = ''
             JurusanRef.current.value = ''
@@ -80,6 +81,7 @@ const Admin = () => {
                     key={doc.id}
                     docid={doc.id}
                     deleteFunction={handleDeleteTopik}
+                    ShowModalBuatKuis={()=>{setShowModalBuatKuis(true)}}
                 />
             }))
         })
