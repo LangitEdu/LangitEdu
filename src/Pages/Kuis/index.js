@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import useResize from 'use-resize'
 import axios from 'axios'
 import { useAuth } from '../../contexts/AuthContext'
 import Navbar from '../../component/Navbar/Navbar'
 import Spinner from '../../component/Spinner/Spin1'
+import SpinnerSimple from '../../component/Spinner/Spin2'
 
 import { db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
     
 const Kuis = ({match}) => {
+    const [processingSubmit, setprocessingSubmit] = useState(false)
     const [currentKuisIndex, setcurrentKuisIndex] = useState("")
     const [allowSession, setallowSession] = useState("load")
     const [showPopup, setshowPopup] = useState(false)
-    const [topik, settopik] = useState({})
     const [questions, setquestions] = useState([])
     const [isSaved, setisSaved] = useState(false)
+    const [topik, settopik] = useState({})
     const [kuis, setkuis] = useState({})
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
+    const screen = useResize().width
     const [answer, setanswer] = useState(() => {
         //TAKING IN ANSWER SAVED IN LOCAL STORAGE WITH CERTAIN CONTION
         if(localStorage.getItem('savedAnswer') !== null && localStorage.getItem('savedKuisID') === kuisID){
@@ -46,14 +51,16 @@ const Kuis = ({match}) => {
     const handleSubmit = (e) => {
         e.preventDefault()
 
+        setprocessingSubmit(true)
+        
         console.log("submiting . . .")
-
+        
         axios.post('http://localhost:5001/langit-edu/us-central1/api/submit', {
             kuisID : kuisID,
             kuis: kuis,
             answers : answer,
             userID : currentUser.uid
-          })
+        })
         .then(function (res) {
             console.log(res.data)
             if (res.data.body){
@@ -61,9 +68,10 @@ const Kuis = ({match}) => {
                 resetIfExist("form")
                 localStorage.removeItem('savedAnswer')
                 localStorage.removeItem('savedKuisID')
+                setprocessingSubmit(false)
+                setallowSession("done")
             }
             setshowPopup(true)
-            setallowSession("done")
         })
         .catch(function (err) {
             console.log(`API fetching ERROR : ${err}`)
@@ -84,12 +92,14 @@ const Kuis = ({match}) => {
             settopik(topikData)
             
             let predeceDone = true
+
             for (let i = 0; i < paketKuis.length; i++) {
-                if (paketKuis[i] === kuisID){
+                if (paketKuis[i].uid === kuisID){
                     setcurrentKuisIndex(i + 1)
                     break
                 }
-                const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i]).get()).exists
+                const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i].uid).get()).exists
+                
                 if (!eachKuis) predeceDone = false 
                 console.log(eachKuis)
                 
@@ -141,7 +151,7 @@ const Kuis = ({match}) => {
     return (
     <>
         <Navbar />
-        <Wrapper>
+        <Wrapper screen={screen} processingSubmit={processingSubmit}>
             {allowSession === "unenrolled" && <Unenrolled /> }
             {allowSession === "disallow" && <Disallow /> }
             {allowSession === "nopredecessor" && <Nopredecessor /> }
@@ -153,16 +163,43 @@ const Kuis = ({match}) => {
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
                 {questions.map((q, i)=>(
                     <div className="question-card" key={i}>
+                        <div className="nomorsoal">
+                            <p>{i+1}</p>
+                        </div>
                         <p key={i}>{q.body}</p> 
                         <div className="pilgan">
-                            <label htmlFor={`answer${i}A`} className={`options ${answer[i] === "A" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} id={`answer${i}A`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>{q.options[0].body}</label>
-                            <label htmlFor={`answer${i}B`} className={`options ${answer[i] === "B" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} id={`answer${i}B`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>{q.options[1].body}</label>
-                            <label htmlFor={`answer${i}C`} className={`options ${answer[i] === "C" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} id={`answer${i}C`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>{q.options[2].body}</label>
-                            <label htmlFor={`answer${i}D`} className={`options ${answer[i] === "D" ? "checkedblue":""}`}><input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} id={`answer${i}D`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>{q.options[3].body}</label>
+                            <div className="eachinput">
+                                <input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} id={`answer${i}A`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>
+                                <label htmlFor={`answer${i}A`} className={`options`}>
+                                    <p className="type">{q.options[0].type}</p>
+                                    <p>{q.options[0].body}</p>
+                                </label>
+                            </div>
+                            <div className="eachinput">
+                                <input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} id={`answer${i}B`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>
+                                <label htmlFor={`answer${i}B`} className={`options`}>
+                                    <p className="type">{q.options[1].type}</p>
+                                    <p>{q.options[1].body}</p>
+                                </label>
+                            </div>
+                            <div className="eachinput">
+                                <input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} id={`answer${i}C`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>
+                                <label htmlFor={`answer${i}C`} className={`options`}>
+                                    <p className="type">{q.options[2].type}</p>
+                                    <p>{q.options[2].body}</p>
+                                </label>
+                            </div>
+                            <div className="eachinput">
+                                <input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} id={`answer${i}D`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>
+                                <label htmlFor={`answer${i}D`} className={`options`}>
+                                    <p className="type">{q.options[3].type}</p>
+                                    <p>{q.options[3].body}</p>
+                                </label>
+                            </div>
                         </div>   
                     </div >
                 ))}
-                <button type="submit" className="btn-bordered">SELESAI</button>
+                <button type="submit" className="btn-bordered submit">{ !processingSubmit  ? "SELESAI KUIS" : <SpinnerSimple />}</button>
                 </form>
             </>
             }
@@ -177,6 +214,9 @@ const Kuis = ({match}) => {
                 <div className="popup-cont">
                     <div className="popup-postsubmit">
                         <p>{isSaved ? "KUIS BERHASIL DIKUMPULKAN" : "MAAF TERJADI KESALAHAN"}</p>
+                        {isSaved && (
+                            <Link to={`/kuis/${kuisID}/result`} className="btn-bordered">LIHAT HASIL</Link>
+                        )}
                     </div>
                 </div>
             }
@@ -186,16 +226,18 @@ const Kuis = ({match}) => {
     )
 }
     
-const Wrapper = Styled.div(() =>`
+const Wrapper = Styled.div(({screen, processingSubmit}) =>`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    padding-bottom: 80px;
 
-    
-    .checkedblue{
+
+    input:checked + label {
         background: #209FBC !important;
         box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25) !important;
+        color: white !important;
     }
     
     h1{
@@ -252,6 +294,22 @@ const Wrapper = Styled.div(() =>`
             background: #FAFAFA;
             border-radius: 12px;
             box-shadow: 0 0 12px 0 rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-direction: column;
+
+            p{
+                font-family: Oxygen;
+                letter-spacing: 0.5px;
+                font-style: normal;
+                font-weight: bold;
+                font-size: 20px;
+                line-height: 25px;
+                text-align: center;
+                margin: 0 16px;
+                color: #444444;
+            }
         }   
     }
 
@@ -275,11 +333,19 @@ const Wrapper = Styled.div(() =>`
         align-items: center;
         flex-direction: column;
 
+        button.submit{
+            margin-top: 32px;
+            width: 228px;
+            height: 64px;
+            ${processingSubmit ? "padding: 0;" : ""}
+        }
+
         .question-card{
+            position: relative;
             width: 90%;
             max-width: 702px;
             min-width: 340px;
-            padding: 48px 4%;
+            padding: 48px 4% ${screen < 702 ? "24px 4%" : ""};
             margin: 12px 0;
             
             /* fafafa */
@@ -287,6 +353,24 @@ const Wrapper = Styled.div(() =>`
             background: #FAFAFA;
             box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
             border-radius: 16px;
+
+            .nomorsoal{
+                position: absolute;
+                top: 0px;
+                left: -56px;
+                padding: 2px 16px;
+                background: #cccccc;
+                border-radius: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                p{
+                    margin: 0;
+                    color:white;
+                }
+
+            }
             
             .pilgan{
                 width: 100%;
@@ -295,24 +379,69 @@ const Wrapper = Styled.div(() =>`
                 align-items: flex-start;
                 flex-direction: column;
 
-                .options{
+                .eachinput{
                     width: 100%;
-                    padding: 16px;
-                    margin: 8px 0;
-                    background: #FAFAFA;
-                    box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.25);
-                    border-radius: 8px;
-                    
-                    font-family: Oxygen;
-                    font-style: normal;
-                    font-weight: normal;
-                    font-size: 26px;
-                    line-height: 33px;
-                    
-                    /* Gray 2 */
-                    
-                    color: #4F4F4F;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
 
+                    input{
+                        width: 0;                     
+                        visibility: hidden;
+                    }
+
+                    label{
+                        width: 100%;
+                        padding: 16px;
+                        margin: 8px 0;
+                        background: #FAFAFA;
+                        box-shadow: inset 0px 0px 4px rgba(0, 0, 0, 0.25);
+                        border-radius: 8px;
+
+                        display: flex;
+                        justify-content: flex-start;
+                        align-items: center;
+                        color: #4f4f4f;
+
+                        p.type{
+                            width: 32px;
+                            height: 32px;
+
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                            background: #FFFFFF;
+                            border-radius: 20px;
+                            margin: 0;
+
+                            font-family: Oxygen;
+                            font-style: normal;
+                            font-weight: bold;
+                            font-size: 22px;
+                            line-height: 22px;
+                            padding: 0 0 4px 0;
+                            text-align: right;
+
+                            /* tosca */
+
+                            color: #209FBC;
+                            margin-right: 12px;
+                        }
+                        p{
+
+                            font-family: Oxygen;
+                            font-style: normal;
+                            font-weight: normal;
+                            font-size: 22px;
+                            line-height: 24px;
+                            
+                            /* Gray 2 */
+                            
+                            margin: 0;
+                        }
+                        
+                    }
                 }
             }
 
@@ -321,11 +450,10 @@ const Wrapper = Styled.div(() =>`
                 letter-spacing: 0.5px;
                 font-style: normal;
                 font-weight: 900;
-                font-size: 26px;
-                line-height: 33px;
+                font-size: 22px;
+                line-height: 30px;
                 margin-bottom: 36px;
-
-                color: #333333;
+                ${screen < 702 ? "margin-left: 12px;" : ""}
 
                 &:first-letter{
                     text-transform: uppercase;

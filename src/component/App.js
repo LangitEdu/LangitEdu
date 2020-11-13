@@ -14,8 +14,10 @@ import ForgotPassword from '../Pages/ForgotPassword'
 import EditProfile from "../Pages/EditProfile"
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas"
+import GoToTopik from '../Pages/Topik/GoToTopik'
 import Admin from "../Pages/Admin"
 import Kuis from "../Pages/Kuis"
+import KuisResult from "../Pages/Kuis/Result"
 import MultipleMenus from "../Pages/SimpleMenu"
 
 function App() {
@@ -28,10 +30,11 @@ function App() {
           <GuestOnlyRoute path={RouteName.forgetPassword} component={ForgotPassword} />
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
-          <UserRoute exact path={RouteName.gotoTopik} component={EditProfile} />
+          <UserRoute exact path={RouteName.gotoTopik} component={GoToTopik} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <AdminRoute exact path={RouteName.admin} component={Admin} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
+          <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
           <Route exact path={RouteName.home} component={Home} />
           <Route exact path={RouteName.coba} component={MultipleMenus} />
         </Switch>

@@ -13,6 +13,9 @@ body{
 h1,h2,h3,h4,h5,p{
     margin: 0;
 }
+p{
+    margin: 0;
+}
 .contain-size{
     width: 100%;
     height: 100%;

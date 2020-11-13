@@ -6,10 +6,11 @@ const RouteName = {
     forgetPassword : '/forgot-password',
     editProfile : '/edit-profile/',
     topik: '/topik',
-    gotoTopik : '/topik/:topik_uid',
+    gotoTopik : '/topik/:topikID',
     listKomunitas : '/komunitas',
     admin : '/admin',
     kuis : '/kuis/:kuisID',
+    kuisresult : '/kuis/:kuisID/result',
     coba :'/coba'
 }
 
