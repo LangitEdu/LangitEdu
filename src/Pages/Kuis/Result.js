@@ -17,7 +17,7 @@ const Result = ({match}) => {
         }
 
         FireAction()
-    }, [kuisID]);
+    }, [kuisID, currentUser.uid]);
 
     return (
     <>
