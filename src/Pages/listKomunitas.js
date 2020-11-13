@@ -1,12 +1,22 @@
+// Starter
 import React, { useEffect, useRef, useState } from 'react'
+import { db, FieldValue, storage } from '../config/Firebase';
+import {useAuth} from '../contexts/AuthContext'
+
+// Komponen
 import ChatBubble from '../component/Chat/ChatBubble';
 import Komunitas from '../component/Chat/Komunitas';
 import ModalKomunitas from '../component/Chat/ModalKomunitas';
 import Navbar from '../component/Navbar/Navbar'
-import { db, FieldValue, storage } from '../config/Firebase';
-import {useAuth} from '../contexts/AuthContext'
 import RichForm from '../component/Chat/RichForm';
 import ModalEditKomunitas from '../component/Chat/ModalEditKomunitas';
+
+// Head
+import { Helmet } from 'react-helmet';
+
+// CSS
+import Styled from '@emotion/styled'
+import { ChatCSS } from '../component/Chat/ChatCSS';
 
 export default function ListKomunitas() {
 
@@ -396,8 +406,11 @@ export default function ListKomunitas() {
         setLoading(false)
     }  
     return (
-        <>
+        <Wrapper>
         <Navbar />
+        <Helmet>
+            <title>Komunitas | Langit Edu</title>
+        </Helmet>
         <div className="container mt-5">
             {Error &&
                 <div className="alert alert-danger">
@@ -529,6 +542,8 @@ export default function ListKomunitas() {
                 Loading={Loadng}
         /> 
         }
-    </>
+    </Wrapper>
     )
 }
+
+const Wrapper = Styled.div(() =>ChatCSS)

@@ -33,6 +33,7 @@ function App() {
           <UserRoute exact path={RouteName.gotoTopik} component={GoToTopik} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <AdminRoute exact path={RouteName.admin} component={Admin} />
+          <AdminRoute exact path={RouteName.liatKuis} component={Home} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
           <Route exact path={RouteName.home} component={Home} />

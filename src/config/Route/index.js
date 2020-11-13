@@ -11,7 +11,8 @@ const RouteName = {
     admin : '/admin',
     kuis : '/kuis/:kuisID',
     kuisresult : '/kuis/:kuisID/result',
-    coba :'/coba'
+    coba :'/coba',
+    liatKuis : '/admin/list-kuis/:uid'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{
