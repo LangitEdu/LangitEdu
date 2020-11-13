@@ -16,6 +16,16 @@ h1,h2,h3,h4,h5,p{
 p{
     margin: 0;
 }
+
+.typical-input{
+    height: 56px;
+    border: 1px solid gray;
+    border-radius: 8px;
+    padding: 12px;
+
+    font-family: Oxygen;
+    font-weight: bold;
+}
 .contain-size{
     width: 100%;
     height: 100%;
