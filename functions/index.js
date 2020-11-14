@@ -12,7 +12,10 @@ const db = admin.firestore()
         const { kuis, journeyID, topikID, userID, answer } = req.body
         db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
-                let kunciArr = doc.data().body
+                let kunciArr = []
+                doc.data().body.forEach(data=>{
+                    kunciArr[data.id] = data.answer
+                })
                 let correction = []
                 let nilai = 0
                 
