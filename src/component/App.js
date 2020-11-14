@@ -16,6 +16,7 @@ import EditProfile from "../Pages/EditProfile"
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas"
 import Topik from '../Pages/Topik'
+import GoToTopik from '../Pages/Topik/Topik'
 import Journey from '../Pages/Topik/Journey'
 import Kuis from "../Pages/Kuis"
 import KuisResult from "../Pages/Kuis/Result"
@@ -44,7 +45,7 @@ function App() {
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
           <UserRoute exact path={RouteName.journey} component={Journey} />
           <UserRoute exact path={RouteName.topik} component={Topik} />
-          <UserRoute exact path={RouteName.gotoTopik} component={Topik} />
+          <UserRoute exact path={RouteName.gotoTopik} component={GoToTopik} />
           <UserRoute exact path={RouteName.listKomunitas} component={ListKomunitas} />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />

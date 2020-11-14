@@ -4,46 +4,43 @@ import { Link } from 'react-router-dom'
 import { db } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
 
-const Topik = () => {
-    const [SearchedTopik, setSearchedTopik] = useState({})
-    const [input, setinput] = useState("")
-    
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        const topikData = await db.collection('Topik').where("topikKey", "==", input).get().then(function (querySnapshot) {
-            let filler
-            querySnapshot.forEach(function (doc) {
-                    filler = doc.data()
-            })
-            return filler
-        })
-
-        setSearchedTopik(topikData)
-
-    }
+const Topik = ({match}) => {
+    const topikKey = typeof match.params.topikKey == 'undefined' ? "default" : match.params.topikKey
+    const [Topik, setTopik] = useState({})
 
     useEffect(() => {
 
+        const FireAction = async () => {
+            const topikData = await db.collection('Topik').where("topikKey", "==", topikKey).get().then(function (querySnapshot) {
+                let filler
+                querySnapshot.forEach(function (doc) {
+                        filler = doc.data()
+                })
+                return filler
+            })
 
+            console.log(topikData)
+            
+            setTopik(topikData)
+        } 
 
-    }, [])
+        FireAction()
+
+    }, [topikKey])
 
     return (
     <>
         <Navbar />
         <Wrapper>
-            <form onSubmit={handleSubmit}>
-                <input type="text" className="typical-input" value={input} onChange={(e)=> setinput(e.target.value)}/>
-                <button type="submit" className="btn-bordered">CARI</button>
-            </form>
-            {SearchedTopik.nama && 
-                <div className="foundtopik">
-                    <p>{SearchedTopik.nama}</p>
-                    <Link to={`/topik/${input}`}> <button>LIHAT TOPIK</button> </Link>
-                </div> 
-            }
-            
+            {topikKey !== "default" && Topik && (
+            <>
+                <h1>{Topik.nama}</h1>
+
+                { Array.isArray(Topik.journeyList) && Topik.journeyList.map((each, i)=>(
+                    <Link to={`/journey/${each.uid}`} key={i}>{each.nama}</Link>
+                ))}
+            </>
+            )}
         </Wrapper>
     </>
     )

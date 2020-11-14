@@ -17,6 +17,24 @@ p{
     margin: 0;
 }
 
+.typical-button{
+    padding: 12px 24px;
+    background: #888888;
+    border: none;
+    box-sizing: border-box;
+    border-radius: 14px;
+
+    font-family: Raleway;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 26px;
+    line-height: 31px;
+    text-align: center;
+
+    /* white */
+
+    color: #FFFFFF;
+}
 .typical-input{
     height: 56px;
     border: 1px solid gray;
