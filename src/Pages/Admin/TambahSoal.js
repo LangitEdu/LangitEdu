@@ -48,6 +48,7 @@ export default function TambahSoal() {
             }))
         }
     }
+
     const handleBuatSoal = async (e)=>{
         e.preventDefault()
         setLoading(true)
@@ -114,6 +115,56 @@ export default function TambahSoal() {
             setLoading(false)
         })
         
+    }
+
+    const handleHapusSoal = async(e)=>{
+        const idSoal = e.target.dataset.id
+        setLoading(true)
+        db.collection('Kuis')
+            .doc(uid)
+            .collection('Questions')
+            .doc(idSoal)
+            .delete()
+            .then(async ()=>{
+                const data = await db.collection('Kuis')
+                            .doc(uid)
+                            .collection('Answers')
+                            .doc('kunci')
+                            .get()
+                const newArray = data.data().body.filter((data)=>{
+                    return data.id !== idSoal
+                })
+
+                await db.collection('Kuis')
+                        .doc(uid)
+                        .collection('Answers')
+                        .doc('kunci')
+                        .update({
+                            body : newArray
+                        })
+                        .then(()=>{
+                            console.log('Berhasil menghapus kus');
+                            setLoading(false)
+                        })
+                        .catch(err=>{
+                            console.log(err)
+                            setLoading(false)
+                        })
+                await db.collection('Kuis')
+                        .doc(uid)
+                        .update({
+                            listQuestion : FieldValue.arrayRemove({id:idSoal})
+                        })
+                        .catch(err=>{
+                            console.log(err)
+                            setLoading(false)
+                        })
+
+            })
+            .catch(err=>{
+                console.log(err);
+                setLoading(false)
+            })
     }
 
     useEffect(() => {
@@ -185,7 +236,15 @@ export default function TambahSoal() {
                         <ul className="list-group list-group-flush">
                             {KuisData && KuisData.listQuestion && 
                             KuisData.listQuestion.map(data=>{
-                                return <li className="list-group-item" key={data.id} >Soal #{parseInt(data.id)+1}</li>
+                                return (
+                                <li className="list-group-item d-flex justify-content-between" key={data.id} >
+                                    Soal #{parseInt(data.id)+1}
+                                    <div>
+                                        <button type="buttom" className="btn btn-success mr-3" data-id={data.id} disabled={Loading} >Edit</button>
+                                        <button type="buttom" className="btn btn-danger" data-id={data.id} onClick={handleHapusSoal} disabled={Loading} >Hapus</button>
+                                    </div>
+                                </li>
+                                )
                             })
                             }
                         </ul>
