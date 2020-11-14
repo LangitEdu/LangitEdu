@@ -49,7 +49,7 @@ export default function Dashboard() {
         <>
         <Navbar />
         <div className="container mt-5">
-            <h1>Dashboard</h1>
+            <h1>Beranda</h1>
             <h3>Hello {currentUser.displayName} </h3>
             {success &&
             <Dismissible type="success" message="Email berhasil dikirim, silahkan cek inbox anda" />

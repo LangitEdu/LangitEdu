@@ -5,6 +5,7 @@ import {useAuth} from '../contexts/AuthContext'
 import Navbar from '../component/Navbar/NavbarBig';
 import { db, FieldValue } from '../config/Firebase';
 import TopikItem from '../component/Admin/TopikItem';
+import { Helmet } from 'react-helmet';
 
 
 const Admin = () => {
@@ -89,6 +90,9 @@ const Admin = () => {
     return (
         <Wrapper>
             <Navbar />
+            <Helmet>
+                <title>Admin | Langit Edu</title>
+            </Helmet>
             <div className="container mt-4">
                 {Error && 
                 <div className="alert alert-danger">

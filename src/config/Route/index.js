@@ -1,5 +1,5 @@
 const RouteName = {
-    dashboard : '/dashboard',
+    dashboard : '/beranda',
     login : '/login',
     register:'/register',
     home:'/',
@@ -13,7 +13,8 @@ const RouteName = {
     kuis : '/kuis/:kuisID',
     kuisresult : '/kuis/:kuisID/result',
     coba :'/coba',
-    liatJourney : '/admin/list-journey/:uid'
+    liatJourney : '/admin/list-journey/:uid',
+    tambahSoal : '/tambah-soal/:uid',
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{

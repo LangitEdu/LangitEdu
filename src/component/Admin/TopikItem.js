@@ -73,10 +73,11 @@ export default function TopikItem(props) {
         }
         if(props.journeyList){
             setElementJourneyList(props.journeyList.map(data=>{
-                return <li className="list-group-item d-flex justify-content-between" key={data.uid}>
-                    <Link to={routeSet.liatJourney({uid:data.uid})} >{data.nama}</Link>
-                    <button className="btn btn-danger" onClick={handleDeleteJourney} data-uid={data.uid} data-nama={data.nama}>Delete</button>
-                    </li>
+                return (
+                    <li className="list-group-item d-flex justify-content-between" key={data.uid}>
+                        <Link to={routeSet.liatJourney({uid:data.uid})} >{data.nama}</Link>
+                        <button className="btn btn-danger" onClick={handleDeleteJourney} data-uid={data.uid} data-nama={data.nama}>Delete</button>
+                    </li>)
             }))
         }
     }, [props])
