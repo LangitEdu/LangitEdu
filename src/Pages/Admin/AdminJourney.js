@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom'
-import { db, FieldValue } from '../config/Firebase';
-import { routeSet } from '../config/Route';
+import { db, FieldValue } from '../../config/Firebase';
+import { routeSet } from '../../config/Route';
 
 export default function AdminJourney() {
     let {uid} = useParams()
@@ -21,6 +21,7 @@ export default function AdminJourney() {
             nama: namaKuisRef.current.value,
             durasi : durasiKuisRef.current.value,
             journeyID:uid,
+            listQuestion:[]
         }).then((res)=>{
             db.collection('Journey').doc(uid).update({
                 kuisList : FieldValue.arrayUnion({nama:namaKuisRef.current.value, uid:res.id, durasi : durasiKuisRef.current.value})
@@ -89,7 +90,7 @@ export default function AdminJourney() {
                         kuisList: FieldValue.arrayRemove({
                             uid:KuisUID, 
                             nama:namaKuis, 
-                            durasi:durasi
+                            durasi:durasi,
                         })
                     })
                     .then(()=>{

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Styled from '@emotion/styled'
 import axios from 'axios';
-import {useAuth} from '../contexts/AuthContext'
-import Navbar from '../component/Navbar/NavbarBig';
-import { db, FieldValue } from '../config/Firebase';
-import TopikItem from '../component/Admin/TopikItem';
+import {useAuth} from '../../contexts/AuthContext'
+import Navbar from '../../component/Navbar/NavbarBig';
+import { db, FieldValue } from '../../config/Firebase';
+import TopikItem from '../../component/Admin/TopikItem';
 import { Helmet } from 'react-helmet';
 
 

@@ -7,20 +7,24 @@ import UserRoute from './Route/UserRoute'
 import GuestOnlyRoute from './Route/GuestOnlyRoute'
 import AdminRoute from './Route/AdminRoute'
 // Pages
-import Dashboard from '../Pages/Dashboard'
 import Register from '../Pages/Register'
 import Login from '../Pages/Login'
 import ForgotPassword from '../Pages/ForgotPassword'
+
+import Dashboard from '../Pages/Dashboard'
 import EditProfile from "../Pages/EditProfile"
 import Home from '../Pages/Home'
 import ListKomunitas from "../Pages/listKomunitas"
 import Topik from '../Pages/Topik'
 import Journey from '../Pages/Topik/Journey'
-import Admin from "../Pages/Admin"
 import Kuis from "../Pages/Kuis"
 import KuisResult from "../Pages/Kuis/Result"
 import MultipleMenus from "../Pages/SimpleMenu"
-import AdminJourney from "../Pages/AdminJourney"
+
+import Admin from "../Pages/Admin"
+import AdminJourney from "../Pages/Admin/AdminJourney"
+import TambahSoal from '../Pages/Admin/TambahSoal'
+
 
 function App() {
   return (
@@ -34,6 +38,7 @@ function App() {
           
           <AdminRoute exact path={RouteName.admin} component={Admin} />
           <AdminRoute exact path={RouteName.liatJourney} component={AdminJourney} />
+          <Route exact path={RouteName.tambahSoal} component={TambahSoal} />
           
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
