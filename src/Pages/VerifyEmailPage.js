@@ -8,17 +8,14 @@ export default function VerifyEmailPage(props) {
 
     const {currentUser} = useAuth()
     const [Sukses, setSukses] = useState(false)
-    const [Loading, setLoading] = useState(true)
     console.log(props.actionCode);
     useEffect(()=>{
         auth.applyActionCode(props.actionCode).then(function(resp) {
             console.log(resp);
             setSukses(true)
-            setLoading(false)
         })
         .catch(err=>{
             setSukses(false)
-            setLoading(false)
         })
     }, [props])
 

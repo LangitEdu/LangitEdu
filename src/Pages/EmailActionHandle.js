@@ -29,7 +29,6 @@ export default function EmailActionHandle(props) {
             return <EmailRecovery
             actionCode={params['oobCode']} 
             />
-        break;
         case 'verifyEmail':
             return <VerifyEmailPage actionCode={params['oobCode']} />
         default:
