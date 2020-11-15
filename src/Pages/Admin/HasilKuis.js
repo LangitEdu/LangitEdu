@@ -17,7 +17,6 @@ export default function HasilKuis() {
                 arrUID.push(data.uid)
             })
             setListNilai(arrNilai)
-            console.log(arrNilai);
             db.collection('Profile').where('uid','in',arrUID)
                 .get()
                 .then(res=>{
@@ -27,7 +26,6 @@ export default function HasilKuis() {
                         listUserData[data.uid] = data
                     })
                     setListUser(listUserData);
-                    console.log(listUserData);
                 })
         })
 
