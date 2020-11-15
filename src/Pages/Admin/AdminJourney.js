@@ -108,29 +108,37 @@ export default function AdminJourney() {
             if (doc.exists) {
                 const data = doc.data()
                 setJourney(data)
-                data.kuisList.sort((a,b)=>{
-                    if(a.nama.toLowerCase() < b.nama.toLowerCase()){
-                        return -1
-                    }else if(a.nama.toLowerCase() > b.nama.toLowerCase()){
-                        return 1
-                    }
-                    else{
-                        return 0
-                    }
-                })
-                setListKuis(data.kuisList.map(data=>{
-                    return (
-                        <li className="list-group-item" key={data.uid}>
-                            <h4>{data.nama} | ({data.durasi} Menit) </h4>
-                            <hr/>
-                            <div className="d-flex">
-                                <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
-                                <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
-                                <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Soal</button>
-                            </div>
-                        </li>
-                    )
-                }))
+                if(data.kuisList.length > 0){
+                    data.kuisList.sort((a,b)=>{
+                        if(a.nama.toLowerCase() < b.nama.toLowerCase()){
+                            return -1
+                        }else if(a.nama.toLowerCase() > b.nama.toLowerCase()){
+                            return 1
+                        }
+                        else{
+                            return 0
+                        }
+                    })
+                    setListKuis(data.kuisList.map(data=>{
+                        return (
+                            <li className="list-group-item" key={data.uid}>
+                                <h4>{data.nama} | ({data.durasi} Menit) </h4>
+                                <hr/>
+                                <div className="d-flex">
+                                    <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
+                                    <Link className="btn btn-primary mr-3" to='#' >Lihat Hasil</Link>
+                                    <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
+                                    <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Soal</button>
+                                </div>
+                            </li>
+                        )
+                    }))
+                }else{
+                    setListKuis(
+                    <li className="list-group-item">
+                        <p>Belum ada Kuis</p>
+                    </li>)
+                }
             }else{
                 setJourney()
             }

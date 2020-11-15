@@ -25,6 +25,7 @@ import MultipleMenus from "../Pages/SimpleMenu"
 import Admin from "../Pages/Admin"
 import AdminJourney from "../Pages/Admin/AdminJourney"
 import TambahSoal from '../Pages/Admin/TambahSoal'
+import EmailActionHandle from "../Pages/EmailActionHandle"
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
           
+          <Route path={RouteName.authAction} component={EmailActionHandle} />
           <Route exact path={RouteName.home} component={Home} />
           <Route exact path={RouteName.coba} component={MultipleMenus} />
         

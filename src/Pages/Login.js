@@ -50,6 +50,7 @@ export default function Login() {
                             <label htmlFor="Password">Password</label>
                             <input ref={passwordRef} type="password" className="form-control" placeholder="Password" />
                         </div>
+                        <Link to={RouteName.forgetPassword} >Lupa Password ?</Link>
                         <BtnPrimary type="submit" title="Login" loading={loading} customClass="m-auto px-4 d-block" />
                     </form>
                 </div>
