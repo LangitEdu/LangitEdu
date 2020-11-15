@@ -24,13 +24,13 @@ const Journey = ({match}) => {
         <Navbar />
         <Wrapper>
             {journeyID !== "default" && (
-            <>
+            <div className="container mt-4">
                 <h1>{Journey.nama}</h1>
 
                 { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
                     <Link to={`/kuis/${each.uid}`} key={i}>{each.nama}</Link>
                 ))}
-            </>
+            </div>
             )}
         </Wrapper>
     </>

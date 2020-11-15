@@ -7,10 +7,21 @@ import Navbar from '../../component/Navbar/Navbar'
 const Topik = () => {
     const [SearchedTopik, setSearchedTopik] = useState({})
     const [input, setinput] = useState("")
+    const [SearchAble, setSearchAble] = useState(false)
+    const [AfterSearch, setAfterSearch] = useState(false)
     
+    const handleSearchInputChange = (e)=>{
+        setinput(e.target.value)
+        setAfterSearch(false)
+        if(e.target.value.length > 0){
+            setSearchAble(true)
+        }else{
+            
+            setSearchAble(false)
+        }
+    }
     const handleSubmit = async (e) => {
         e.preventDefault()
-
         const topikData = await db.collection('Topik').where("topikKey", "==", input).get().then(function (querySnapshot) {
             let filler
             querySnapshot.forEach(function (doc) {
@@ -18,7 +29,7 @@ const Topik = () => {
             })
             return filler
         })
-
+        setAfterSearch(true)
         setSearchedTopik(topikData)
 
     }
@@ -34,14 +45,16 @@ const Topik = () => {
         <Navbar />
         <Wrapper>
             <form onSubmit={handleSubmit}>
-                <input type="text" className="typical-input" value={input} onChange={(e)=> setinput(e.target.value)}/>
-                <button type="submit" className="btn-bordered">CARI</button>
+                <input type="text" className="typical-input" value={input} onChange={handleSearchInputChange}/>
+                <button type="submit" className="btn btn-bordered" disabled={!SearchAble} >CARI</button>
             </form>
-            {SearchedTopik.nama && 
+            {SearchedTopik ? SearchedTopik.nama && 
                 <div className="foundtopik">
                     <p>{SearchedTopik.nama}</p>
-                    <Link to={`/topik/${input}`}> <button>LIHAT TOPIK</button> </Link>
+                    <Link className="btn btn-primary" to={`/topik/${input}`}> LIHAT TOPIK </Link>
                 </div> 
+             :
+             AfterSearch && 'Not Found'
             }
             
         </Wrapper>

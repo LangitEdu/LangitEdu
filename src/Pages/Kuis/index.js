@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import Navbar from '../../component/Navbar/Navbar'
 import Spinner from '../../component/Spinner/Spin1'
 import SpinnerSimple from '../../component/Spinner/Spin2'
-
+import parse from 'html-react-parser';
 import { db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
     
@@ -23,6 +23,8 @@ const Kuis = ({match}) => {
     const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
     const screen = useResize().width
+    const defaultOptionList = ['A','B','C','D','E']
+
     const [answer, setanswer] = useState(() => {
         //TAKING IN ANSWER SAVED IN LOCAL STORAGE WITH CERTAIN CONTION
         if(localStorage.getItem('savedAnswer') !== null && localStorage.getItem('savedKuisID') === kuisID){
@@ -188,36 +190,17 @@ const Kuis = ({match}) => {
                         <div className="nomorsoal">
                             <p>{i+1}</p>
                         </div>
-                        <p key={i}>{q.body}</p> 
+                        <p key={i}>{parse(q.body)}</p> 
                         <div className="pilgan">
-                            <div className="eachinput">
-                                <input type="radio" defaultChecked={answer[i] === "A"} name={`answer${i}`} id={`answer${i}A`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[0].type}/>
-                                <label htmlFor={`answer${i}A`} className={`options`}>
-                                    <p className="type">{q.options[0].type}</p>
-                                    <p>{q.options[0].body}</p>
-                                </label>
-                            </div>
-                            <div className="eachinput">
-                                <input type="radio" defaultChecked={answer[i] === "B"} name={`answer${i}`} id={`answer${i}B`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[1].type}/>
-                                <label htmlFor={`answer${i}B`} className={`options`}>
-                                    <p className="type">{q.options[1].type}</p>
-                                    <p>{q.options[1].body}</p>
-                                </label>
-                            </div>
-                            <div className="eachinput">
-                                <input type="radio" defaultChecked={answer[i] === "C"} name={`answer${i}`} id={`answer${i}C`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[2].type}/>
-                                <label htmlFor={`answer${i}C`} className={`options`}>
-                                    <p className="type">{q.options[2].type}</p>
-                                    <p>{q.options[2].body}</p>
-                                </label>
-                            </div>
-                            <div className="eachinput">
-                                <input type="radio" defaultChecked={answer[i] === "D"} name={`answer${i}`} id={`answer${i}D`} onClick={(e) => changeAnswer(e.target.value, i)} value={q.options[3].type}/>
-                                <label htmlFor={`answer${i}D`} className={`options`}>
-                                    <p className="type">{q.options[3].type}</p>
-                                    <p>{q.options[3].body}</p>
-                                </label>
-                            </div>
+                            {q.options.map((o,j)=>(
+                                <div className="eachinput" key={j}>
+                                    <input type="radio" defaultChecked={answer[i] === defaultOptionList[j]} name={`answer${i}`} id={`answer${i+defaultOptionList[j]}`} onClick={(e) => changeAnswer(e.target.value, i)} value={o.type}/>
+                                    <label htmlFor={`answer${i+defaultOptionList[j]}`} className={`options`}>
+                                        <p className="type">{o.type}</p>
+                                        <p>{parse(o.body)}</p>
+                                    </label>
+                                </div>
+                            ))}
                         </div>   
                     </div >
                 ))}

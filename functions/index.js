@@ -13,18 +13,18 @@ const db = admin.firestore()
         db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
                 let kunciArr = []
+                let correction = [] 
                 doc.data().body.forEach(data=>{
                     kunciArr[data.id] = data.answer
                 })
-                let correction = []
                 let nilai = 0
                 
                 kunciArr.forEach((kunci, i) => {
-                    correction.push(typeof answer[i] !== 'undefined' ? answer[i] === kunci : false)
-                })
-                
-                correction.forEach(hasil => {
-                    if(hasil) nilai++
+                    const status = typeof answer[i] !== 'undefined' ? answer[i] === kunci : false
+                    correction.push(status)
+                    if(typeof answer[i] !== 'undefined' && answer[i] === kunci){
+                        nilai++
+                    }
                 })
                 
                 nilai = (nilai/kunciArr.length) * 100
@@ -36,9 +36,24 @@ const db = admin.firestore()
                     namaKuis: kuis.nama,
                     body: nilai,
                     answer: answer,
-                    correction: correction
-                
+                    correction :correction,
                 }).then(() => {
+                    db.collection('Kuis').doc(kuis.kuisID)
+                        .collection('Nilai')
+                        .doc(userID)
+                        .set({
+                            uid : userID,
+                            nilai: nilai,
+                            answer : answer
+                        })
+                        .then(()=>{
+                            console.log('Berhasil menyimpan nilai untuk user : ', userID);
+                        }).catch(err=>{
+                            console.log(err);
+                            res.status(500).json({
+                                body : `failed with error : ${err}`
+                            })
+                        })
                     return true
                 }).catch(() => {
                     return false
@@ -53,14 +68,8 @@ const db = admin.firestore()
             .catch(err => {
                 res.status(400).json({
                     body : `failed with error : ${err}`
+                })
             })
-        })
-    }
-    
-    const halo = (req, res) => {
-        res.status(200).json({
-            message : "Hello World!"
-        })
     }
 
     app.post('/make-admin',async (req,res)=>{
@@ -97,7 +106,6 @@ const db = admin.firestore()
     })
     
     app.post("/submit", submit)
-    app.get("/halo", halo)
     
     
     
