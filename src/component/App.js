@@ -26,6 +26,7 @@ import Admin from "../Pages/Admin"
 import AdminJourney from "../Pages/Admin/AdminJourney"
 import TambahSoal from '../Pages/Admin/TambahSoal'
 import EmailActionHandle from "../Pages/EmailActionHandle"
+import HasilKuis from "../Pages/Admin/HasilKuis"
 
 
 function App() {
@@ -41,7 +42,8 @@ function App() {
           <AdminRoute exact path={RouteName.admin} component={Admin} />
           <AdminRoute exact path={RouteName.liatJourney} component={AdminJourney} />
           <AdminRoute exact path={RouteName.tambahSoal} component={TambahSoal} />
-          
+          <AdminRoute exact path={RouteName.lihatHasilKuis} component={HasilKuis} />
+
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
           <UserRoute exact path={RouteName.journey} component={Journey} />

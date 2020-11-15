@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Editor } from '@tinymce/tinymce-react'
 import OpsiItem from '../../component/TambahSoal/OpsiItem'
 import { db, FieldValue } from '../../config/Firebase'
+import Navbar from '../../component/Navbar/Navbar'
 
 export default function TambahSoal() {
     const [KuisData, setKuisData] = useState()
@@ -324,6 +325,8 @@ export default function TambahSoal() {
         return unsub
     }, [uid])
     return (
+        <>
+        <Navbar />
         <div className="container mt-4">
             <h1>Tambah Soal {KuisData && KuisData.nama} </h1>
             <div className="row mt-4">
@@ -418,5 +421,6 @@ export default function TambahSoal() {
                 </div>
             </div>
         </div>
+        </>
     )
 }

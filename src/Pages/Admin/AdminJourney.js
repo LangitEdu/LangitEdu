@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
 import { Link, useParams } from 'react-router-dom'
+import Navbar from '../../component/Navbar/Navbar';
 import { db, FieldValue } from '../../config/Firebase';
 import { routeSet } from '../../config/Route';
 
@@ -126,7 +127,7 @@ export default function AdminJourney() {
                                 <hr/>
                                 <div className="d-flex">
                                     <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
-                                    <Link className="btn btn-primary mr-3" to='#' >Lihat Hasil</Link>
+                                    <Link className="btn btn-primary mr-3" to={routeSet.lihatHasilKuis({kuisID : data.uid })} >Lihat Hasil</Link>
                                     <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
                                     <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Soal</button>
                                 </div>
@@ -153,6 +154,7 @@ export default function AdminJourney() {
         <Helmet>
             <title>Admin Journey | Langit Edu</title>
         </Helmet>
+        <Navbar />
         <div className="container mt-4">
             <h1>{Journey && Journey.nama}</h1>
 

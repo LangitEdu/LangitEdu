@@ -15,7 +15,8 @@ const RouteName = {
     coba :'/coba',
     liatJourney : '/admin/list-journey/:uid',
     tambahSoal : '/tambah-soal/:uid',
-    authAction : '/Auth'
+    authAction : '/Auth',
+    lihatHasilKuis : '/lihat-hasil-kuis/:kuisID'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{
