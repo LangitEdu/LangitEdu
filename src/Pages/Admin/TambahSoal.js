@@ -86,6 +86,7 @@ export default function TambahSoal() {
                     }).then(()=>{
                         console.log('Berhasil update');
                         setLoading(false)
+                        resetForm()
                     }).catch((err)=>{
                         console.log(err);
                         setLoading(false)
@@ -99,9 +100,9 @@ export default function TambahSoal() {
                     SoalRef.update({
                         listQuestion : FieldValue.arrayUnion({id:nomer})
                     }).then(()=>{
-                        console.log('Berhasil update');
+                        console.log('Berhasil Buat Soal');
                         setLoading(false)
-                        return resetForm
+                        resetForm()
                     }).catch((err)=>{
                         console.log(err);
                         setLoading(false)
@@ -114,9 +115,60 @@ export default function TambahSoal() {
         })
         
     }
-    const handleSubmitEdit = (e)=>{
+    const handleSubmitEdit = async (e)=>{
         e.preventDefault()
-        console.log(e);
+        setLoading(true)
+        const options=[]
+        const nomer = String(NoRef.current.value-1)
+        arrIsiOpsi.forEach((data,i)=>{
+            if(data){
+                options.push({
+                    body:data,
+                    type:defaultOpsiList[i]
+                })
+            }
+        })
+        const data = {
+            options:options,
+            body : BodySoal,
+            pembahasan :BodyPembahasan
+        }
+        const answer = {
+            answer : Jawaban,
+            id : NoRef.current.value-1
+        }
+        const SoalRef = db.collection('Kuis').doc(uid)
+        SoalRef.collection('Questions')
+                .doc(nomer)
+                .update(data)
+                .then(async()=>{
+                   
+                    let OldAnswers = (await SoalRef.collection('Answers')
+                                .doc('kunci')
+                                .get()).data().body
+                    const exceptCurrentNumber =  OldAnswers.filter(data=>{
+                        return data.id !== NoRef.current.value-1
+                    })
+                    exceptCurrentNumber.push(answer)
+                    SoalRef.collection('Answers')
+                                .doc('kunci')
+                                .update({
+                                    body:exceptCurrentNumber
+                                })
+                                .then(()=>{
+                                    console.log('Berhasil Update');
+                                    resetForm()
+                                    setLoading(false)
+                                })
+                                .catch(err=>{
+                                    console.log(err);
+                                    setLoading(false)
+                                })
+                })
+                .catch(err=>{
+                    console.log(err);
+                    setLoading(false)
+                })
     }
     const resetForm = ()=>{
         setOnEdit(false)
@@ -129,13 +181,12 @@ export default function TambahSoal() {
         setIsiOpsiE('')
         setJawaban('')
         setListOpsi(['A','B'])
-        setItemOpsi(ListOpsi.map((type,i)=>{
-            return <OpsiItem type={type} onEditorChange={arrSetIisiOpsi[i]} key={type}/>
-        }))
+        document.getElementById('nomer').removeAttribute('readonly')
         NoRef.current.value = 1
     }
     const handleEditSoal = async (e)=>{
         setOnEdit(true)
+        document.getElementById('nomer').setAttribute('readonly','')
         const idSoal = e.target.dataset.id
         db.collection('Kuis')
             .doc(uid)
@@ -294,7 +345,7 @@ export default function TambahSoal() {
                             <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatSoal}>
                                 <div className="form-group">
                                     <label htmlFor="no ">No</label>
-                                    <input ref={NoRef} className="form-control" type="number" min='1' />
+                                    <input id="nomer" ref={NoRef} className="form-control" type="number" min='1'/>
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="Soal">Soal</label>

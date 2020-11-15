@@ -39,7 +39,7 @@ function App() {
           
           <AdminRoute exact path={RouteName.admin} component={Admin} />
           <AdminRoute exact path={RouteName.liatJourney} component={AdminJourney} />
-          <Route exact path={RouteName.tambahSoal} component={TambahSoal} />
+          <AdminRoute exact path={RouteName.tambahSoal} component={TambahSoal} />
           
           <UserRoute exact path={RouteName.dashboard} component={Dashboard} />
           <UserRoute exact path={RouteName.editProfile} component={EditProfile} />
