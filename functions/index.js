@@ -13,9 +13,11 @@ const db = admin.firestore()
         db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
                 let kunciArr = []
+                let pembahasanArr = []
                 let correction = [] 
                 doc.data().body.forEach(data=>{
                     kunciArr[data.id] = data.answer
+                    pembahasanArr[data.id] = data.pembahasan
                 })
                 let nilai = 0
                 
@@ -36,6 +38,7 @@ const db = admin.firestore()
                     namaKuis: kuis.nama,
                     body: nilai,
                     answer: answer,
+                    pembahasan : pembahasanArr,
                     correction :correction,
                 }).then(() => {
                     db.collection('Kuis').doc(kuis.kuisID)
