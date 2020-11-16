@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext'
 
 export default function TopikItem(props) {
     const [ElementJourneyList, setElementJourneyList] = useState()
-    const namaKuisRef = useRef()
+    const namaJourneyRef = useRef()
     const {currentUser} = useAuth()
     const [Loading, setLoading] = useState(false)
     const [Error, setError] = useState()
@@ -14,14 +14,14 @@ export default function TopikItem(props) {
     const handleCreateKuis = (e)=>{
         e.preventDefault()
         setLoading(true)
-        const namaKuis = namaKuisRef.current.value
-        if(namaKuis.length < 3){
+        const namaJourney = namaJourneyRef.current.value
+        if(namaJourney.length < 3){
             setError({message:'Nama kuis minimal 3 karakter'})
             setLoading(false)
             return ;
         }
         db.collection('Journey').add({
-            name: namaKuis,
+            name: namaJourney,
             created_by : {
                 name : currentUser.displayName,
                 uid : currentUser.uid,
@@ -31,10 +31,10 @@ export default function TopikItem(props) {
             topikID : props.docid
         }).then(res=>{
             db.collection('Topik').doc(props.docid).update({
-                journeyList : FieldValue.arrayUnion({nama:namaKuis, uid:res.id})
+                journeyList : FieldValue.arrayUnion({nama:namaJourney, uid:res.id})
             }).then(()=>{
                 setLoading(false)
-                namaKuisRef.current.value = ''
+                namaJourneyRef.current.value = ''
             }).catch(err=>{
                 console.log(err)
                 setLoading(false)
@@ -110,7 +110,7 @@ export default function TopikItem(props) {
                                     <div className="form-group row">
                                         <label htmlFor="nama" className="col-md-2 col-form-label">Nama Kuis</label>
                                         <div className="col-md-8">
-                                            <input ref={namaKuisRef} type="text" className="form-control" required />
+                                            <input ref={namaJourneyRef} type="text" className="form-control" required />
                                         </div>
                                         <div className="col-md-2">
                                             <button type="submit" className="btn btn-primary" onClick={props.ShowModalBuatKuis} disabled={Loading}>

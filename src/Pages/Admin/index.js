@@ -73,7 +73,7 @@ const Admin = () => {
             },
             member : [],
             kuislist:[]
-        }).then(res=>{
+        }).then((res)=>{
             TopikNameRef.current.value = ''
             JurusanRef.current.value = ''
             TopikDeskripsiRef.current.value = ''

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet';
-import { Link, useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import Navbar from '../../component/Navbar/Navbar';
 import { db, FieldValue } from '../../config/Firebase';
 import { routeSet } from '../../config/Route';
@@ -15,6 +15,8 @@ export default function AdminJourney() {
     const durasiKuisRef = useRef()
     const [CurrentEditKuis, setCurrentEditKuis] = useState()
     const [oldKuisData, setOldKuisData] = useState()
+    const history = useHistory()
+
     const handleBuatKuis = async (e)=>{
         e.preventDefault()
         setLoading(true)
@@ -27,7 +29,8 @@ export default function AdminJourney() {
             db.collection('Journey').doc(uid).update({
                 kuisList : FieldValue.arrayUnion({nama:namaKuisRef.current.value, uid:res.id, durasi : durasiKuisRef.current.value})
             }).then(()=>{
-                setLoading(false)
+                console.log('Berhasil dibuat');
+                history.push(routeSet.tambahSoal({uid:res.id}))
             }).catch(err=>{
                 console.log(err);
                 setLoading(false)
@@ -79,37 +82,35 @@ export default function AdminJourney() {
         setOldKuisData()
     }
     useEffect(() => {
-
-        const hapusKuis = (e)=>{
-            const KuisUID = e.target.dataset.uid
-            const durasi = e.target.dataset.durasi
-            const namaKuis = e.target.dataset.nama
-
-            db.collection('Kuis').doc(KuisUID).delete()
-            .then(()=>{
-                    db.collection('Journey').doc(uid).update({
-                        kuisList: FieldValue.arrayRemove({
-                            uid:KuisUID, 
-                            nama:namaKuis, 
-                            durasi:durasi,
-                        })
-                    })
-                    .then(()=>{
-                        console.log('Berhasil Menghapus Data');
-                    }).catch(err=>{
-                        console.log(err)
-                    })
-            })
-            .catch(err=>{
-                console.log(err);
-            })
-        }
-
         let unsub = db.collection('Journey').doc(uid).onSnapshot(doc=>{
             if (doc.exists) {
+                const hapusKuis = (e)=>{
+                    const KuisUID = e.target.dataset.uid
+                    const durasi = e.target.dataset.durasi
+                    const namaKuis = e.target.dataset.nama
+        
+                    db.collection('Kuis').doc(KuisUID).delete()
+                    .then(()=>{
+                            db.collection('Journey').doc(uid).update({
+                                kuisList: FieldValue.arrayRemove({
+                                    uid:KuisUID, 
+                                    nama:namaKuis, 
+                                    durasi:durasi,
+                                })
+                            })
+                            .then(()=>{
+                                console.log('Berhasil Menghapus Data');
+                            }).catch(err=>{
+                                console.log(err)
+                            })
+                    })
+                    .catch(err=>{
+                        console.log(err);
+                    })
+                }
                 const data = doc.data()
                 setJourney(data)
-                if(data.kuisList.length > 0){
+                if(data.kuisList && data.kuisList.length > 0){
                     data.kuisList.sort((a,b)=>{
                         if(a.nama.toLowerCase() < b.nama.toLowerCase()){
                             return -1
@@ -129,7 +130,7 @@ export default function AdminJourney() {
                                     <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
                                     <Link className="btn btn-primary mr-3" to={routeSet.lihatHasilKuis({kuisID : data.uid })} >Lihat Hasil</Link>
                                     <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
-                                    <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Soal</button>
+                                    <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Kuis</button>
                                 </div>
                             </li>
                         )
