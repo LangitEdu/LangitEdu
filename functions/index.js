@@ -97,7 +97,7 @@ const db = admin.firestore()
         return admin.auth().setCustomUserClaims(user.uid, {
             admin: true
         }).then(()=>{
-            return res.json({status:'sukses', message: `Berhasil membuat akun ${email} menjadi admin silahkan logout dan login kembali untuk merefresh akun`});
+            return res.json({status:'sukses', message: `Berhasil membuat akun ${data.email} menjadi admin silahkan logout dan login kembali untuk merefresh akun`});
         })
         .catch(err=>{
             console.log(err);

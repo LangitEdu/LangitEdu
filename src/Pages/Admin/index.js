@@ -3,7 +3,7 @@ import Styled from '@emotion/styled'
 import axios from 'axios';
 import {useAuth} from '../../contexts/AuthContext'
 import Navbar from '../../component/Navbar/NavbarBig';
-import { db, FieldValue } from '../../config/Firebase';
+import { db, FieldValue, storage } from '../../config/Firebase';
 import TopikItem from '../../component/Admin/TopikItem';
 import { Helmet } from 'react-helmet';
 
@@ -17,6 +17,7 @@ const Admin = () => {
     const TopikNameRef = useRef()
     const TopikDeskripsiRef = useRef()
     const JurusanRef = useRef()
+    const ThumbnailRef = useRef()
     const [ListTopik, setListTopik] = useState()
     async function verify(e) {
         e.preventDefault()
@@ -43,12 +44,29 @@ const Admin = () => {
     }   
     async function handleBuatTopik(e) {
         e.preventDefault()
+        let URL = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+        let Ref  = ''
+
+        if(ThumbnailRef.current.files.length > 0){
+            const file = ThumbnailRef.current.files[0]
+            let extention = file.name.split('.').pop();
+            let res = await storage.ref('TopikThumbnail')
+                    .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .catch(function(error) {
+                        setError(error);
+                        throw new Error(error.message)
+                      });
+            URL = await res.ref.getDownloadURL()
+            Ref = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
+        }
         db.collection('Topik').add({
             nama : TopikNameRef.current.value,
             deskripsi : TopikDeskripsiRef.current.value,
             jurusan :  JurusanRef.current.value,
             created_at : FieldValue.serverTimestamp(),
             updated_at : FieldValue.serverTimestamp(),
+            thumbnail : URL,
+            thumbnailRef : Ref,
             created_by : {
                 nama : currentUser.displayName,
                 uid : currentUser.uid
@@ -72,6 +90,41 @@ const Admin = () => {
                 }).catch(err=>{
                     setError(err)
                 })
+    }
+    const handleThumbnailChange = (e)=>{
+        setError()
+        if(e.target.files.length > 0){
+            let name
+            const file = e.target.files[0]
+            const AcceptAbleExtention = ['png','jpeg','jpg']
+            let extention = file.name.split('.').pop();
+            if(!AcceptAbleExtention.includes(extention.toLowerCase())){
+                setError({message:"anda mengupload file dengan ekstensi yang tidak diizinkan, silahkan upload file yang lain"});
+                document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsacas.svg'
+                return;
+            }
+            if(file.size > 5242880){
+                setError({message:'Ukuran file yang anda upload terlalu besar, harap upload file yang berukuran tidak lebih dari 5MB'})
+                document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+                return
+            }
+            
+            if(file.name.length < 40){
+                name = file.name
+            }else{
+                name = file.name.substring(0,40)+"...."
+            }
+            var reader = new FileReader();
+    
+            reader.onload = function(e) {
+                document.getElementById('thumbpic').src = e.target.result
+            }
+            reader.readAsDataURL(file);
+            document.getElementById('labelNewThumbnail').innerHTML = name
+        }else{
+            document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+            document.getElementById('labelNewThumbnail').innerHTML = 'Choose file'
+        }
     }
     useEffect(() => {
         let unsub = db.collection('Topik').onSnapshot(snapShot=>{
@@ -128,6 +181,17 @@ const Admin = () => {
                 <div className="card">
                     <div className="card-body">
                         <form onSubmit={handleBuatTopik}>
+
+                            <div className="thumbpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
+                                <img id="thumbpic" src={`https://avatars.dicebear.com/api/jdenticon/acsascaca.svg`} alt="Thumbnail" className="img-fluid"/>
+                            </div>
+                            <div className="form-group">
+                                <div className="custom-file">
+                                    <input ref={ThumbnailRef} type="file" className="custom-file-input" id="newProfilePic" onChange={handleThumbnailChange} accept=".png,.jpg,.jpeg"/>
+                                    <label id="labelNewThumbnail" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
+                                </div>
+                            </div>
+
                             <div className="form-group">
                                 <label htmlFor="namaTopik">Nama Topik</label>
                                 <input ref={TopikNameRef} type="text" className="form-control" id="namaTopik"/>
