@@ -51,7 +51,7 @@ const Home = () => {
                                 <h3 className="mb-3" >Diskusi dengan komunitas belajarmu</h3>
                                 <p>Kamu dapat dengan langsung bertanya dan berdiskusi tentang topik terkait bersama member lainnya</p>
                                 <br/>
-                                <Link className="btn btn-outline-dark font-weight-bold mr-3" to={RouteName.listKomunitas} >CARI KOMUNITASMU <i class="ml-2 fas fa-search"></i> </Link>
+                                <Link className="btn btn-outline-dark font-weight-bold mr-3" to={RouteName.listKomunitas} >CARI KOMUNITASMU <i className="ml-2 fas fa-search"></i> </Link>
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ const Home = () => {
                                 <h3 className="mb-3" >Temukan topik belajar untukmu</h3>
                                 <p>Beragam topik belajar tersedia di langit edu dan siap untuk kamu pelajari sekarang juga</p>
                                 <br/>
-                                <Link className=" btn btn-outline-dark font-weight-bold mr-3" to={RouteName.topik} >Jelajahi topik <i class="ml-2 fas fa-search"></i></Link>
+                                <Link className=" btn btn-outline-dark font-weight-bold mr-3" to={RouteName.topik} >Jelajahi topik <i className="ml-2 fas fa-search"></i></Link>
                             </div>
                         </div>
                     </div>
@@ -101,15 +101,15 @@ const Home = () => {
                             <h4 className="mb-3" >Kontak Kami</h4>
                             <ul>
                                 <li><i className="fas fa-envelope mr-2"></i>Info@langitedu.com</li>
-                                <li><i class="fab fa-whatsapp mr-2"></i>089889883637</li>
+                                <li><i className="fab fa-whatsapp mr-2"></i>089889883637</li>
                             </ul>
                         </div>
                         <div className="col-md-4">
                             <h4 className="mb-3">Sosial Media</h4>
                             <ul>
-                                <li><i class="fab fa-twitter mr-2"></i><a href="http://twitter.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
-                                <li><i class="fab fa-instagram mr-2"></i><a href="http://instagram.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
-                                <li><i class="fab fa-facebook mr-2"></i><a href="http://facebook.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                                <li><i className="fab fa-twitter mr-2"></i><a href="http://twitter.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                                <li><i className="fab fa-instagram mr-2"></i><a href="http://instagram.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                                <li><i className="fab fa-facebook mr-2"></i><a href="http://facebook.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
                             </ul>
                         </div>
                     </div>
