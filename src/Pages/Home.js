@@ -37,19 +37,91 @@ const Home = () => {
                     </div>
                 </div>
                 <hr/>
+
+                <div className="class-wrapper px-5 py-3 mt-4">
+
+                    <div className="post-item row mb-5">
+                        <div className="col-md-4">
+                            <div className="thumbnail">
+                                <img className="img-fluid" src="/img/thumbnail.png" alt="thumbnail.png"/>
+                            </div>
+                        </div>
+                        <div className="col-md-8">
+                            <div className="detail py-md-3">
+                                <h3 className="mb-3" >Diskusi dengan komunitas belajarmu</h3>
+                                <p>Kamu dapat dengan langsung bertanya dan berdiskusi tentang topik terkait bersama member lainnya</p>
+                                <br/>
+                                <Link className="btn btn-outline-dark font-weight-bold mr-3" to={RouteName.listKomunitas} >CARI KOMUNITASMU <i class="ml-2 fas fa-search"></i> </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="post-item row mb-5">
+                        <div className="col-md-4">
+                            <div className="thumbnail">
+                                <img className="img-fluid" src="/img/thumbnail.png" alt="thumbnail.png"/>
+                            </div>
+                        </div>
+                        <div className="col-md-8">
+                            <div className="detail py-md-3">
+                                <h3 className="mb-3" >Temukan topik belajar untukmu</h3>
+                                <p>Beragam topik belajar tersedia di langit edu dan siap untuk kamu pelajari sekarang juga</p>
+                                <br/>
+                                <Link className=" btn btn-outline-dark font-weight-bold mr-3" to={RouteName.topik} >Jelajahi topik <i class="ml-2 fas fa-search"></i></Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="post-item row mb-5">
+                        <div className="col-md-4">
+                            <div className="thumbnail">
+                                <img className="img-fluid" src="/img/thumbnail-2.png" alt="thumbnail.png"/>
+                            </div>
+                        </div>
+                        <div className="col-md-8">
+                            <div className="detail py-md-3">
+                                <h3 className="mb-3" >Kuis yang dikemas dengan seru</h3>
+                                <p>Dengan konsep berbeda, langit edu membawakan kuis dengan cara yang menyenangkan seperti permainan</p>
+                                <br/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </section>
             <section className="footer py-2">
-                <div className="container mt-5">
+                <div className="container mt-5 mb-5">
                     <div className="row">
                         <div className="col-md-4">
                             <img className="img-fluid" src="/img/logo-blue.png" alt="Logo"/>
+                            <h4 className="mt-4 mb-3" >Tentang kami</h4>
+                            <p>Dengan konsep berbeda, di langitedu.com membawakan kuis dengan cara yang menyenangkan seperti permainan</p>
                         </div>
                         <div className="col-md-4">
-
+                            <h4 className="mb-3" >Kontak Kami</h4>
+                            <ul>
+                                <li><i className="fas fa-envelope mr-2"></i>Info@langitedu.com</li>
+                                <li><i class="fab fa-whatsapp mr-2"></i>089889883637</li>
+                            </ul>
                         </div>
                         <div className="col-md-4">
-
+                            <h4 className="mb-3">Sosial Media</h4>
+                            <ul>
+                                <li><i class="fab fa-twitter mr-2"></i><a href="http://twitter.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                                <li><i class="fab fa-instagram mr-2"></i><a href="http://instagram.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                                <li><i class="fab fa-facebook mr-2"></i><a href="http://facebook.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
+                            </ul>
                         </div>
+                    </div>
+                </div>
+            </section>
+            <section className="footer-copyright py-2">
+                <div className="container d-flex justify-content-between flex-md-row flex-column">
+                    <div className="copyright">
+                        © Copyright 2020
+                    </div>
+                    <div className="nama">
+                    <img src="/img/white-logo-icon.png" alt="Logo Langit Edu" className="img-fluid"/> LangitEdu | Belajar dimanapun dan kapanpun
                     </div>
                 </div>
             </section>
@@ -59,9 +131,58 @@ const Home = () => {
 }
     
 const Wrapper = Styled.div(() =>`
+
+    .footer-copyright{
+        background : #007A95;
+        color : white;
+        font-weight : 400
+    }
+
+    .btn{
+        text-transform: uppercase;
+        border-radius : .7rem
+    }
+
+    .post-item {
+        
+        color : #209FBC;
+
+        .thumbnail{
+            overflow:hidden;
+            border-radius:20px;
+            box-shadow: 0px 0px 23px rgba(0, 0, 0, 0.25);
+            position : relative;
+            width: fit-content;
+        }
+
+        .detail{
+            h3{
+                font-size:3rem;
+            }
+            p{
+                font-size: 1.2rem;
+            }
+
+        }
+
+    }
+
     .footer{
         background: #F5F5F5;
         box-shadow: inset 0px 20px 28px -12px rgba(0, 0, 0, 0.14);
+        color : #209FBC;
+
+        h4{
+            font-weight : bold
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+
+            li{
+                font-size:1.2rem
+            }
+        }
     }
     .jelajah{
 
