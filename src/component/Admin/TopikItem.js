@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { db, FieldValue } from '../../config/Firebase'
 import {routeSet} from '../../config/Route'
 import { useAuth } from '../../contexts/AuthContext'
+import parse from 'html-react-parser';
 
 export default function TopikItem(props) {
     const [ElementJourneyList, setElementJourneyList] = useState()
@@ -90,13 +91,13 @@ export default function TopikItem(props) {
                 </button>
                 <div className='d-flex'>
                 <button className="btn btn-info mr-4" onClick={()=>{console.log('edit');}} data-uid={props.docid} >Edit</button>
-                <button className="btn btn-danger" onClick={props.deleteFunction} data-uid={props.docid} >Delete</button>
+                <button className="btn btn-danger" onClick={props.deleteFunction} data-uid={props.docid} data-thumbnail={props.ThumbnailRef} >Delete</button>
                 </div>
             </h2>
             </div>
             <div id={`collapse${props.docid}`} className="collapse" aria-labelledby={`heading${props.docid}`} data-parent="#listTopik">
                 <div className="card-body">
-                    {props.deskripsi}
+                    {parse(props.deskripsi)}
                     <br/>
                     <div className="card mt-4">
                         <ul className="list-group list-group-flush">

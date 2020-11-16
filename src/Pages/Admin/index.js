@@ -6,6 +6,7 @@ import Navbar from '../../component/Navbar/NavbarBig';
 import { db, FieldValue, storage } from '../../config/Firebase';
 import TopikItem from '../../component/Admin/TopikItem';
 import { Helmet } from 'react-helmet';
+import { Editor } from '@tinymce/tinymce-react';
 
 
 const Admin = () => {
@@ -14,8 +15,8 @@ const Admin = () => {
     const emailRef = useRef()
     const [Error, setError] = useState()
     const [Loading, setLoading] = useState(false)
+    const [TopikDeksripsi, setTopikDeksripsi] = useState('')
     const TopikNameRef = useRef()
-    const TopikDeskripsiRef = useRef()
     const JurusanRef = useRef()
     const ThumbnailRef = useRef()
     const [ListTopik, setListTopik] = useState()
@@ -44,6 +45,7 @@ const Admin = () => {
     }   
     async function handleBuatTopik(e) {
         e.preventDefault()
+        setLoading(true)
         let URL = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
         let Ref  = ''
 
@@ -61,7 +63,7 @@ const Admin = () => {
         }
         db.collection('Topik').add({
             nama : TopikNameRef.current.value,
-            deskripsi : TopikDeskripsiRef.current.value,
+            deskripsi : TopikDeksripsi,
             jurusan :  JurusanRef.current.value,
             created_at : FieldValue.serverTimestamp(),
             updated_at : FieldValue.serverTimestamp(),
@@ -75,20 +77,38 @@ const Admin = () => {
             kuislist:[]
         }).then((res)=>{
             TopikNameRef.current.value = ''
-            JurusanRef.current.value = ''
-            TopikDeskripsiRef.current.value = ''
+            JurusanRef.current.value = 'MIPA'
+            setTopikDeksripsi('')
+            document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+            document.getElementById('labelNewThumbnail').innerHTML = 'Choose file'
             setVerify({message:'Berhasil membuat Topik'})
+            setLoading(false)
         }).catch(err=>{
             setError(err)
+            setLoading(false)
             return;
         })
     }
     async function handleDeleteTopik(e) {
+        setLoading(true)
+        if(e.target.dataset.thumbnail !== undefined && e.target.dataset.thumbnail !==''){
+            await storage.ref().child(e.target.dataset.thumbnail).delete()
+            .then(()=>{
+                console.log('Berhasil menghapus data');
+            })
+            .catch(err=>{
+                setError(err)
+                return;
+            })
+        }
+       
         return db.collection('Topik').doc(e.target.dataset.uid).delete()
                 .then(()=>{
                     console.log('Berhasil dihapus');
+                    setLoading(false)
                 }).catch(err=>{
                     setError(err)
+                    setLoading(false)
                 })
     }
     const handleThumbnailChange = (e)=>{
@@ -100,12 +120,12 @@ const Admin = () => {
             let extention = file.name.split('.').pop();
             if(!AcceptAbleExtention.includes(extention.toLowerCase())){
                 setError({message:"anda mengupload file dengan ekstensi yang tidak diizinkan, silahkan upload file yang lain"});
-                document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsacas.svg'
+                document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsacas.svg'
                 return;
             }
             if(file.size > 5242880){
                 setError({message:'Ukuran file yang anda upload terlalu besar, harap upload file yang berukuran tidak lebih dari 5MB'})
-                document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+                document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
                 return
             }
             
@@ -122,18 +142,20 @@ const Admin = () => {
             reader.readAsDataURL(file);
             document.getElementById('labelNewThumbnail').innerHTML = name
         }else{
-            document.getElementById('profilepic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+            document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
             document.getElementById('labelNewThumbnail').innerHTML = 'Choose file'
         }
     }
     useEffect(() => {
         let unsub = db.collection('Topik').onSnapshot(snapShot=>{
             setListTopik(snapShot.docs.map(doc=>{
+                const data = doc.data()
                 return <TopikItem 
-                    {...doc.data()}
+                    {...data}
                     key={doc.id}
                     docid={doc.id}
                     deleteFunction={handleDeleteTopik}
+                    ThumbnailRef={data.thumbnailRef}
                 />
             }))
         })
@@ -198,7 +220,15 @@ const Admin = () => {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="deskripsiTopik">Deskripsi Topik</label>
-                                <textarea ref={TopikDeskripsiRef} className="form-control" id="deskripsiTopik" cols="30" rows="10"></textarea>
+                                <Editor
+                                    apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
+                                    init = {{
+                                        menubar: false,
+                                        min_height:400
+                                    }}
+                                    value={TopikDeksripsi}
+                                    onEditorChange={setTopikDeksripsi}
+                                />
                             </div>
                             <div className="form-group">
                                 <label htmlFor="Jurusan">Pilih Jurusan</label>
