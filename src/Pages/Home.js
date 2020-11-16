@@ -15,7 +15,6 @@ const Home = () => {
         const width = size.width
         const handleWindowSizeChange = () => {
             setScreen(width )
-            console.log(width);
         }
         setScreen(width)
         window.addEventListener('resize', handleWindowSizeChange)
