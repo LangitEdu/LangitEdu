@@ -68,11 +68,11 @@ export default function TambahSoal() {
         const data = {
             options:options,
             body : BodySoal,
-            pembahasan :BodyPembahasan
         }
         const answer = {
             answer : Jawaban,
-            id : NoRef.current.value-1
+            id : NoRef.current.value-1,
+            pembahasan :BodyPembahasan
         }
         const SoalRef = db.collection('Kuis').doc(uid)
         SoalRef.collection('Questions').doc(nomer).set(data)
@@ -132,11 +132,11 @@ export default function TambahSoal() {
         const data = {
             options:options,
             body : BodySoal,
-            pembahasan :BodyPembahasan
         }
         const answer = {
             answer : Jawaban,
-            id : NoRef.current.value-1
+            id : NoRef.current.value-1,
+            pembahasan :BodyPembahasan
         }
         const SoalRef = db.collection('Kuis').doc(uid)
         SoalRef.collection('Questions')

@@ -190,14 +190,14 @@ const Kuis = ({match}) => {
                         <div className="nomorsoal">
                             <p>{i+1}</p>
                         </div>
-                        <p key={i}>{parse(q.body)}</p> 
+                       {parse(q.body)} 
                         <div className="pilgan">
                             {q.options.map((o,j)=>(
                                 <div className="eachinput" key={j}>
                                     <input type="radio" defaultChecked={answer[i] === defaultOptionList[j]} name={`answer${i}`} id={`answer${i+defaultOptionList[j]}`} onClick={(e) => changeAnswer(e.target.value, i)} value={o.type}/>
                                     <label htmlFor={`answer${i+defaultOptionList[j]}`} className={`options`}>
                                         <p className="type">{o.type}</p>
-                                        <p>{parse(o.body)}</p>
+                                        {parse(o.body)}
                                     </label>
                                 </div>
                             ))}

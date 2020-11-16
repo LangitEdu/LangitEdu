@@ -27,9 +27,9 @@ export default function Dashboard() {
         let docRef = db.collection("Profile").doc(currentUser.uid);
         docRef.get().then(function(doc) {
             if(doc.exists && doc.data().topik.length > 0){
-                setTopikCard(doc.data().topik.map((data)=>{
+                setTopikCard(doc.data().topik.map((data, i)=>{
                     return (
-                        <div className="card" style={{width: "18rem"}} key={data.topik_uid}>
+                        <div className="card" style={{width: "18rem"}} key={i}>
                             <img src={data.thumbnail} className="card-img-top" alt={`thumbnail ${data.name} `} />
                             <div className="card-body">
                                 <h5 className="card-title">{data.name}</h5>
