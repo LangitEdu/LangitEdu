@@ -4,6 +4,7 @@ import { Editor } from '@tinymce/tinymce-react'
 import OpsiItem from '../../component/TambahSoal/OpsiItem'
 import { db, FieldValue } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
+import UploadImage from '../../utils/UploadImgInTinyMCE'
 
 export default function TambahSoal() {
     const [KuisData, setKuisData] = useState()
@@ -356,7 +357,21 @@ export default function TambahSoal() {
                                         apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
                                         init = {{
                                             menubar: false,
-                                            min_height:400
+                                            min_height:400,
+                                            plugins: [
+                                                'advlist autolink lists link image charmap print preview anchor',
+                                                'searchreplace visualblocks code fullscreen',
+                                                'insertdatetime media table paste code help wordcount image '
+                                              ],
+                                              toolbar: 'undo redo | formatselect | ' +
+                                              'bold italic backcolor | alignleft aligncenter ' +
+                                              'alignright alignjustify | bullist numlist outdent indent | ' +
+                                              'removeformat | image ',
+                                            images_upload_handler: function (blobInfo, success, failure) {
+                                                const file = blobInfo.blob()
+                                                UploadImage(file, success, failure)
+                                            },
+                                            branding: false,
                                         }}
                                         value={BodySoal}
                                         onEditorChange={setBodySoal}
@@ -379,7 +394,21 @@ export default function TambahSoal() {
                                         apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
                                         init = {{
                                             menubar: false,
-                                            min_height:400
+                                            min_height:400,
+                                            plugins: [
+                                                'advlist autolink lists link image charmap print preview anchor',
+                                                'searchreplace visualblocks code fullscreen',
+                                                'insertdatetime media table paste code help wordcount image '
+                                              ],
+                                              toolbar: 'undo redo | formatselect | ' +
+                                              'bold italic backcolor | alignleft aligncenter ' +
+                                              'alignright alignjustify | bullist numlist outdent indent | ' +
+                                              'removeformat | image ',
+                                            images_upload_handler: function (blobInfo, success, failure) {
+                                                const file = blobInfo.blob()
+                                                UploadImage(file, success, failure)
+                                            },
+                                            branding: false,
                                         }}
                                         value={BodyPembahasan}
                                         onEditorChange={setBodyPembahasan}

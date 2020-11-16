@@ -9,6 +9,8 @@ export default function RichForm(props) {
             apiKey='njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
             init={{
                 menubar: false,
+                branding: false,
+                elementpath: false,
                 plugins: 'emoticons ',
                 toolbar: 'emoticons | bold italic',
                 setup: function (ed) {

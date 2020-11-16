@@ -7,6 +7,7 @@ import { db, FieldValue, storage } from '../../config/Firebase';
 import TopikItem from '../../component/Admin/TopikItem';
 import { Helmet } from 'react-helmet';
 import { Editor } from '@tinymce/tinymce-react';
+import UploadImage from '../../utils/UploadImgInTinyMCE';
 
 
 const Admin = () => {
@@ -224,10 +225,24 @@ const Admin = () => {
                                     apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
                                     init = {{
                                         menubar: false,
-                                        min_height:400
+                                        plugins: [
+                                            'advlist autolink lists link image charmap print preview anchor',
+                                            'searchreplace visualblocks code fullscreen',
+                                            'insertdatetime media table paste code help wordcount image '
+                                          ],
+                                          toolbar: 'undo redo | formatselect | ' +
+                                          'bold italic backcolor | alignleft aligncenter ' +
+                                          'alignright alignjustify | bullist numlist outdent indent | ' +
+                                          'removeformat | image ',
+                                        min_height:400,
+                                        images_upload_handler: function (blobInfo, success, failure) {
+                                            const file = blobInfo.blob()
+                                            UploadImage(file, success, failure)
+                                          },
                                     }}
                                     value={TopikDeksripsi}
                                     onEditorChange={setTopikDeksripsi}
+                                    
                                 />
                             </div>
                             <div className="form-group">
