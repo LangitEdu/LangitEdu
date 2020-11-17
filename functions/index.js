@@ -10,15 +10,21 @@ const db = admin.firestore()
 
     const submit = (req, res) => {
         const { kuis, journeyID, topikID, userID, answer } = req.body
+
         db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
-                let kunciArr = []
+                let kunciArr = new Array(doc.data().body.length).fill("")
                 let pembahasanArr = []
                 let correction = [] 
-                doc.data().body.forEach(data=>{
+
+                doc.data().body.forEach((data)=>{
                     kunciArr[data.id] = data.answer
                     pembahasanArr[data.id] = data.pembahasan
                 })
+
+                kunciArr = kunciArr.filter(item => item)
+                pembahasanArr = pembahasanArr.filter(item => item)
+
                 let nilai = 0
                 
                 kunciArr.forEach((kunci, i) => {
@@ -36,10 +42,11 @@ const db = admin.firestore()
                     kuisID: kuis.kuisID,
                     journeyID: journeyID,
                     namaKuis: kuis.nama,
+                    kunciArr: kunciArr,
                     body: nilai,
                     answer: answer,
                     pembahasan : pembahasanArr,
-                    correction :correction,
+                    correction : correction
                 }).then(() => {
                     db.collection('Kuis').doc(kuis.kuisID)
                         .collection('Nilai')
@@ -70,7 +77,7 @@ const db = admin.firestore()
             })
             .catch(err => {
                 res.status(400).json({
-                    body : `failed with error : ${err}`
+                    body : `failed with errorarere : ${err}`
                 })
             })
     }
