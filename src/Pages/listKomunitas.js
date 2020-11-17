@@ -215,14 +215,14 @@ export default function ListKomunitas() {
     }
     async function handleSearchKomunitas(e){
         e.preventDefault()
-        setListKomunitas("Loading....")
+        setListKomunitas(<li className="font-weight-bold person tulisan" >Loading....</li>)
         let KomunitasId = searchKomunitas.current.value
         if(KomunitasId.length > 0){
             let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId.toLowerCase())
             setOnSearch(true)
             docRef.get().then((querySnapshot)=>{
                 if(querySnapshot.docs.length === 0 ){
-                    setListKomunitas("Komunitas yang km cari tidak ada")
+                    setListKomunitas(<li className="font-weight-bold person tulisan" >Komunitas yang kamu cari tidak ada :( </li>)
                 }else{
                     setListKomunitas(querySnapshot.docs.map(doc=>{
                         return (
@@ -248,7 +248,7 @@ export default function ListKomunitas() {
                 }
 
                 if(querySnapshot.docs.length === 0 ){
-                    setListKomunitas("Belum ada obrolan")
+                    setListKomunitas(<li className="person tulisan"><span className="font-weight-bold">Belum ada obrolan</span></li>)
                     return;
                 }
                 let listKomunitas = querySnapshot.docs.map(doc=>{
@@ -264,7 +264,7 @@ export default function ListKomunitas() {
                 setBakcupListKomunitas(listKomunitas)
             },(err)=>{
                 console.log(err);
-                setListKomunitas("Error X_x")
+                setListKomunitas(<li className="person tulisan"><span className="font-weight-bold text-danger" >Error X_x</span></li>)
             })
         return unsub
     }, [currentUser,CurrentKomunitas, onSerach])
