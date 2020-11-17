@@ -96,7 +96,7 @@ export default function TambahSoal() {
                 })
             }else{
                 SoalRef.collection('Answers').doc('kunci').set({
-                    body : answer
+                    body : [answer]
                 })
                 .then(()=>{
                     SoalRef.update({
@@ -257,8 +257,12 @@ export default function TambahSoal() {
                     .doc('kunci')
                     .get()
                     .then(res=>{
-                        setBodyPembahasan(res.data().body[idSoal].pembahasan)
-                        setJawaban(res.data().body[idSoal].answer)
+                        const data = res.data()
+                        const filteredArr= data.body.filter((data)=>{
+                            return data.id === parseInt(idSoal)
+                        })
+                        setBodyPembahasan(filteredArr[0].pembahasan)
+                        setJawaban(filteredArr[0].answer)
                     })
                 NoRef.current.value = parseInt(idSoal)+1
             })
