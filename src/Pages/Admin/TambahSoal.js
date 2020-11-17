@@ -196,9 +196,8 @@ export default function TambahSoal() {
             .doc(idSoal)
             .get()
             .then(res=>{
-                const {body, options, pembahasan} = res.data();
+                const {body, options} = res.data();
                 setBodySoal(body)
-                setBodyPembahasan(pembahasan)
                 let resListOpsi = []
 
                 options.forEach(data=>{
@@ -258,6 +257,7 @@ export default function TambahSoal() {
                     .doc('kunci')
                     .get()
                     .then(res=>{
+                        setBodyPembahasan(res.data().body[idSoal].pembahasan)
                         setJawaban(res.data().body[idSoal].answer)
                     })
                 NoRef.current.value = parseInt(idSoal)+1
