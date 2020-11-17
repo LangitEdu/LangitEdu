@@ -62,7 +62,7 @@ export default function ListKomunitas() {
         let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
         const currentKomunitas = await db.collection('Komunitas').doc(currentKom).get()
         const currentKomunitasData = currentKomunitas.data()
-        setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData})   
+        setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData, DontRefresh:true})   
         let {photoUrl, nama, id,member} = currentKomunitasData
         document.getElementById('JudulRoom').innerHTML = nama
         document.getElementById('idRoom').innerHTML = id
@@ -223,13 +223,13 @@ export default function ListKomunitas() {
             docRef.get().then((querySnapshot)=>{
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas("Komunitas yang km cari tidak ada")
-                    return;
+                }else{
+                    setListKomunitas(querySnapshot.docs.map(doc=>{
+                        return (
+                            <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
+                        )
+                    }))
                 }
-                setListKomunitas(querySnapshot.docs.map(doc=>{
-                    return (
-                        <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
-                    )
-                }))
             })
         }
         return ;
@@ -242,6 +242,11 @@ export default function ListKomunitas() {
     useEffect(() => {
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
+                
+                if(onSerach || (CurrentKomunitas && CurrentKomunitas.DontRefresh)){
+                    return;
+                }
+
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas("Belum ada obrolan")
                     return;
@@ -262,7 +267,7 @@ export default function ListKomunitas() {
                 setListKomunitas("Error X_x")
             })
         return unsub
-    }, [currentUser,CurrentKomunitas])
+    }, [currentUser,CurrentKomunitas, onSerach])
 
     function makeid(length) {
         var result           = '';
@@ -406,7 +411,7 @@ export default function ListKomunitas() {
         setLoading(false)
     }  
     return (
-        <Wrapper>
+        <Wrapper onChat = {onChat}>
         <Navbar />
         <Helmet>
             <title>Komunitas | Langit Edu</title>
@@ -423,13 +428,13 @@ export default function ListKomunitas() {
 
                     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
 
-                        <div className="card m-0">
+                        <div className="card bg-transparent m-0">
 
                             <div className="row no-gutters">
                                 <div className="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
                                     <div className="users-container">
                                         <div className="chat-search-box">
-                                            <form className="input-group" onSubmit={handleSearchKomunitas}>
+                                            <form className="input-group align-items-center" onSubmit={handleSearchKomunitas}>
                                                 {onSerach && 
                                                 <div className="input-group-btn">
                                                     <button type="button" className="btn btn-warning text-white" onClick={cancelSearch} >
@@ -437,15 +442,14 @@ export default function ListKomunitas() {
                                                     </button>
                                                 </div>
                                                 }
-                                                <input ref={searchKomunitas} className="form-control" placeholder="Search" onChange={handleSearchTextChange} />
-                                                <div className="input-group-btn">
-                                                    <button type="submit" className="btn btn-info" id="btnSearch" disabled={!CanSearch}>
-                                                        <i className="fa fa-search"></i>
-                                                    </button>
-                                                </div>
+                                                <input ref={searchKomunitas} className="form-control mr-3 py-4" placeholder="Search" onChange={handleSearchTextChange} />
+                                                <button type="submit" className="btn btn-info align-self-stretch px-3" id="btnSearch" disabled={!CanSearch}>
+                                                    <i className="fa fa-search"></i>
+                                                </button>
                                             </form>
                                         </div>
                                         <ul className="users position-relative">
+                                            {!onSerach && <li className="tulisan person font-weight-bold"><span>KOMUNITAS DIIKUTI</span></li>}
                                             {ListKomunitas}
                                         </ul>
                                         <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModalAddKomunitas(true);setError()}}>
@@ -453,61 +457,67 @@ export default function ListKomunitas() {
                                         </button>
                                     </div>
                                 </div>
-                                <div className="col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
-                                    <div className="selected-user d-flex justify-content-between flex-wrap align-items-center">
-                                        <div className="d-flex">
-                                            {onChat && 
-                                            CurrentKomunitas &&
-                                            <div className="chat-avatar d-none d-lg-block mr-3">
-                                                <img className="img-fluid" src={CurrentKomunitas.photoUrl} alt="Profile Komunitas" id="avaGroup"/>
-                                            </div>
-                                            }
-                                            <div className="d-flex flex-column mt-lg-4">
-                                                <span className="name mb-1" id="JudulRoom"></span>
-                                                <span className="idRoom" id="idRoom"></span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                        {onChat && 
-                                        <>
-                                            {IsAdmin && 
-                                                <button className="btn btn-info mr-4" onClick={()=>{setShowModalEditKomunitas(true)}}>
-                                                    Edit <i className="far fa-edit" style={{fontSize:".8rem"}}></i>
-                                                </button>
-                                            }
-                                        <button className="btn btn-danger" onClick={handleExitGroup}>
-                                            Exit <i className="fas fa-external-link-alt" style={{fontSize:".8rem"}}></i>
-                                            </button>
-                                        </>
-                                        }
-                                        </div>
-                                    </div>
-                                    <div className="chat-container">
-                                        <ul className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
-                                            <li ref={dummy}></li>
-                                            {
-                                            onChat ? 
-                                            Chat
-                                            :
-                                            "Selamat Datang"
-                                            }
-                                        </ul>
-                                        {onChat &&
-                                            <>
-                                            <form onSubmit={(kirimPesan)} id="formPesan">
-                                                <div className="">
-                                                <RichForm 
-                                                    reference={PesanRef}
-                                                    pesan={pesan}
-                                                    onEditorChange={handleFormPesan}
-                                                    kirimPesan={kirimPesan}
-                                                    KomunitasUID={CurrentKomunitas.uid}
-                                                />
-                                                <button type="submit" className="btn btn-primary" disabled={!chatAble} >Kirim</button>
+                                <div className=" card shadow col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                    <div className="card-body">
+                                        <div className="selected-user d-flex justify-content-between flex-wrap align-items-center">
+                                            <div className="d-flex">
+                                                {onChat && 
+                                                CurrentKomunitas &&
+                                                <div className="chat-avatar d-none d-lg-block mr-3">
+                                                    <img className="img-fluid" src={CurrentKomunitas.photoUrl} alt="Profile Komunitas" id="avaGroup"/>
                                                 </div>
-                                            </form>
+                                                }
+                                                <div className="d-flex flex-column mt-lg-4">
+                                                    <span className="name mb-1" id="JudulRoom"></span>
+                                                    <span className="idRoom" id="idRoom"></span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                            {onChat && 
+                                            <>
+                                                {IsAdmin && 
+                                                    <button className="tombol shadow-sm btn-bordered mr-4" onClick={()=>{setShowModalEditKomunitas(true)}}>
+                                                        Edit 
+                                                    </button>
+                                                }
+                                            <button className="tombol shadow-sm btn-bordered-red" onClick={handleExitGroup}>
+                                                Exit
+                                                </button>
                                             </>
-                                        }
+                                            }
+                                            </div>
+                                        </div>
+                                        <div className="chat-container">
+                                            <ul className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
+                                                <li ref={dummy}></li>
+                                                {
+                                                onChat ? 
+                                                Chat
+                                                :
+                                                <div className="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                                                    <img className="img-fluid mb-4" src="/img/Icon-chat.png" alt="chat"/>
+                                                    <span className="text-black-50 font-weight-bold mb-5" >Pilih komunitas terlebih dahulu untuk memulai diskusi</span>
+                                                </div>
+                                                }
+                                            </ul>
+                                            {onChat &&
+                                                <>
+                                                <form onSubmit={(kirimPesan)} id="formPesan">
+                                                    <div className="">
+                                                    <RichForm 
+                                                        reference={PesanRef}
+                                                        pesan={pesan}
+                                                        onEditorChange={handleFormPesan}
+                                                        kirimPesan={kirimPesan}
+                                                        KomunitasUID={CurrentKomunitas.uid}
+                                                    />
+                                                    <button type="submit" className="btn btn-primary btn-block" disabled={!chatAble} >Kirim</button>
+                                                    </div>
+                                                </form>
+                                                </>
+                                            }
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -546,4 +556,4 @@ export default function ListKomunitas() {
     )
 }
 
-const Wrapper = Styled.div(() =>ChatCSS)
+const Wrapper = Styled.div(({onChat}) =>ChatCSS)

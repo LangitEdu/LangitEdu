@@ -6,6 +6,7 @@ import Navbar from '../component/Navbar/Navbar'
 import {useAuth} from '../contexts/AuthContext'
 import { db } from '../config/Firebase';
 import {routeSet} from '../config/Route'
+import FooterCopyright from '../component/FooterCopyright';
 
 export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
@@ -49,7 +50,7 @@ export default function Dashboard() {
     return (
         <>
         <Navbar />
-        <div className="container mt-5">
+        <div className="container mt-5 min-vh-100">
             <h1>Beranda</h1>
             <h3>Hello {currentUser.displayName} </h3>
             {success &&
@@ -71,6 +72,7 @@ export default function Dashboard() {
                 {currentUser.emailVerified && topikCard}
             </div>
         </div>
+        <FooterCopyright />
         </>
     )
 }

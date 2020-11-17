@@ -4,6 +4,7 @@ import Navbar from '../component/Navbar/NavbarBig'
 import RouteName from '../config/Route'
 import Styled from '@emotion/styled'
 import useResize from "use-resize"
+import FooterCopyright from '../component/FooterCopyright'
 
 const Home = () => {
 
@@ -132,28 +133,13 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            <section className="footer-copyright py-2">
-                <div className="container d-flex justify-content-between flex-md-row flex-column-reverse text-center">
-                    <div className="copyright">
-                        © Copyright 2020
-                    </div>
-                    <div className="nama">
-                    <img src="/img/white-logo-icon.png" alt="Logo Langit Edu" className="img-fluid"/> LangitEdu | Belajar dimanapun dan kapanpun
-                    </div>
-                </div>
-            </section>
+            <FooterCopyright />
         </Wrapper>
     </>
     );
 }
 
 const Wrapper = Styled.div(({screen}) =>`
-
-    .footer-copyright{
-        background : #007A95;
-        color : white;
-        font-weight : 400
-    }
 
     .btn{
         text-transform: uppercase;

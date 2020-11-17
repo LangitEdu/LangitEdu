@@ -1,4 +1,13 @@
-export const ChatCSS = `
+export const ChatCSS= ({onChat}) =>( `
+
+body{
+    background : white;
+}
+
+.card .card{
+    border-radius:2rem;
+}
+
 .modal{
     z-index: 9999;
 }
@@ -33,28 +42,8 @@ export const ChatCSS = `
     padding: .75rem 1rem;
 }
 
-.chat-search-box .input-group .form-control {
-    -webkit-border-radius: 2px 0 0 2px;
-    -moz-border-radius: 2px 0 0 2px;
-    border-radius: 2px 0 0 2px;
-    border-right: 0;
-}
-
-.chat-search-box .input-group .form-control:focus {
-    border-right: 0;
-}
-
-.chat-search-box .input-group .input-group-btn .btn {
-    -webkit-border-radius: 0 2px 2px 0;
-    -moz-border-radius: 0 2px 2px 0;
-    border-radius: 0 2px 2px 0;
-    margin: 0;
-}
-
-.chat-search-box .input-group .input-group-btn .btn i {
-    font-size: 1.2rem;
-    line-height: 100%;
-    vertical-align: middle;
+button#btnSearch, .chat-search-box .input-group .form-control {
+    border-radius: .75rem;
 }
 
 @media (max-width: 767px) {
@@ -66,11 +55,9 @@ export const ChatCSS = `
 .users-container {
     position: relative;
     padding: 1rem 0;
-    border-right: 1px solid #e6ecf3;
     height: 100%;
     display: -ms-flexbox;
     display: flex;
-    -ms-flex-direction: column;
     flex-direction: column;
 }
 
@@ -91,6 +78,10 @@ export const ChatCSS = `
     padding: 10px 1rem;
     cursor: pointer;
     border-bottom: 1px solid #f0f4f8;
+}
+
+.users .person.tulisan{
+    border-bottom: none !important;
 }
 
 .users .person:hover {
@@ -209,9 +200,7 @@ export const ChatCSS = `
     padding: 0 15px;
     min-height: 64px;
     line-height: 64px;
-    border-bottom: 1px solid #e6ecf3;
-    -webkit-border-radius: 0 3px 0 0;
-    -moz-border-radius: 0 3px 0 0;
+    ${onChat && 'border-bottom: 1px solid #e6ecf3;'}
     border-radius: 0 3px 0 0;
 }
 
@@ -278,15 +267,21 @@ export const ChatCSS = `
 }
 
 .chat-container li .chat-text {
-    padding: .1rem 1rem;
-    padding-top: .5rem;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
+    padding: .5rem 1rem;
     border-radius: 4px;
-    background: #ffffff;
+    background: #FBFBFB;
     font-weight: 300;
     position: relative;
     width: fit-content;
+}
+
+.chat-container li.chat-right > div .chat-text {
+    background : #007A95;
+    color: #FBFBFB;
+}
+
+.tombol{
+    padding : .4rem 2rem ;
 }
 
 .tombolBuat {
@@ -305,12 +300,12 @@ export const ChatCSS = `
     top: 10px;
     left: -20px;
     border: 10px solid;
-    border-color: transparent #ffffff transparent transparent;
+    border-color: transparent #FBFBFB transparent transparent;
 }
 
 .chat-container li.chat-right > div .chat-text:before {
     right: -20px;
-    border-color: transparent transparent transparent #ffffff;
+    border-color: transparent transparent transparent #007A95;
     left: inherit;
 }
 
@@ -392,11 +387,8 @@ ul {
 }
 .card {
     border: 0;
-    background: #f4f5fb;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
     border-radius: 2px;
     margin-bottom: 2rem;
     box-shadow: none;
 }
-`
+`)
