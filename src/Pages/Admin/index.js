@@ -235,6 +235,7 @@ const Admin = () => {
                                           'alignright alignjustify | bullist numlist outdent indent | ' +
                                           'removeformat | image ',
                                         min_height:400,
+                                        branding: false,
                                         images_upload_handler: function (blobInfo, success, failure) {
                                             const file = blobInfo.blob()
                                             UploadImage(file, success, failure)

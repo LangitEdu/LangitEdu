@@ -18,7 +18,7 @@ export default function TambahSoal() {
     const [isiOpsiD, setIsiOpsiD] = useState('')
     const [isiOpsiE, setIsiOpsiE] = useState('')
     const [BodySoal, setBodySoal] = useState()
-    const [Jawaban, setJawaban] = useState()
+    const [Jawaban, setJawaban] = useState('A')
     const [BodyPembahasan, setBodyPembahasan] = useState()
     let arrIsiOpsi = useMemo(()=>{return [isiOpsiA, isiOpsiB, isiOpsiC, isiOpsiD, isiOpsiE]},[isiOpsiA, isiOpsiB, isiOpsiC, isiOpsiD, isiOpsiE])
     let arrSetIisiOpsi = useMemo(() => {return [setIsiOpsiA, setIsiOpsiB, setIsiOpsiC, setIsiOpsiD, setIsiOpsiE]}, [setIsiOpsiA, setIsiOpsiB, setIsiOpsiC, setIsiOpsiD, setIsiOpsiE])
