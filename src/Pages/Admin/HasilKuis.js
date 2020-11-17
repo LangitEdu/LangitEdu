@@ -17,16 +17,18 @@ export default function HasilKuis() {
                 arrUID.push(data.uid)
             })
             setListNilai(arrNilai)
-            db.collection('Profile').where('uid','in',arrUID)
-                .get()
-                .then(res=>{
-                    let listUserData = []
-                    res.docs.forEach(doc=>{
-                        const data = doc.data()
-                        listUserData[data.uid] = data
+            if(arrNilai.length > 0){
+                db.collection('Profile').where('uid','in',arrUID)
+                    .get()
+                    .then(res=>{
+                        let listUserData = []
+                        res.docs.forEach(doc=>{
+                            const data = doc.data()
+                            listUserData[data.uid] = data
+                        })
+                        setListUser(listUserData);
                     })
-                    setListUser(listUserData);
-                })
+            }
         })
 
         return unsub
@@ -50,14 +52,19 @@ export default function HasilKuis() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {ListNilai.map((data,i)=>(
+                                {ListNilai.length > 0 ? ListNilai.map((data,i)=>(
                                     <tr key={data.uid}>
                                     <th scope="row">{i+1}</th>
                                     <td>{ListUser[data.uid].displayName}</td>
                                     <td> {data.nilai} </td>
                                     <td>action?</td>
                                     </tr>
-                                ))}
+                                ))
+                                    :
+                                    <tr>
+                                        <th colSpan="5" className="text-center">Belum ada yang selesai mengerjakan</th>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
