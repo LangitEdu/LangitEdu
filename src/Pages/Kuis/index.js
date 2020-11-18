@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import useResize from 'use-resize'
-import axios from 'axios'
 import { useAuth } from '../../contexts/AuthContext'
-import Navbar from '../../component/Navbar/Navbar'
-import Spinner from '../../component/Spinner/Spin1'
-import SpinnerSimple from '../../component/Spinner/Spin2'
-import parse from 'html-react-parser';
 import { db } from '../../config/Firebase'
+import Countdown from 'react-countdown'
+import parse from 'html-react-parser'
 import Styled from '@emotion/styled'
-import Countdown from "react-countdown"
+import useResize from 'use-resize'
 import twoDigit from 'two-digit'
+import axios from 'axios'
+//COMPS
+import SpinnerSimple from '../../component/Spinner/Spin2'
+import Spinner from '../../component/Spinner/Spin1'
+import Navbar from '../../component/Navbar/Navbar'
     
 const Kuis = ({match}) => {
     const kuisID = match.params.kuisID
-    const [processingSubmit, setprocessingSubmit] = useState(false)
+    const [processingSubmit, setprocessingSubmit] = useState('false')
     const [ date, setDate ] = useState(Date.now() + 180*(60000))
     const [allowSession, setallowSession] = useState("load")
     const [showPopup, setshowPopup] = useState(false)
@@ -58,7 +59,7 @@ const Kuis = ({match}) => {
     const handleSubmit = (e) => {
         if(typeof e != 'undefined') e.preventDefault()
 
-        setprocessingSubmit(true)
+        setprocessingSubmit('true')
         
         console.log({
             kuis : {
@@ -90,7 +91,7 @@ const Kuis = ({match}) => {
                 localStorage.removeItem('savedAnswer')
                 localStorage.removeItem('savedKuisID')
                 localStorage.removeItem('finalTime')
-                setprocessingSubmit(false)
+                setprocessingSubmit('false')
                 setallowSession("done")
             }
             setshowPopup(true)
@@ -220,7 +221,10 @@ const Kuis = ({match}) => {
                         <div className="nomorsoal">
                             <p>{i+1}</p>
                         </div>
-                       {parse(q.body)} 
+                        <div className="the-question">
+                            <p className="nomornempel">{i+1}.&ensp;</p>
+                            {parse(q.body)} 
+                        </div>
                         <div className="pilgan">
                             {q.options.map((o,j)=>(
                                 <div className="eachinput" key={j}>
@@ -234,7 +238,17 @@ const Kuis = ({match}) => {
                         </div>   
                     </div >
                 ))}
-                <button type="submit" className="btn-bordered submit">{ !processingSubmit  ? "SELESAI KUIS" : <SpinnerSimple />}</button>
+                <button type="button" className="btn-bordered-blue openconfirm" onClick={()=> setprocessingSubmit('confirm')}>{ processingSubmit != 'true' ? "SELESAI KUIS" : <SpinnerSimple />}</button>
+                {processingSubmit == 'confirm' && 
+                    <div className="popup-cont">
+                        <div className="popup-postsubmit">
+                            <p>KONFIRMASI SUBMIT</p>                        
+                            <p className="kok-kosong">Masih ada 3 soal belum terjawab</p>                       
+                            <button type="button" className="btn-bordered-gray openconfirm" onClick={()=> setprocessingSubmit('false')}>KEMBALI</button>
+                            <button type="submit" className="btn-bordered submit">SUBMIT</button>
+                        </div>
+                    </div>
+                }
                 </form>
             </>
             }
@@ -250,12 +264,12 @@ const Kuis = ({match}) => {
                     <div className="popup-postsubmit">
                         <p>{isSaved ? "KUIS BERHASIL DIKUMPULKAN" : "MAAF TERJADI KESALAHAN"}</p>
                         {isSaved && (
-                            <Link to={`/kuis/${kuisID}/result`} className="btn-bordered">LIHAT HASIL</Link>
+                            <Link to={`/kuis/${kuisID}/result`} className="btn-bordered mt-4">LIHAT HASIL</Link>
                         )}
                     </div>
                 </div>
             }
-            {processingSubmit && 
+            {processingSubmit == 'true' && 
                 <div className="popup-cont">
                     <div className="popup-postsubmit">
                         <p>SUBMITING...</p>                        
@@ -320,9 +334,10 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
         justify-content: center;
         align-items: center;
         z-index: 20;
+
         p{
+            min-width: 154px;
             position: relative;
-            min-width: 108px; 
             margin: 4px 0;
             font-family: Oxygen;
             font-weight: bold;
@@ -386,7 +401,8 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
             max-width: 450px;
             width: 90%;
             min-width: 350px;
-            height: 200px;
+            min-height: 150px;
+            padding: 24px 0;
             background: #FAFAFA;
             border-radius: 12px;
             box-shadow: 0 0 12px 0 rgba(0,0,0,0.3);
@@ -406,6 +422,12 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
                 margin: 0 16px;
                 color: #444444;
             }
+            
+            .kok-kosong{
+                font-size: 14px;
+                color: gray;
+            }
+
         }   
     }
 
@@ -430,10 +452,13 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
         flex-direction: column;
 
         button.submit{
-            margin-top: 32px;
             width: 228px;
             height: 64px;
             ${processingSubmit ? "padding: 0;" : ""}
+        }
+        button.openconfirm{
+            width: 228px;
+            margin-top: 24px;
         }
 
         .question-card{
@@ -457,7 +482,7 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
                 padding: 2px 16px;
                 background: #cccccc;
                 border-radius: 4px;
-                display: flex;
+                display: ${screen < 882 ? 'none' : 'flex'};
                 justify-content: center;
                 align-items: center;
 
@@ -548,13 +573,25 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
                 font-weight: 900;
                 font-size: 22px;
                 line-height: 30px;
-                margin-bottom: 36px;
                 ${screen < 702 ? "margin-left: 12px;" : ""}
 
                 &:first-letter{
                     text-transform: uppercase;
                 }
             }
+            .the-question{
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                
+                margin-bottom: 36px;
+
+                .nomornempel{
+                    ${screen < 882 ? '' : 'display: none;'}
+                    
+                }
+            }
+        
         }
     }
 `)
