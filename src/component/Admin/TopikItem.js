@@ -90,7 +90,11 @@ export default function TopikItem(props) {
                 {props.nama}
                 </button>
                 <div className='d-flex'>
-                <button className="btn btn-info mr-4" onClick={()=>{console.log('edit');}} data-uid={props.docid} >Edit</button>
+                <button 
+                    className="btn btn-info mr-4"
+                    onClick={props.editFunction}
+                    data-uid={props.docid} 
+                >Edit</button>
                 <button className="btn btn-danger" onClick={props.deleteFunction} data-uid={props.docid} data-thumbnail={props.ThumbnailRef} >Delete</button>
                 </div>
             </h2>

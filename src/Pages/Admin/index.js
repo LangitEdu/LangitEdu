@@ -18,8 +18,11 @@ const Admin = () => {
     const [Loading, setLoading] = useState(false)
     const [TopikDeksripsi, setTopikDeksripsi] = useState('')
     const TopikNameRef = useRef()
+    const TopikKeyRef = useRef()
     const JurusanRef = useRef()
     const ThumbnailRef = useRef()
+    const [CurrentTopikId, setCurrentTopikId] = useState('')
+    const [OnEdit, setOnEdit] = useState(false)
     const [ListTopik, setListTopik] = useState()
     async function verify(e) {
         e.preventDefault()
@@ -49,7 +52,6 @@ const Admin = () => {
         setLoading(true)
         let URL = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
         let Ref  = ''
-
         if(ThumbnailRef.current.files.length > 0){
             const file = ThumbnailRef.current.files[0]
             let extention = file.name.split('.').pop();
@@ -75,11 +77,13 @@ const Admin = () => {
                 nama : currentUser.displayName,
                 uid : currentUser.uid
             },
+            topikKey: TopikKeyRef.current.value.toLowerCase(),
             member : [],
             kuislist:[]
         }).then((res)=>{
             TopikNameRef.current.value = ''
             JurusanRef.current.value = 'MIPA'
+            TopikKeyRef.current.value = ''
             setTopikDeksripsi('')
             document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
             document.getElementById('labelNewThumbnail').innerHTML = 'Choose file'
@@ -90,6 +94,63 @@ const Admin = () => {
             setLoading(false)
             return;
         })
+    }
+    async function handleChangetoEditTopik(e){
+        const {uid} = e.target.dataset
+        setCurrentTopikId(uid)
+        db.collection('Topik').doc(uid).get().then(doc=>{
+            setOnEdit(true)
+            const data = doc.data()
+            TopikNameRef.current.value = data.nama
+            JurusanRef.current.value = data.jurusan
+            TopikKeyRef.current.value = data.topikKey
+            setTopikDeksripsi(data.deskripsi)
+            document.getElementById('thumbpic').src = data.thumbnail
+            document.getElementById('labelNewThumbnail').innerHTML = data.thumbnailRef.split('/').pop() !== '' ? data.thumbnailRef.split('/').pop() : 'Choose file';
+        }).catch(err=>{
+            setError(err)
+            setOnEdit(false)
+        })
+    }
+    const handleSubmitEdit = async (e)=>{
+        e.preventDefault()
+        setLoading(true)
+        let data = {
+            nama : TopikNameRef.current.value,
+            jurusan : JurusanRef.current.value,
+            topikKey : TopikKeyRef.current.value,
+            deskripsi : TopikDeksripsi,
+        }
+        if(ThumbnailRef.current.files.length > 0){
+            const file = ThumbnailRef.current.files[0]
+            let extention = file.name.split('.').pop();
+            let res = await storage.ref('TopikThumbnail')
+                    .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .catch(function(error) {
+                        setError(error);
+                        return;
+                      });
+            console.log(res);
+            data.thumbnail = await res.ref.getDownloadURL()
+            data.thumbnailRef = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
+        }
+        await db.collection('Topik').doc(CurrentTopikId).update(data)
+        .then(()=>{
+            setCurrentTopikId('')
+            setOnEdit(false)
+            setLoading(false)
+            TopikNameRef.current.value = ''
+            JurusanRef.current.value = ''
+            TopikKeyRef.current.value = ''
+            setTopikDeksripsi('')
+            document.getElementById('thumbpic').src = 'https://avatars.dicebear.com/api/jdenticon/acsascaca.svg'
+            document.getElementById('labelNewThumbnail').innerHTML = 'Choose file';
+        }).catch(err=>{
+            console.log(err);
+            setError(err)
+            setLoading(false)
+        })
+        
     }
     async function handleDeleteTopik(e) {
         setLoading(true)
@@ -158,6 +219,7 @@ const Admin = () => {
                     docid={doc.id}
                     deleteFunction={handleDeleteTopik}
                     ThumbnailRef={data.thumbnailRef}
+                    editFunction={handleChangetoEditTopik}
                 />
             }))
         })
@@ -204,7 +266,7 @@ const Admin = () => {
                 <h2 className="mb-3">Buat Topik</h2>
                 <div className="card">
                     <div className="card-body">
-                        <form onSubmit={handleBuatTopik}>
+                        <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatTopik}>
 
                             <div className="thumbpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
                                 <img id="thumbpic" src={`https://avatars.dicebear.com/api/jdenticon/acsascaca.svg`} alt="Thumbnail" className="img-fluid"/>
@@ -219,6 +281,10 @@ const Admin = () => {
                             <div className="form-group">
                                 <label htmlFor="namaTopik">Nama Topik</label>
                                 <input ref={TopikNameRef} type="text" className="form-control" id="namaTopik"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="topikKey">Topik Key</label>
+                                <input ref={TopikKeyRef} type="text" className="form-control"/>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="deskripsiTopik">Deskripsi Topik</label>
@@ -254,7 +320,7 @@ const Admin = () => {
                                     <option value='ips'>IPS</option>
                             </select>
                             </div>
-                            <button className="btn btn-primary" >Buat Topik</button>
+                            <button className="btn btn-primary" disabled={Loading} > {OnEdit ? 'Update Topik' : 'Buat Topik'} </button>
                         </form>
                     </div>
                 </div>
