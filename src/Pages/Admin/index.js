@@ -3,7 +3,7 @@ import Styled from '@emotion/styled'
 import axios from 'axios';
 import {useAuth} from '../../contexts/AuthContext'
 import Navbar from '../../component/Navbar/NavbarBig';
-import { db, FieldValue, storage } from '../../config/Firebase';
+import { API_URL, db, FieldValue, storage } from '../../config/Firebase';
 import TopikItem from '../../component/Admin/TopikItem';
 import { Helmet } from 'react-helmet';
 import { Editor } from '@tinymce/tinymce-react';
@@ -32,7 +32,7 @@ const Admin = () => {
             email: email,
             tokenAdmin : tokenAdmin
         }
-        axios.post('http://localhost:5001/langit-edu/asia-southeast2/api/make-admin',data)
+        axios.post(`${API_URL}/make-admin`,data)
         .then((res)=>{
             console.log(res.data);
             setVerify(res.data)

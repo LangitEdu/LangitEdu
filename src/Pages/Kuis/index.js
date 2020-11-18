@@ -7,7 +7,7 @@ import Navbar from '../../component/Navbar/Navbar'
 import Spinner from '../../component/Spinner/Spin1'
 import SpinnerSimple from '../../component/Spinner/Spin2'
 import parse from 'html-react-parser';
-import { db } from '../../config/Firebase'
+import { API_URL, db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
 import Countdown from "react-countdown"
 import twoDigit from 'two-digit'
@@ -72,7 +72,7 @@ const Kuis = ({match}) => {
         })
         console.log("submiting . . .")
         
-        axios.post('http://localhost:5001/langit-edu/asia-southeast2/api/submit', {
+        axios.post(`${API_URL}/submit`, {
             kuis : {
                 kuisID : kuisID,
                 nama : Kuis.nama

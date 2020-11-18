@@ -16,18 +16,32 @@ const firebaseConfig = {
   appId: "1:1043332770295:web:ac8096202d179f753766f2",
   measurementId: "G-8RFQS90YJ3"
 };
+
+
+
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 // Auth
 firebase.auth().useDeviceLanguage();
-export const auth = app.auth();
-export const EmailAuthProvider = firebase.auth.EmailAuthProvider
+const auth = app.auth();
+const EmailAuthProvider = firebase.auth.EmailAuthProvider
 // Firestore
-export const db = firebase.firestore();
-export const FieldValue = firebase.firestore.FieldValue;
+const db = firebase.firestore();
+const FieldValue = firebase.firestore.FieldValue;
 // Storage
-export const storage = app.storage();
+const storage = app.storage();
 // Functions
-export const functions = firebase.functions();
+const functions = firebase.functions();
+let API_URL;
+if (window.location.hostname === "localhost") {
+  db.useEmulator("localhost", 8080);
+  functions.useEmulator('localhost', 5001)
+  API_URL = `http://localhost:5001/langit-edu/asia-southeast2/api`
+  auth.useEmulator('http://localhost:9099/')
+}else{
+  API_URL='https://us-central1-langit-edu.cloudfunctions.net/api'
+}
+
+export {auth, EmailAuthProvider,db, FieldValue, storage, functions, API_URL }
 export default app;

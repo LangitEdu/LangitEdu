@@ -78,7 +78,7 @@ export default function Dashboard() {
                     <div className="card mt-4">
                         <div className="card-body d-flex justify-content-center flex-column align-items-center">
                             <div className="profile mb-4 ">
-                                <img src={currentUser.photoURL} alt="Profile" className="img-fluid"/>
+                                <img src={currentUser.photoURL} alt="Profile"/>
                             </div>
                             <div className="mb-3">
                                 <h4 className="mb-2" >{currentUser.displayName}</h4>
@@ -185,6 +185,13 @@ const Wrapper = styled.div(({screen})=>`
         overflow:hidden;
         border-radius:100%;
         width : 75%;
+
+        img{
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
     }
     .card{
         border-radius:.5rem;
