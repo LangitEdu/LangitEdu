@@ -284,16 +284,8 @@ export default function TambahSoal() {
                             .get()
 
                 const newArray = data.data().body.filter((data)=>{
-                    return data.id !== idSoal
+                    return data.id !== parseInt(idSoal)
                 })
-                
-                // let newArray = new Array( data.data().body.length).fill("")
-
-                // newArray.forEach(element => {
-                //     if (element.id == idSoal) element = ""  
-                // })
-
-                // newArray = newArray.filter(item => item)
 
                 await db.collection('Kuis')
                         .doc(uid)
