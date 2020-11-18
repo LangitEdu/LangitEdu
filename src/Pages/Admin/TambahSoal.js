@@ -10,7 +10,8 @@ export default function TambahSoal() {
     const [KuisData, setKuisData] = useState()
     const [OnEdit, setOnEdit] = useState(false)
     const {uid} = useParams()
-    const [Loading, setLoading] = useState()    
+    const [Error, setError] = useState()
+    const [Loading, setLoading] = useState()  
     const defaultOpsiList = ['A','B','C','D','E']
     const [isiOpsiA, setIsiOpsiA] = useState('')
     const [isiOpsiB, setIsiOpsiB] = useState('')
@@ -55,17 +56,67 @@ export default function TambahSoal() {
     const handleBuatSoal = async (e)=>{
         e.preventDefault()
         setLoading(true)
+        setError()
         const options=[]
         const nomer = String(NoRef.current.value-1)
+        
+        if(NoRef.current.value <1){
+            setLoading(false)
+            setError({message:"Nomor Tidak boleh dibawah 1"})
+            return;
+        }
 
+        let Urut = false
+        let NumberExist = false
+        KuisData.listQuestion.forEach(data=>{
+            if(String(NoRef.current.value-2) === data.id || nomer === '0'){
+                Urut = true
+            }
+            if(data.id === nomer){
+                NumberExist=true
+            }
+        })
+        if(!Urut){
+            setLoading(false)
+            setError({message:"Nomor Tidak urut, silahkan masukin nilai yang urut"})
+            return;
+        }
+        if(NumberExist){
+            setLoading(false)
+            setError({message:"Nomor sudah ada, silahkan diganti"})
+            return;
+        }
+        let opsiKosong = false;
         arrIsiOpsi.forEach((data,i)=>{
-            if(data){
+            if(ListOpsi.length-1 < i){
+                return;
+            }
+            if(data.length > 0){
                 options.push({
                     body:data,
                     type:defaultOpsiList[i]
                 })
+            }else{
+                opsiKosong = true
             }
         })
+
+        if(opsiKosong){
+            setError({message:"Opsi Tidak boleh Kosong"})
+            setLoading(false)
+            return;
+        }
+
+        if(BodySoal.length <=0){
+            setError({message:"Soal Tidak boleh Kosong"})
+            setLoading(false)
+            return;
+        }
+        if(BodyPembahasan.length <= 0){
+            setError({message:"Pembahasan Tidak boleh Kosong"})
+            setLoading(false)
+            return;
+        }
         const data = {
             options:options,
             body : BodySoal,
@@ -75,6 +126,8 @@ export default function TambahSoal() {
             id : NoRef.current.value-1,
             pembahasan :BodyPembahasan
         }
+
+
         const SoalRef = db.collection('Kuis').doc(uid)
         SoalRef.collection('Questions').doc(nomer).set(data)
         .then( async()=>{
@@ -261,7 +314,7 @@ export default function TambahSoal() {
                         const filteredArr= data.body.filter((data)=>{
                             return data.id === parseInt(idSoal)
                         })
-                        setBodyPembahasan(filteredArr[0].pnembahasan)
+                        setBodyPembahasan(filteredArr[0].pembahasan)
                         setJawaban(filteredArr[0].answer)
                     })
                 NoRef.current.value = parseInt(idSoal)+1
@@ -338,6 +391,11 @@ export default function TambahSoal() {
             <h1>Tambah Soal {KuisData && KuisData.nama} </h1>
             <div className="row mt-4">
                 <div className="col-md-8">
+                    {Error&&
+                    <div className="alert alert-danger">
+                        {Error.message}
+                    </div>
+                    }
                     <div className="card">
                         <div className="card-header">
                             <h4 className="mb-0">
