@@ -282,9 +282,18 @@ export default function TambahSoal() {
                             .collection('Answers')
                             .doc('kunci')
                             .get()
+
                 const newArray = data.data().body.filter((data)=>{
                     return data.id !== idSoal
                 })
+                
+                // let newArray = new Array( data.data().body.length).fill("")
+
+                // newArray.forEach(element => {
+                //     if (element.id == idSoal) element = ""  
+                // })
+
+                // newArray = newArray.filter(item => item)
 
                 await db.collection('Kuis')
                         .doc(uid)
@@ -301,6 +310,7 @@ export default function TambahSoal() {
                             console.log(err)
                             setLoading(false)
                         })
+
                 await db.collection('Kuis')
                         .doc(uid)
                         .update({

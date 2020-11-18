@@ -69,7 +69,8 @@ p{
     text-align: center;
 
     /* white */
-
+    
+    text-transform: uppercase;
     color: #FFFFFF;
 
 }

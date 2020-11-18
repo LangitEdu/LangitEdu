@@ -9,10 +9,13 @@ import SpinnerSimple from '../../component/Spinner/Spin2'
 import parse from 'html-react-parser';
 import { db } from '../../config/Firebase'
 import Styled from '@emotion/styled'
+import Countdown from "react-countdown"
+import twoDigit from 'two-digit'
     
 const Kuis = ({match}) => {
+    const kuisID = match.params.kuisID
     const [processingSubmit, setprocessingSubmit] = useState(false)
-    const [currentKuisIndex, setcurrentKuisIndex] = useState("")
+    const [ date, setDate ] = useState(Date.now() + 180*(60000))
     const [allowSession, setallowSession] = useState("load")
     const [showPopup, setshowPopup] = useState(false)
     const [questions, setquestions] = useState([])
@@ -20,9 +23,9 @@ const Kuis = ({match}) => {
     const [Journey, setJourney] = useState({})
     const [Topik, setTopik] = useState({})
     const [Kuis, setKuis] = useState({})
-    const kuisID = match.params.kuisID
     const {currentUser} = useAuth()
     const screen = useResize().width
+    
     const defaultOptionList = ['A','B','C','D','E']
 
     const [answer, setanswer] = useState(() => {
@@ -33,6 +36,7 @@ const Kuis = ({match}) => {
             return []
         }
     }) 
+
 
     const resetIfExist = (id) => {
         const element = document.getElementById(id)
@@ -52,10 +56,20 @@ const Kuis = ({match}) => {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault()
+        if(typeof e != 'undefined') e.preventDefault()
 
         setprocessingSubmit(true)
         
+        console.log({
+            kuis : {
+                kuisID : kuisID,
+                nama : Kuis.nama
+            },
+            journeyID : Kuis.journeyID,
+            topikID : Journey.topikID,
+            userID : currentUser.uid,
+            answer : answer
+        })
         console.log("submiting . . .")
         
         axios.post('http://localhost:5001/langit-edu/asia-southeast2/api/submit', {
@@ -75,12 +89,13 @@ const Kuis = ({match}) => {
                 resetIfExist("form")
                 localStorage.removeItem('savedAnswer')
                 localStorage.removeItem('savedKuisID')
+                localStorage.removeItem('finalTime')
                 setprocessingSubmit(false)
                 setallowSession("done")
             }
             setshowPopup(true)
         })
-        .catch(function (err) {
+        .catch(function (err, res) {
             console.log(`API fetching ERROR : ${err}`)
             console.log({
                 kuis : {
@@ -98,6 +113,7 @@ const Kuis = ({match}) => {
 
 
     useEffect(() => {
+
         const FireAction = async () => {
             //CALLING FIRESTORE TO CHECK IF KUIS ALREADY TAKEN
             const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
@@ -108,30 +124,22 @@ const Kuis = ({match}) => {
             const journeyData = (await db.collection('Journey').doc(kuisData.journeyID).get()).data()
             const topikData = (await db.collection('Topik').doc(journeyData.topikID).get()).data()
             
-            const paketKuis = journeyData.kuisList
+            // const paketKuis = journeyData.kuisList
             
             //UPDATING STATE
             setKuis(kuisData)
             setJourney(journeyData)
-            setTopik(topikData)
-            
-            // let predeceDone = true
+            setTopik(topikData)            
 
-            for (let i = 0; i < paketKuis.length; i++) {
-                if (paketKuis[i].uid === kuisID){
-                    setcurrentKuisIndex(i + 1)
-                    break
-                }
-            //     const eachKuis = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i].uid).get()).exists
-                
-            //     if (!eachKuis) predeceDone = false 
-            //     console.log(eachKuis)
-                
-            }
+            // for (let i = 0; i < paketKuis.length; i++) {
+            //     if (paketKuis[i].uid === kuisID){
+            //         setcurrentKuisIndex(i + 1)
+            //         break
+            //     }
+            // }
 
             if (!profileData.topik.includes(journeyData.topikID)) setallowSession("unenrolled")
             else if (userKuis.exists) setallowSession("disallow")
-            // else if (!predeceDone) setallowSession("nopredecessor")
             else proceedKuis()
 
             async function proceedKuis(){
@@ -147,6 +155,16 @@ const Kuis = ({match}) => {
 
                 console.log("bolehin")
                 setallowSession("allowed")
+
+                 //SETTING UP TIME DURATION
+                if(localStorage.getItem('finalTime') !== null){
+                    setDate(parseInt(localStorage.getItem('finalTime')))
+                }else{
+                    let endTime = Date.now() + parseInt(kuisData.durasi)*(60000)
+                    setDate(endTime)
+                    localStorage.setItem('finalTime', endTime)
+                }
+
             }
 
         }
@@ -154,21 +172,32 @@ const Kuis = ({match}) => {
         //RUN THE FIRESTORE QUERIES AND CHECK FOR ALLOWANCE
         FireAction()
         
+        
     }, [kuisID, currentUser.uid])
+
+
+ 
 
     const Disallow = () => {
         return (
-            <h2>MAAF KUIS {Kuis.Nama} SUDAH PERNAH DIAMBIL</h2>
+            <div className="allowsession">
+                <h4>MAAF KUIS {Kuis.Nama} SUDAH PERNAH DIAMBIL</h4>
+            </div>
             )
         }
     const Unenrolled = () => {
         return (
-            <h2>AMBIL TOPIK {Kuis.Nama} TERLEBIH DAHULU</h2>
+            <div className="allowsession">
+                <h4>AMBIL TOPIK {Topik.nama} TERLEBIH DAHULU</h4>
+                <Link to={`/topik/${Topik.topikKey}`}><p className="btn-bordered">BUKA TOPIK {Topik.nama}</p></Link>
+            </div>
         )
     }
     const Nopredecessor = () => {
         return (
-            <h2>AMBIL KUIS SEBELUMNYA TERLEBIH DAHULU</h2>
+            <div className="allowsession">
+                <h4>AMBIL KUIS SEBELUMNYA TERLEBIH DAHULU</h4>
+            </div>
         )
     }
 
@@ -183,7 +212,8 @@ const Kuis = ({match}) => {
             {allowSession === "allowed" && 
             <>
                 <h1>{Kuis.nama}</h1>
-                <h2>QUIZ {currentKuisIndex} &ensp;|&ensp; {Topik.nama} : {Journey.nama} &ensp;|&ensp; {questions.length} SOAL</h2>
+                <h2>{Kuis.durasi} MENIT&ensp;|&ensp; {Topik.nama} : {Journey.nama} &ensp;|&ensp; {questions.length} SOAL</h2>
+                <Countdown date={date} renderer={renderer} onComplete={() => handleSubmit()}/>
                 <form id="form" onSubmit={(e)=> handleSubmit(e)}>
                 {questions.map((q, i)=>(
                     <div className="question-card" key={i}>
@@ -225,12 +255,33 @@ const Kuis = ({match}) => {
                     </div>
                 </div>
             }
+            {processingSubmit && 
+                <div className="popup-cont">
+                    <div className="popup-postsubmit">
+                        <p>SUBMITING...</p>                        
+                    </div>
+                </div>
+            }
 
         </Wrapper>
     </>
     )
 }
     
+const renderer = ({ hours, minutes, seconds, completed}) => {
+    if (completed) {
+      return <div className="btn-bordered">Time is up!</div>
+    } else {
+      return (
+        <div className="btn-bordered timerbox">
+            <p>
+                { hours ? <span className="timer">{twoDigit(hours)}</span> : '' } {hours ? ':' : ''} <span  className="timer">{twoDigit(minutes)}</span> : <span className="timer">{twoDigit(seconds)}</span>
+            </p>
+        </div>
+      );
+    }
+};
+
 const Wrapper = Styled.div(({screen, processingSubmit}) =>`
     display: flex;
     justify-content: center;
@@ -238,6 +289,46 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
     flex-direction: column;
     padding-bottom: 80px;
 
+    div.allowsession{
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+
+        h4{
+            font-family: Raleway;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 24px;
+            line-height: 50px;
+            color: #209FBC;
+            text-transform: uppercase;
+        }
+    }
+
+    .timerbox{
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 20;
+        p{
+            position: relative;
+            min-width: 108px; 
+            margin: 4px 0;
+            font-family: Oxygen;
+            font-weight: bold;
+            font-size: 32px;
+        }
+    }
 
     input:checked + label {
         background: #209FBC !important;
