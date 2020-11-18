@@ -18,7 +18,7 @@ const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout, IsA
                     </div>
 
                 <div className="menu">
-                    {currentUser  && <Link to={RouteName.dashboard} className="link">DASHBOARD</Link>}
+                    {currentUser  && <Link to={RouteName.dashboard} className="link">BERANDA</Link>}
                     <Link to={RouteName.listKomunitas} className="link">KOMUNITAS</Link>
                     <Link to={RouteName.topik} className="link">TOPIK</Link>
                     {!currentUser && <Link to={RouteName.login} className="link">MASUK</Link>}

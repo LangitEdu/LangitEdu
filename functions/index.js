@@ -36,6 +36,7 @@ const db = admin.firestore()
                 })
                 
                 nilai = (nilai/kunciArr.length) * 100
+                nilai = nilai.toFixed(0)
                 
                 const isSaved = await db.collection('Profile').doc(userID).collection('Kuis').doc(kuis.kuisID).set({
                     topikID: topikID,
@@ -113,12 +114,11 @@ const db = admin.firestore()
         })
         .catch(err=>{
             console.log(err);
-            return res.status(500).json({status:'error',message:err.message})
+            return res.status(500).json({status:'error', message:err.message})
         })
     })
     
     app.post("/submit", submit)
-    
     
     
 exports.api = functions.region("asia-southeast2").https.onRequest(app);

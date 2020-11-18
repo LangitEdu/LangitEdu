@@ -129,13 +129,7 @@ const Kuis = ({match}) => {
 
 
     useEffect(() => {
-
-        let counter = 0
-        answer.forEach(ans => {
-            if (ans === "") counter++
-        })
-        setemptyAnswer(counter)
-
+        
         const FireAction = async () => {
             //CALLING FIRESTORE TO CHECK IF KUIS ALREADY TAKEN
             const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
@@ -172,6 +166,7 @@ const Kuis = ({match}) => {
                     questionArr.push(doc.data())
                     filler.push("")
                 })
+                setemptyAnswer(questionData.length)
                 setquestions(questionArr)
                 if(localStorage.getItem('savedAnswer') == null) setanswer(filler)
 

@@ -160,3 +160,19 @@ a:hover{
 button:focus{
     outline: none;
 }
+.no-btn{
+    border: none;
+    background: none;
+}
+.no-btn:focus{
+    outline: none;
+}
+.btn-shadow{
+    box-shadow: 0 0 8px rgba(0,0,0,0.25);
+}
+.disableddd{
+    background: #aaa;
+}
+.disableddd:hover{
+    background: #aaa;
+}
