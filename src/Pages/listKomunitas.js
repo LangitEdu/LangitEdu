@@ -411,7 +411,7 @@ export default function ListKomunitas() {
         setLoading(false)
     }  
     return (
-        <Wrapper onChat = {onChat}>
+        <Wrapper>
         <Navbar />
         <Helmet>
             <title>Komunitas | Langit Edu</title>
@@ -556,4 +556,4 @@ export default function ListKomunitas() {
     )
 }
 
-const Wrapper = Styled.div(({onChat}) =>ChatCSS)
+const Wrapper = Styled.div(() =>ChatCSS)
