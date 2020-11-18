@@ -54,7 +54,7 @@ const Result = ({match}) => {
                                 <p className={`nomorsoal ${UserKuis.correction[i]}`}>{i+1}</p>
                                 <p className={`${UserKuis.correction[i]}-text`}>{ans}</p>
                                 <p>{UserKuis.kunciArr[i]}</p>
-                                <button className="penjelasan" onClick={() => setopenPembahasan(i)}>PENJELASAN</button>
+                                <button className="penjelasan" onClick={() => setopenPembahasan(openPembahasan == i ? 'none' : i)}>PENJELASAN</button>
                             </div>
                             { openPembahasan == i &&
                                 <div className="each-pembahasan">

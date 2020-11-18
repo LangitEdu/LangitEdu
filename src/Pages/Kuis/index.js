@@ -18,6 +18,7 @@ const Kuis = ({match}) => {
     const [processingSubmit, setprocessingSubmit] = useState('false')
     const [ date, setDate ] = useState(Date.now() + 180*(60000))
     const [allowSession, setallowSession] = useState("load")
+    const [emptyAnswer, setemptyAnswer] = useState(0)
     const [showPopup, setshowPopup] = useState(false)
     const [questions, setquestions] = useState([])
     const [isSaved, setisSaved] = useState(false)
@@ -29,6 +30,7 @@ const Kuis = ({match}) => {
     
     const defaultOptionList = ['A','B','C','D','E']
 
+
     const [answer, setanswer] = useState(() => {
         //TAKING IN ANSWER SAVED IN LOCAL STORAGE WITH CERTAIN CONTION
         if(localStorage.getItem('savedAnswer') !== null && localStorage.getItem('savedKuisID') === kuisID){
@@ -36,8 +38,7 @@ const Kuis = ({match}) => {
         }else{
             return []
         }
-    }) 
-
+    })
 
     const resetIfExist = (id) => {
         const element = document.getElementById(id)
@@ -47,9 +48,23 @@ const Kuis = ({match}) => {
         }
     }        
     
-    const changeAnswer = (value, i) => {
+    const changeAnswer = (value, i, id) => {
+        let el = document.getElementById(id)
         let data = answer
-        data[i] = value
+        if (data[i] == value) {
+            data[i] = ""
+            el.checked = false
+        }else{
+            data[i] =  value
+        }
+
+        let counter = 0
+        answer.forEach(ans => {
+            if (ans === "") counter++
+        })
+        console.log(counter)
+        setemptyAnswer(counter)
+
         setanswer(data)
         localStorage.setItem('savedAnswer', answer.join(","))
         localStorage.setItem('savedKuisID', kuisID)
@@ -114,6 +129,12 @@ const Kuis = ({match}) => {
 
 
     useEffect(() => {
+
+        let counter = 0
+        answer.forEach(ans => {
+            if (ans === "") counter++
+        })
+        setemptyAnswer(counter)
 
         const FireAction = async () => {
             //CALLING FIRESTORE TO CHECK IF KUIS ALREADY TAKEN
@@ -183,6 +204,7 @@ const Kuis = ({match}) => {
         return (
             <div className="allowsession">
                 <h4>MAAF KUIS {Kuis.Nama} SUDAH PERNAH DIAMBIL</h4>
+                <Link to={`/kuis/${kuisID}/result`} className="btn-bordered mt-4">LIHAT HASIL</Link>
             </div>
             )
         }
@@ -228,7 +250,7 @@ const Kuis = ({match}) => {
                         <div className="pilgan">
                             {q.options.map((o,j)=>(
                                 <div className="eachinput" key={j}>
-                                    <input type="radio" defaultChecked={answer[i] === defaultOptionList[j]} name={`answer${i}`} id={`answer${i+defaultOptionList[j]}`} onClick={(e) => changeAnswer(e.target.value, i)} value={o.type}/>
+                                    <input type="radio" defaultChecked={answer[i] === defaultOptionList[j]} name={`answer${i}`} id={`answer${i+defaultOptionList[j]}`} onClick={(e) => changeAnswer(e.target.value, i, `answer${i+defaultOptionList[j]}`)} value={o.type}/>
                                     <label htmlFor={`answer${i+defaultOptionList[j]}`} className={`options`}>
                                         <p className="type">{o.type}</p>
                                         {parse(o.body)}
@@ -243,7 +265,9 @@ const Kuis = ({match}) => {
                     <div className="popup-cont">
                         <div className="popup-postsubmit">
                             <p>KONFIRMASI SUBMIT</p>                        
-                            <p className="kok-kosong">Masih ada 3 soal belum terjawab</p>                       
+                            {emptyAnswer > 0 &&
+                                <p className="kok-kosong">Masih ada {emptyAnswer} soal belum terjawab</p>
+                            }        
                             <button type="button" className="btn-bordered-gray openconfirm" onClick={()=> setprocessingSubmit('false')}>KEMBALI</button>
                             <button type="submit" className="btn-bordered submit">SUBMIT</button>
                         </div>
