@@ -7,6 +7,7 @@ import {useAuth} from '../contexts/AuthContext'
 import { db } from '../config/Firebase';
 import {routeSet} from '../config/Route'
 import FooterCopyright from '../component/FooterCopyright';
+import styled from '@emotion/styled';
 
 export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
@@ -48,10 +49,12 @@ export default function Dashboard() {
     }, [currentUser])
     
     return (
-        <>
+        <Wrapper>
         <Navbar />
         <div className="container mt-5 min-vh-100">
             <h1>Beranda</h1>
+            <br/>
+            <hr/>
             <h3>Hello {currentUser.displayName} </h3>
             {success &&
             <Dismissible type="success" message="Email berhasil dikirim, silahkan cek inbox anda" />
@@ -73,6 +76,15 @@ export default function Dashboard() {
             </div>
         </div>
         <FooterCopyright />
-        </>
+        </Wrapper>
     )
 }
+
+const Wrapper = styled.div(()=>`
+
+    h1{
+        color : #209FBC;
+        font-size : 5rem;
+    }
+
+`)
