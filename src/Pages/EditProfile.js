@@ -3,6 +3,7 @@ import {useAuth} from '../contexts/AuthContext'
 import {storage, EmailAuthProvider, db} from '../config/Firebase'
 import Navbar from '../component/Navbar/Navbar'
 import FormGroup from '../component/EditProfile/FormGroup'
+import styled from '@emotion/styled'
 
 export default function EditProfile() {
     const {currentUser} = useAuth()
@@ -25,12 +26,12 @@ export default function EditProfile() {
     }
     let FormGroupArr = [
         {
-            lebel:'Nama',
+            label:'Nama',
             refer: namaRef,
             defaultValue:currentUser.displayName,
         },
         {
-            lebel:'Email',
+            label:'Email',
             refer: emailRef,
             defaultValue:currentUser.email,
             type:'email'
@@ -213,10 +214,11 @@ export default function EditProfile() {
     }
 
     return (
-        <>
+        <Wrapper>
         <Navbar />
         <div className="container mt-4">
-            <h1 className="mb-4">Edit Profile</h1>
+            <h1 className="mb-2">Edit Profile</h1>
+            <hr className="mb-5"/>
             {newError && 
             <div className="alert alert-danger mb-4">
                 {newError.message}
@@ -228,23 +230,46 @@ export default function EditProfile() {
             </div>
             }
             <div className="card">
-                <div className="card-body">
-                    <form onSubmit={reAuth}>
-                        <div className="profilpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
-                            <img id="profilepic" src={currentUser.photoURL} alt="Profile" className="img-fluid"/>
-                        </div>
-                        <div className="form-group">
-                            <div className="custom-file">
-                                <input ref={profilePicRef} type="file" className="custom-file-input" id="newProfilePic" onChange={handleProfileChange} accept=".png,.jpg,.jpeg"/>
-                                <label id="labelNewProfilePic" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
+                <div className="card-body py-5">
+                    <div className="row">
+                        <div className="col-md-3 d-flex justify-content-center">
+                            <div className="profilpic mb-4" style={{width:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
+                                <img id="profilepic" src={currentUser.photoURL} alt="Profile"/>
                             </div>
                         </div>
-                        {FormGroupArr}
-                        <button id="btnSubmit" className="btn btn-primary" type="submit" disabled={Loading || !SubmitAble || newError}>Submit</button>
-                    </form>
+                        <div className="col-md-9">
+                            <form onSubmit={reAuth}>
+                                <div className="form-group">
+                                    <div className="custom-file">
+                                        <input ref={profilePicRef} type="file" className="custom-file-input" id="newProfilePic" onChange={handleProfileChange} accept=".png,.jpg,.jpeg"/>
+                                        <label id="labelNewProfilePic" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
+                                    </div>
+                                </div>
+                                {FormGroupArr}
+                                <button id="btnSubmit" className="btn btn-primary btn-block" type="submit" disabled={Loading || !SubmitAble || newError}>Submit</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        </>
+        </Wrapper>
     )
 }
+
+const Wrapper = styled.div(()=>`
+
+#profilepic{
+    width:100%;
+    object-fit: cover;
+}
+h1{
+    color: #209FBC;
+    font-size: 4rem;
+}
+.card{
+    border:none;
+    border-radius:2rem;
+    box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.25);
+}
+`)

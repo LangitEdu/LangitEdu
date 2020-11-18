@@ -17,7 +17,7 @@ const KomunitasItem = (props)=>{
                                 <h3>{props.title}</h3>
                             </Link>
                         </div>
-                        <Link to={props.link} >Masuk Room <i className="fas fa-angle-right"></i></Link>
+                        <Link to={props.link}>Masuk Room <i className="fas fa-angle-right"></i></Link>
                     </div>
                 </div>
             </div>
