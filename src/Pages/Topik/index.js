@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import Styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
-import { db } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
+import { db } from '../../config/Firebase'
+import parse from 'html-react-parser'
+import Styled from '@emotion/styled'
+import FooterCopyright from '../../component/FooterCopyright'
+
 
 const Topik = () => {
     const [SearchedTopik, setSearchedTopik] = useState({})
-    const [input, setinput] = useState("")
-    const [SearchAble, setSearchAble] = useState(false)
+    const [Topik, setTopik] = useState([])
     const [AfterSearch, setAfterSearch] = useState(false)
+    const [SearchAble, setSearchAble] = useState(false)
+    const [input, setinput] = useState("")
     
     const handleSearchInputChange = (e)=>{
         setinput(e.target.value)
@@ -35,8 +39,19 @@ const Topik = () => {
     }
 
     useEffect(() => {
+        const FireAction = async () => {
+            const topikData = await db.collection('Topik').get()
+            let filler = []
+            topikData.forEach( doc => {
+                filler.push(doc.data())
+            })
+        
+            setTopik(filler)
+            console.log(filler)
 
+        }
 
+        FireAction()
 
     }, [])
 
@@ -44,20 +59,44 @@ const Topik = () => {
     <>
         <Navbar />
         <Wrapper>
+            <h1>Jelajahi Topik</h1>
             <form onSubmit={handleSubmit}>
-                <input type="text" className="typical-input" value={input} onChange={handleSearchInputChange}/>
-                <button type="submit" className="btn btn-bordered" disabled={!SearchAble} >CARI</button>
+                <input type="text" className="typical-input" value={input} onChange={handleSearchInputChange} placeholder="Masukan topik key"/>
+                <button type="submit" className="btn btn-bordered" disabled={!SearchAble}>CARI</button>
             </form>
             {SearchedTopik ? SearchedTopik.nama && 
-                <div className="foundtopik">
-                    <p>{SearchedTopik.nama}</p>
-                    <Link className="btn btn-primary" to={`/topik/${input}`}> LIHAT TOPIK </Link>
-                </div> 
+                <div className="topik-tersedia">
+                <h2>Topik Ditemukan</h2>
+                    <div className="topik-card">
+                        <img src={SearchedTopik.thumbnail} alt=""/>
+                        <div className="topik-content">
+                            <p className="nama">{SearchedTopik.nama}</p>
+                            <p className="desc">{parse(SearchedTopik.deskripsi)}</p>
+                            <Link to={`/topik/${SearchedTopik.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
+                        </div>
+                    </div>
+                </div>
              :
              AfterSearch && 'Not Found'
             }
+            <div className="topik-tersedia">
+                <h2>Topik Tersedia</h2>
+                {Topik.map((top, i) => (
+                    <div key={i} className="topik-card">
+                        <img src={top.thumbnail} alt=""/>
+                        <div className="topik-content">
+                            <p className="nama">{top.nama}</p>
+                            <p className="desc">{parse(top.deskripsi)}</p>
+                            <Link to={`/topik/${top.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
+                        </div>
+                    </div>
+                ))
+
+                }
+            </div>
             
         </Wrapper>
+        <FooterCopyright />
     </>
     )
 }
@@ -67,8 +106,117 @@ const Wrapper = Styled.div(() =>`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding-top: 54px;
+    padding: 54px 0;
 
+    .topik-card{
+        width: 553px;
+        height: 180px;
+        margin: 12px 0;
+        
+        background: #FFFFFF;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 2px rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 0 16px;
+
+        p.nama{
+            font-family: Raleway;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 35px;
+            line-height: 41px;
+
+            /* Gray 1 */
+
+            color: #333333;
+        }
+
+        p.desc{
+            font-family: Oxygen;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 14px;
+            line-height: 18px;
+
+            /* Gray 3 */
+
+            color: #828282;
+        }
+
+        p.button{
+            font-family: Oxygen;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 18px;
+            /* identical to box height */
+            
+            
+            /* tosca */
+            
+            color: #209FBC;
+
+            span{
+                margin-top: 6px;
+            }
+        }
+        
+        img{
+            height: 148px;
+            width: 148px;
+            border-radius: 8px;
+            margin-right: 16px;
+        }
+        .topik-content{
+            height: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    .topik-tersedia{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        
+    }
+    
+    h2{
+        margin-bottom: 24px;
+    }
+    h1{
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 49px;
+        line-height: 58px;
+        text-align: center;
+        margin-bottom: 32px;
+
+        /* tosca */
+
+        color: #209FBC;
+    }
+
+    h2{
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 20px;
+        line-height: 23px;
+
+        /* Gray 1 */
+
+        color: #333333;
+        margin-top: 32px;
+    }
 
     .foundtopik{
         width: 340px;
@@ -100,9 +248,6 @@ const Wrapper = Styled.div(() =>`
 
         input{
             width: 100%;
-        }
-        button{
-
         }
     }
     

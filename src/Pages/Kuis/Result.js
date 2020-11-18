@@ -6,27 +6,16 @@ import parse from 'html-react-parser'
 import Navbar from '../../component/Navbar/Navbar'
     
 const Result = ({match}) => {
-    const [UserKuis, setUserKuis] = useState({})
-    const [historyKuis, sethistoryKuis] = useState([])
     const [openPembahasan, setopenPembahasan] = useState("none")
+    const [UserKuis, setUserKuis] = useState({})
     const kuisID = match.params.kuisID
     const { currentUser } = useAuth()
 
     useEffect(() => {
         const FireAction = async () => {
             const userKuisData = (await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()).data()
-            const journeyData = (await db.collection('Journey').doc(userKuisData.journeyID).get()).data()
-            const paketKuis = journeyData.kuisList
-            
-            let history = []
-            for (let i = 0; i < paketKuis.length; i++) {
-                history.push((await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(paketKuis[i].uid).get()).data().body)
-                if (paketKuis[i].uid === kuisID) break
-            }
-            console.log(history)
-            sethistoryKuis(history)
+
             setUserKuis(userKuisData)
-            console.log(userKuisData)
         }
 
         FireAction()
@@ -54,9 +43,9 @@ const Result = ({match}) => {
                                 <p className={`nomorsoal ${UserKuis.correction[i]}`}>{i+1}</p>
                                 <p className={`${UserKuis.correction[i]}-text`}>{ans}</p>
                                 <p>{UserKuis.kunciArr[i]}</p>
-                                <button className="penjelasan" onClick={() => setopenPembahasan(openPembahasan == i ? 'none' : i)}>PENJELASAN</button>
+                                <button className="penjelasan" onClick={() => setopenPembahasan(openPembahasan === i ? 'none' : i)}>PENJELASAN</button>
                             </div>
-                            { openPembahasan == i &&
+                            { openPembahasan === i &&
                                 <div className="each-pembahasan">
                                     {parse(UserKuis.pembahasan[i])}
                                 </div>
@@ -80,6 +69,7 @@ const Wrapper = Styled.div(() =>`
     padding: 42px 0;
 
     .content{
+        width: 100%;
         display: flex;
         justify-content: center;
         align-items: flex-start;

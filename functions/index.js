@@ -47,7 +47,7 @@ const db = admin.firestore()
                     answer: answer,
                     pembahasan : pembahasanArr,
                     correction : correction,
-                    timestamp : admin.firestore.FieldValue.serverTimestamp()
+                    timestamp : admin.firestore.Timestamp.now()
                 }).then(() => {
                     db.collection('Kuis').doc(kuis.kuisID)
                         .collection('Nilai')
@@ -59,6 +59,7 @@ const db = admin.firestore()
                         })
                         .then(()=>{
                             console.log('Berhasil menyimpan nilai untuk user : ', userID);
+                            console.log(admin.firestore.Timestamp.now());
                         }).catch(err=>{
                             console.log(err);
                             res.status(500).json({
