@@ -9,12 +9,12 @@ const HasilKuisItem = (props)=>{
                 <div className="col-md-10">
                     <div className="card">
                         <div className="card-body">
-                            <Link to={'#'}>
+                            <Link to={props.link}>
                                 <h3>{props.title}</h3>
                             </Link>
                             <div className="d-flex justify-content-between flex-row mt-3">
                                 <p>{moment.unix(props.date).format('DD/MM/YYYY HH:mm')}</p>
-                                <Link to={"#"} >Detail Hasil <i className="fas fa-angle-right"></i></Link>
+                                <Link to={props.link} >Detail Hasil <i className="fas fa-angle-right"></i></Link>
                             </div>
                         </div>
                     </div>

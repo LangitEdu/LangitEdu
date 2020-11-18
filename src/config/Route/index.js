@@ -12,11 +12,10 @@ const RouteName = {
     journey : '/journey/:journeyID',
     kuis : '/kuis/:kuisID',
     kuisresult : '/kuis/:kuisID/result',
-    coba :'/coba',
     liatJourney : '/admin/list-journey/:uid',
     tambahSoal : '/tambah-soal/:uid',
     authAction : '/Auth',
-    lihatHasilKuis : '/lihat-hasil-kuis/:kuisID'
+    lihatHasilKuis : '/admin/lihat-hasil-kuis/:kuisID'
 }
 
 const generateUrlWithParams = (data, oldUrl)=>{

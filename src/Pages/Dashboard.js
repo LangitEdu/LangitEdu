@@ -88,8 +88,10 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </div>
+                <div className="col-md-1">
 
-                <div className="col-md-9">
+                </div>
+                <div className="col-md-8">
                     <h2><b>Topik Terdaftar</b></h2>
                     
                     <div className="listTopik my-4">
@@ -99,7 +101,7 @@ export default function Dashboard() {
                             const data = doc.data()
                             return <TopikItem
                             key={doc.id}
-                            link={'#'}
+                            link={routeSet.gotoTopik({topikKey:data.topikKey})}
                             title = {data.nama}
                             desc={data.deskripsi}
                             thumb = {data.thumbnail}
@@ -124,7 +126,7 @@ export default function Dashboard() {
                                 return <KomunitasItem 
                                         key={doc.id}
                                         title = {data.nama}
-                                        link={'#'}
+                                        link={RouteName.listKomunitas}
                                         thumb={data.photoUrl}
                                     />
                             })
@@ -151,14 +153,15 @@ export default function Dashboard() {
                                 title = {data.namaKuis}
                                 nilai = {data.body}
                                 date = {data.timestamp.seconds}
+                                link={routeSet.kuisresult({kuisID:data.kuisID})}
                             />
                         })
                         }
-                        <Plus
-                            link={'#'}
-                            text = {'LIHAT RIWAYAT KUIS LAINNYA MELALUI JOURNEY'}
-                        />
-                        
+                        <div className="card plus">
+                            <div className="card-body text-center">
+                            {'LIHAT RIWAYAT KUIS LAINNYA MELALUI JOURNEY'}
+                            </div>
+                        </div>
                     </div>
 
                 </div>
