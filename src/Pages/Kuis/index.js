@@ -261,7 +261,7 @@ const Kuis = ({match}) => {
                     </div >
                 ))}
                 <button type="button" className="btn-bordered-blue openconfirm" onClick={()=> setprocessingSubmit('confirm')}>{ processingSubmit !== 'true' ? "SELESAI KUIS" : <SpinnerSimple />}</button>
-                {processingSubmit == 'confirm' && 
+                {processingSubmit === 'confirm' && 
                     <div className="popup-cont">
                         <div className="popup-postsubmit">
                             <p>KONFIRMASI SUBMIT</p>                        
