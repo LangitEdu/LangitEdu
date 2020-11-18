@@ -46,7 +46,8 @@ const db = admin.firestore()
                     body: nilai,
                     answer: answer,
                     pembahasan : pembahasanArr,
-                    correction : correction
+                    correction : correction,
+                    timestamp : admin.firestore.FieldValue.serverTimestamp()
                 }).then(() => {
                     db.collection('Kuis').doc(kuis.kuisID)
                         .collection('Nilai')

@@ -261,7 +261,7 @@ export default function TambahSoal() {
                         const filteredArr= data.body.filter((data)=>{
                             return data.id === parseInt(idSoal)
                         })
-                        setBodyPembahasan(filteredArr[0].pembahasan)
+                        setBodyPembahasan(filteredArr[0].pnembahasan)
                         setJawaban(filteredArr[0].answer)
                     })
                 NoRef.current.value = parseInt(idSoal)+1
