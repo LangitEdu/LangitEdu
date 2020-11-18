@@ -82,6 +82,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
 
 .users .person.tulisan{
     border-bottom: none !important;
+    cursor: auto;
 }
 
 .users .person:hover {
@@ -269,7 +270,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
 .chat-container li .chat-text {
     padding: .5rem 1rem;
     border-radius: 4px;
-    background: #FBFBFB;
+    background: #f1f1f1;
     font-weight: 300;
     position: relative;
     width: fit-content;
@@ -300,7 +301,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
     top: 10px;
     left: -20px;
     border: 10px solid;
-    border-color: transparent #FBFBFB transparent transparent;
+    border-color: transparent #f1f1f1 transparent transparent;
 }
 
 .chat-container li.chat-right > div .chat-text:before {

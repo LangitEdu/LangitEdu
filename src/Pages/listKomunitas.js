@@ -17,6 +17,7 @@ import { Helmet } from 'react-helmet';
 // CSS
 import Styled from '@emotion/styled'
 import { ChatCSS } from '../component/Chat/ChatCSS';
+import ModalMember from '../component/Chat/ModalMember';
 
 export default function ListKomunitas() {
 
@@ -33,6 +34,9 @@ export default function ListKomunitas() {
     const [CanSearch, setCanSearch] = useState(false)
     const [ShowModalAddKomunitas, setShowModalAddKomunitas] = useState(false)
     const [ShowModalEditKomunitas, setShowModalEditKomunitas] = useState(false)
+    const [ShowModalMember, setShowModalMember] = useState(false)
+    const [DataMember, setDataMember] = useState([])
+    const [ListBanUser, setListBanUser] = useState([])
     const searchKomunitas = useRef()
     const dummy = useRef()
     const PesanRef = useRef()
@@ -60,35 +64,41 @@ export default function ListKomunitas() {
             return currentKom;
         }
         let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
-        const currentKomunitas = await db.collection('Komunitas').doc(currentKom).get()
-        const currentKomunitasData = currentKomunitas.data()
-        setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData, DontRefresh:true})   
-        let {photoUrl, nama, id,member} = currentKomunitasData
-        document.getElementById('JudulRoom').innerHTML = nama
-        document.getElementById('idRoom').innerHTML = id
-        setOnChat(true)
-        document.getElementById('avaGroup').src = photoUrl
-        await db.collection('Profile').where('uid','in',member).get().then(res=>{
-            res.forEach(doc=>{
-                dataMember[doc.id] = doc.data()
-            })
-            let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
-            docRef.onSnapshot((querySnapshot)=>{
-                if(!querySnapshot.empty){
-                    setChat(querySnapshot.docs.map((doc)=>{
-                        return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
-                                    docid={doc.id} 
-                                    komuniastUID={currentKom} 
-                                    dataMember={dataMember[doc.data().sender_uid]} 
-                                    key={doc.id} />
-                    }))
-                }else{
-                    setChat("Masih belum ada pesan dari room")
-                }
-                
-            },(err)=>{
-                console.log(err);
-            })
+        db.collection('Komunitas').doc(currentKom).onSnapshot(async(currentKomunitas)=>{
+            const currentKomunitasData = currentKomunitas.data()
+            console.log(currentKomunitasData.listBanUser);
+            setListBanUser(currentKomunitasData.listBanUser)
+            setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData, DontRefresh:true})   
+            let {photoUrl, nama, id,member} = currentKomunitasData
+            document.getElementById('JudulRoom').innerHTML = `${nama} (${member.length}) ` 
+            document.getElementById('idRoom').innerHTML = id
+            setOnChat(true)
+            if(document.getElementById('avaGroup') !== null){
+                document.getElementById('avaGroup').src = photoUrl
+            }
+            await db.collection('Profile').where('uid','in',member).get().then(res=>{
+                res.docs.forEach(doc=>{
+                    dataMember[doc.id] = doc.data()
+                })
+                setDataMember(res.docs)
+                let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
+                docRef.onSnapshot((querySnapshot)=>{
+                    if(!querySnapshot.empty){
+                        setChat(querySnapshot.docs.map((doc)=>{
+                            return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
+                                        docid={doc.id} 
+                                        komuniastUID={currentKom} 
+                                        dataMember={dataMember[doc.data().sender_uid]} 
+                                        key={doc.id} />
+                        }))
+                    }else{
+                        setChat("Masih belum ada pesan dari room")
+                    }
+                    
+                },(err)=>{
+                    console.log(err);
+                })
+        })
         })
 
     }
@@ -224,7 +234,11 @@ export default function ListKomunitas() {
                 if(querySnapshot.docs.length === 0 ){
                     setListKomunitas(<li className="font-weight-bold person tulisan" >Komunitas yang kamu cari tidak ada :( </li>)
                 }else{
-                    setListKomunitas(querySnapshot.docs.map(doc=>{
+                    let newDocs = querySnapshot.docs.filter(doc=>{
+                        const data= doc.data()
+                        return !data.listBanUser.includes(currentUser.uid)
+                    })
+                    setListKomunitas(newDocs.map(doc=>{
                         return (
                             <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
                         )
@@ -240,6 +254,11 @@ export default function ListKomunitas() {
         setListKomunitas(bakcupListKomunitas)
     }
     useEffect(() => {
+        if(CurrentKomunitas && CurrentKomunitas.member && !CurrentKomunitas.member.includes(currentUser.uid)){
+            setOnChat(false)
+            document.getElementById('JudulRoom').innerHTML = ""
+            document.getElementById('idRoom').innerHTML = ""
+        }
         let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
                 
@@ -248,7 +267,7 @@ export default function ListKomunitas() {
                 }
 
                 if(querySnapshot.docs.length === 0 ){
-                    setListKomunitas(<li className="person tulisan"><span className="font-weight-bold">Belum ada obrolan</span></li>)
+                    setListKomunitas(<li className="person tulisan">Kamu belum mengikuti komunitas apapun</li>)
                     return;
                 }
                 let listKomunitas = querySnapshot.docs.map(doc=>{
@@ -388,7 +407,8 @@ export default function ListKomunitas() {
                 lastChat : FieldValue.serverTimestamp(),
                 nama:namaKomunitas,
                 photoUrl : KomProfilePicUrl ? KomProfilePicUrl : `https://avatars.dicebear.com/api/identicon/${new Date().getTime()}.svg`,
-                member : [currentUser.uid]
+                member : [currentUser.uid],
+                listBanUser : []
             }
             if(KomProfilePicUrl){
                 data.profileRef = 'Komunitas/'+FileUID+"."+extention
@@ -467,7 +487,11 @@ export default function ListKomunitas() {
                                                     <img className="img-fluid" src={CurrentKomunitas.photoUrl} alt="Profile Komunitas" id="avaGroup"/>
                                                 </div>
                                                 }
-                                                <div className="d-flex flex-column mt-lg-4">
+                                                <div className="d-flex flex-column mt-lg-4" onClick={()=>{
+                                                    if(onChat && IsAdmin){
+                                                        setShowModalMember(true)
+                                                    }
+                                                }} >
                                                     <span className="name mb-1" id="JudulRoom"></span>
                                                     <span className="idRoom" id="idRoom"></span>
                                                 </div>
@@ -529,6 +553,16 @@ export default function ListKomunitas() {
 
             </div>
         </div>
+
+        {ShowModalMember &&
+        <ModalMember
+        hideModal={()=>{setShowModalMember(false)}}
+        dataMember={DataMember}
+        currentUser={currentUser}
+        CurrentKomunitas = {CurrentKomunitas}
+        ListBanUser={ListBanUser}
+        />
+        }
         {ShowModalEditKomunitas && 
             <ModalEditKomunitas 
                     onClick={()=>{setShowModalEditKomunitas(false)}}
