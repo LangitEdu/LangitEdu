@@ -57,8 +57,9 @@ const Admin = () => {
                     .child(TopikNameRef.current.value+"."+extention).put(file)
                     .catch(function(error) {
                         setError(error);
-                        throw new Error(error.message)
+                        return;
                       });
+            console.log(res);
             URL = await res.ref.getDownloadURL()
             Ref = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
         }

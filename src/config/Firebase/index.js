@@ -35,10 +35,10 @@ const storage = app.storage();
 const functions = firebase.functions();
 let API_URL;
 if (window.location.hostname === "localhost") {
-  db.useEmulator("localhost", 8080);
-  functions.useEmulator('localhost', 5001)
+  // db.useEmulator("localhost", 8080);
+  // functions.useEmulator('localhost', 5001)
+  // auth.useEmulator('http://localhost:9099/')
   API_URL = `http://localhost:5001/langit-edu/asia-southeast2/api`
-  auth.useEmulator('http://localhost:9099/')
 }else{
   API_URL='https://us-central1-langit-edu.cloudfunctions.net/api'
 }
