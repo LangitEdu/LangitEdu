@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Styled from '@emotion/styled'
 import { Link } from 'react-router-dom'
+import useResize from 'use-resize'
 import { db, FieldValue } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
 import { useAuth } from '../../contexts/AuthContext'
@@ -15,6 +16,8 @@ const Topik = ({match}) => {
     const [TopikId, setTopikId] = useState()
     const [Topik, setTopik] = useState({})
     const {currentUser} = useAuth()
+    
+    const screen = useResize().width
 
     useEffect(() => {
 
@@ -66,7 +69,7 @@ const Topik = ({match}) => {
     return (
     <>
         <Navbar />
-        <Wrapper Topik={Topik}>
+        <Wrapper Topik={Topik} screen={screen}>
             {topikKey !== "default" && Topik && (
             <div className="content-wrapper">
                 <div className="h1">
@@ -113,7 +116,7 @@ const Topik = ({match}) => {
     )
 }
     
-const Wrapper = Styled.div(({Topik}) =>`
+const Wrapper = Styled.div(({Topik, screen}) =>`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -135,8 +138,9 @@ const Wrapper = Styled.div(({Topik}) =>`
         width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: ${screen < 772 ? 'center' : 'flex-start'};
         margin-top: 24px;
+        ${screen < 772 ? "flex-direction: column;" : ''}
 
         .journeylist{
             width: 100%;
@@ -144,7 +148,7 @@ const Wrapper = Styled.div(({Topik}) =>`
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            margin-left: 40px;
+            ${screen > 772 ? 'margin-left: 40px;': ''}
 
             p{
                 width: 100%;
@@ -198,6 +202,7 @@ const Wrapper = Styled.div(({Topik}) =>`
             align-items: center;
             flex-direction: column;
             padding: 24px;
+            margin-bottom: 54px;
 
             .upper{
                 display: flex;

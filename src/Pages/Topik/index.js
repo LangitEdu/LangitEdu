@@ -114,7 +114,9 @@ const Wrapper = Styled.div(() =>`
     min-height: 1000px;
 
     .topik-card{
-        width: 553px;
+        max-width: 553px;
+        width: 90%;
+        min-width: 340px;
         height: 180px;
         margin: 12px 0;
         
