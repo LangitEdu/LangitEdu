@@ -11,7 +11,7 @@ const Journey = ({match}) => {
     const [Journey, setJourney] = useState({})
     const [howManyKuis, sethowManyKuis] = useState(0)
     const [Topik, setTopik] = useState({})
-    
+    const [KuisList, setKuisList] = useState([])
     const screen = useResize().width
     
     useEffect(() => {
@@ -21,7 +21,11 @@ const Journey = ({match}) => {
             setJourney(journeyData)
             setTopik(topikData)
             if(journeyData.kuisList){
-                sethowManyKuis(journeyData.kuisList.length)
+                const newKulisList = journeyData.kuisList.filter(data=>{
+                    return data.publish
+                })
+                setKuisList(newKulisList)
+                sethowManyKuis(newKulisList.length)
             }
         } 
 
@@ -43,14 +47,9 @@ const Journey = ({match}) => {
                         </div>
                     </div>
                     <div className="grid-area">
-                        { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
+                        { Array.isArray(KuisList) && KuisList.map((each, i)=>(
                             <KuisCard key={i} kuisID={each.uid}/>
                         ))} 
-                        {/* { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
-                            <div className="each-card" key={i}>
-                                <Link to={`/kuis/${each.uid}`}>{each.nama}</Link>
-                            </div>
-                        ))}  */}
                     </div>
                 </div>
             )}

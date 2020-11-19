@@ -11,6 +11,7 @@ export default function AdminJourney() {
     const [Loading, setLoading] = useState(false)
     const [ListKuis, setListKuis] = useState()
     const [OnEdit, setOnEdit] = useState(false)
+    const [isPublish, setIsPublish] = useState(false)
     const namaKuisRef = useRef()
     const durasiKuisRef = useRef()
     const [CurrentEditKuis, setCurrentEditKuis] = useState()
@@ -24,10 +25,11 @@ export default function AdminJourney() {
             nama: namaKuisRef.current.value,
             durasi : durasiKuisRef.current.value,
             journeyID:uid,
+            publish:isPublish,
             listQuestion:[]
         }).then((res)=>{
             db.collection('Journey').doc(uid).update({
-                kuisList : FieldValue.arrayUnion({nama:namaKuisRef.current.value, uid:res.id, durasi : durasiKuisRef.current.value})
+                kuisList : FieldValue.arrayUnion({nama:namaKuisRef.current.value, uid:res.id, durasi : durasiKuisRef.current.value,publish:isPublish})
             }).then(()=>{
                 console.log('Berhasil dibuat');
                 history.push(routeSet.tambahSoal({uid:res.id}))
@@ -43,39 +45,47 @@ export default function AdminJourney() {
     }
     const handleEditKuis = (e)=>{
         e.preventDefault()
-        db.collection('Kuis').doc()
+        setLoading(true)
         const nama = namaKuisRef.current.value
         const durasi = durasiKuisRef.current.value
         db.collection('Kuis').doc(CurrentEditKuis).update({
            durasi : durasi,
            nama : nama,
-           journeyID : uid 
+           journeyID : uid ,
+           publish:isPublish
         }).then( async ()=>{
             await db.collection('Journey').doc(uid).update({
                 kuisList:FieldValue.arrayRemove(oldKuisData),
             })
             await db.collection('Journey').doc(uid).update({
-                kuisList:FieldValue.arrayUnion({nama:nama, durasi:durasi, uid:CurrentEditKuis})
+                kuisList:FieldValue.arrayUnion({nama:nama, durasi:durasi, uid:CurrentEditKuis, publish:isPublish})
             })
             setOnEdit(false)
+            setIsPublish(false)
+            setLoading(false)
             namaKuisRef.current.value = '';
             durasiKuisRef.current.value = '';
         }).catch(err=>{
             console.log(err);
+            setLoading(false)
         })
         
     }   
-
+    const handlePublishChange=(e)=>{
+        setIsPublish(e.target.checked)
+    }
     const ChangeToEdit = (e)=>{
         setOnEdit(true)
-        const {nama, uid, durasi} = e.target.dataset
+        const {nama, uid, durasi, publish} = e.target.dataset
         namaKuisRef.current.value = nama
         durasiKuisRef.current.value = durasi
         setCurrentEditKuis(uid)
-        setOldKuisData({nama:nama, durasi:durasi, uid:uid})
+        setIsPublish(publish==='true')
+        setOldKuisData({nama:nama, durasi:durasi, uid:uid, publish:publish==='true'})
     }
-    const ChangeToAddKuis = (e)=>{
+    const CancelEdit = (e)=>{
         setOnEdit(false)
+        setIsPublish(false)
         namaKuisRef.current.value = ''
         durasiKuisRef.current.value = ''
         setCurrentEditKuis()
@@ -129,7 +139,7 @@ export default function AdminJourney() {
                                 <div className="d-flex">
                                     <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
                                     <Link className="btn btn-primary mr-3" to={routeSet.lihatHasilKuis({kuisID : data.uid })} >Lihat Hasil</Link>
-                                    <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
+                                    <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-publish={data.publish} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
                                     <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Kuis</button>
                                 </div>
                             </li>
@@ -165,6 +175,10 @@ export default function AdminJourney() {
                 </div>
                 <div className="card-body">
                     <form onSubmit={OnEdit ? handleEditKuis : handleBuatKuis}>
+                        <div className="custom-control custom-switch">
+                            <input onChange={handlePublishChange} type="checkbox" className="custom-control-input" id="isPublish" checked={isPublish} />
+                            <label className="custom-control-label" htmlFor="isPublish">Publish Kuis</label>
+                        </div>
                         <div className="form-group">
                             <label htmlFor="nama">Nama Kuis</label>
                             <input className="form-control" type="text" ref={namaKuisRef} />
@@ -175,7 +189,7 @@ export default function AdminJourney() {
                         </div>
                         <button className="btn btn-primary mr-3" disabled={Loading} >Submit</button>
                         {OnEdit && 
-                        <button type='button' className="btn btn-success" onClick={ChangeToAddKuis}>Cancel Edit</button>
+                        <button type='button' className="btn btn-success" onClick={CancelEdit}>Cancel Edit</button>
                         }
                     </form>
                 </div>
