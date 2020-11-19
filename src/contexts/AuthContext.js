@@ -73,11 +73,14 @@ export function AuthProvider({ children }) {
                     }else{
                         setIsAdmin(false)
                     }
+                    setCurrentUser(user)
+                    setLoading(false)
                 })
+            }else{
+                setIsAdmin(false)
+                setCurrentUser(user)
+                setLoading(false)
             }
-            setIsAdmin(false)
-            setCurrentUser(user)
-            setLoading(false)
         })
         return unsubcribe;
     },[])

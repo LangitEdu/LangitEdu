@@ -40,7 +40,7 @@ const Topik = () => {
 
     useEffect(() => {
         const FireAction = async () => {
-            const topikData = await db.collection('Topik').get()
+            const topikData = await db.collection('Topik').orderBy('created_at', 'desc').limit(3).get()
             let filler = []
             topikData.forEach( doc => {
                 filler.push(doc.data())

@@ -267,8 +267,8 @@ const Admin = () => {
                 <div className="card">
                     <div className="card-body">
                         <div className="row p-md-3">
-                            <div className="col-md-3">
-                                <div className="thumbpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
+                            <div className="col-md-3 d-flex justify-content-center ">
+                                <div className="thumbpic mb-4" style={{width:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
                                     <img id="thumbpic" src={`https://avatars.dicebear.com/api/jdenticon/acsascaca.svg`} alt="Thumbnail" className="img-fluid"/>
                                 </div>
                             </div>
