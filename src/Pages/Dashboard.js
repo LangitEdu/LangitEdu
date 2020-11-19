@@ -80,7 +80,7 @@ export default function Dashboard() {
                             <div className="profile mb-4 ">
                                 <img src={currentUser.photoURL} alt="Profile"/>
                             </div>
-                            <div className="mb-3">
+                            <div className="mb-3 text-center">
                                 <h4 className="mb-2" >{currentUser.displayName}</h4>
                                 <p>{currentUser.email}</p>
                             </div>

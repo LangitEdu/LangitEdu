@@ -98,7 +98,7 @@ const Kuis = ({match}) => {
             userID : currentUser.uid,
             answer : answer
         })
-        .then(function (res) {
+        .then(function (res) {  
             console.log(res.data)
             if (res.data.body){
                 setisSaved(true)
@@ -264,7 +264,7 @@ const Kuis = ({match}) => {
                             {emptyAnswer > 0 &&
                                 <p className="kok-kosong">Masih ada {emptyAnswer} soal belum terjawab</p>
                             }        
-                            {emptyAnswer == -11291 &&
+                            {emptyAnswer === -11291 &&
                                 <p className="kok-kosong">Semua soal belum terjawab</p>
                             }        
                             <button type="button" className="btn-bordered-gray openconfirm" onClick={()=> setprocessingSubmit('false')}>KEMBALI</button>
