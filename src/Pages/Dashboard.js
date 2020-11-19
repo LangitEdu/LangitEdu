@@ -13,7 +13,7 @@ import TopikItem from '../component/Dashboard/TopikItem';
 import KomunitasItem from '../component/Dashboard/KomunitasItem';
 import HasilKuisItem from '../component/Dashboard/HasilKuisItem';
 import Plus from '../component/Dashboard/Plus';
-
+import parse from 'html-react-parser'
 
 export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
@@ -103,7 +103,7 @@ export default function Dashboard() {
                             key={doc.id}
                             link={routeSet.gotoTopik({topikKey:data.topikKey})}
                             title = {data.nama}
-                            desc={data.deskripsi}
+                            desc={parse(data.deskripsi)}
                             thumb = {data.thumbnail}
                             />
                         })  
