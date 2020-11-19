@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Styled from '@emotion/styled'
 import { db } from '../../config/Firebase'
+import useResize from 'use-resize'
 import Navbar from '../../component/Navbar/Navbar'
 import FooterCopyright from '../../component/FooterCopyright'
 import KuisCard from '../../component/KuisCard'
@@ -10,6 +11,8 @@ const Journey = ({match}) => {
     const [Journey, setJourney] = useState({})
     const [howManyKuis, sethowManyKuis] = useState(0)
     const [Topik, setTopik] = useState({})
+    
+    const screen = useResize().width
     
     useEffect(() => {
         const FireAction = async () => {
@@ -27,7 +30,7 @@ const Journey = ({match}) => {
     return (
     <>
         <Navbar />
-        <Wrapper>
+        <Wrapper screen={screen}>
             {journeyID !== "default" && (
                 <div className="content-wrapper">
                     <div className="title-cont">
@@ -38,6 +41,9 @@ const Journey = ({match}) => {
                         </div>
                     </div>
                     <div className="grid-area">
+                        { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
+                            <KuisCard key={i} kuisID={each.uid}/>
+                        ))} 
                         { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
                             <KuisCard key={i} kuisID={each.uid}/>
                         ))} 
@@ -55,7 +61,7 @@ const Journey = ({match}) => {
     )
 }
     
-const Wrapper = Styled.div(() =>`
+const Wrapper = Styled.div(({screen}) =>`
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -72,7 +78,7 @@ const Wrapper = Styled.div(() =>`
 
     .grid-area{
         display: flex;
-        justify-content: flex-start;
+        justify-content: ${screen < 772 ? 'center' : 'flex-start'};
         align-items: center;
         flex-wrap: wrap;
         
