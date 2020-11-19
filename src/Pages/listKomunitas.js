@@ -36,7 +36,7 @@ export default function ListKomunitas() {
     const [ShowModalMember, setShowModalMember] = useState(false)
     const [DataMember, setDataMember] = useState([])
     const [ListBanUser, setListBanUser] = useState([])
-    const [LoadiedChat, setLoadiedChat] = useState()
+    // const [LoadiedChat, setLoadiedChat] = useState()
     const searchKomunitas = useRef()
     const dummy = useRef()
     const PesanRef = useRef()
