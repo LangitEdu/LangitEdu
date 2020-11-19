@@ -169,7 +169,7 @@ const Kuis = ({match}) => {
                 })
                 setemptyAnswer(questionData.length)
                 setquestions(questionArr)
-                if(localStorage.getItem('savedAnswer') == null) setanswer(filler)
+                if(localStorage.getItem('savedAnswer') === null) setanswer(filler)
 
                 console.log("bolehin")
                 setallowSession("allowed")
