@@ -24,7 +24,7 @@ const KuisCard = ({kuisID}) => {
 
 
         FireAction()
-    }, [])
+    }, [currentUser,kuisID])
 
     return (
         <Wrapper>

@@ -121,6 +121,12 @@ const db = admin.firestore()
     })
     
     app.post("/submit", submit)
+
+    app.get('/halo', (req,res) => {
+        res.status(200).json({
+            message: 'halo world'
+        })
+    })
     
     
 exports.api = functions.region("asia-southeast2").https.onRequest(app);
