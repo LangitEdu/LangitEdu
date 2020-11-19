@@ -11,7 +11,6 @@ import parse from 'html-react-parser'
 const Topik = ({match}) => {
     const topikKey = typeof match.params.topikKey == 'undefined' ? "default" : match.params.topikKey
     const [IsMember, setIsMember] = useState(false)
-    const [Loading, setLoading] = useState(false)
     const [iswarnedJoin, setiswarnedJoin] = useState(true)
     const [TopikId, setTopikId] = useState()
     const [Topik, setTopik] = useState({})
@@ -42,7 +41,7 @@ const Topik = ({match}) => {
 
     const handleJoinTopik = ()=>{
         console.log("haha");
-        setLoading(true)
+       
         db.collection('Topik').doc(TopikId).update({
             member : FieldValue.arrayUnion(currentUser.uid)
         }).then(()=>{
@@ -50,14 +49,14 @@ const Topik = ({match}) => {
                 topik : FieldValue.arrayUnion(TopikId)
             }).then(()=>{
                 setIsMember(true)
-                setLoading(false)
+               
             }).catch(err=>{
                 console.log(err);
-                setLoading(false)
+               
             })
         }).catch(err=>{
             console.log(err);
-            setLoading(false)
+           
         })
     }
 
@@ -99,7 +98,6 @@ const Topik = ({match}) => {
                             <div key={i} className="journeybox">
                                 <div className="lefter">
                                     <p className="namajourney">{each.nama}</p>
-                                    {/* <p className="kuisjourney" id={each.uid}>{cekJumlahKuis(each.uid)}</p> */}
                                 </div>
                                 
                                 <Link className={`btn btn-see-journey ${IsMember ? '' : 'disabled'}`} to={`/journey/${each.uid}`} aria-disabled={IsMember} >

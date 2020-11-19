@@ -24,11 +24,11 @@ const KuisCard = ({kuisID}) => {
 
 
         FireAction()
-    }, [])
+    }, [currentUser,kuisID])
 
     return (
         <Wrapper>
-            <p className="kuisnama">{Kuis.nama}</p>
+            {Kuis && <p className="kuisnama">{Kuis.nama}</p>}
             {UserKuis ?
             <>
                 <div className="nilai-box">

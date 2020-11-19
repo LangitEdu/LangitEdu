@@ -13,13 +13,6 @@ const db = admin.firestore()
 
         db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
             async function(doc) {
-                const testttt = await db.collection('Kuis').doc('EXF1Pn8D5SsUq5niWeAy').collection('Answers').doc('kunci').get()
-
-                // console.log("haha");
-                // console.log(kuisID);
-                // console.log('EXF1Pn8D5SsUq5niWeAy');
-                // console.log("haha");
-                console.log(testttt);
 
                 // console.log(doc);
                 let kunciArr = new Array(doc.data().body.length).fill("")
@@ -128,6 +121,12 @@ const db = admin.firestore()
     })
     
     app.post("/submit", submit)
+
+    app.get('/halo', (req,res) => {
+        res.status(200).json({
+            message: 'halo world'
+        })
+    })
     
     
 exports.api = functions.region("asia-southeast2").https.onRequest(app);
