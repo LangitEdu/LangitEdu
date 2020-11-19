@@ -36,15 +36,31 @@ export default function ListKomunitas() {
     const [ShowModalMember, setShowModalMember] = useState(false)
     const [DataMember, setDataMember] = useState([])
     const [ListBanUser, setListBanUser] = useState([])
+    const [LoadiedChat, setLoadiedChat] = useState()
     const searchKomunitas = useRef()
     const dummy = useRef()
     const PesanRef = useRef()
-    
     const namaKomunitasRef = useRef()
     const idKomunitasRef = useRef()
     const deskripsiKomunitasRef = useRef()
     const ProfileKomPicRef = useRef()
     const [Loadng, setLoading] = useState(false)
+
+
+    useEffect(()=>{
+        const handleScrollChat = (e)=>{
+            let triggerHeight = e.target.scrollTop - e.target.offsetHeight;
+            if(1-e.target.scrollHeight >= triggerHeight){
+                console.log('udah di puncak',e.target.scrollHeight,triggerHeight);
+            }
+        }
+        document.getElementById('container').addEventListener('scroll', handleScrollChat)
+        
+        return ()=>{
+            document.getElementById('container').removeEventListener('scroll',handleScrollChat)
+        }
+        
+    }, [onChat])
 
     async function LiatChat(e, langsungUID=false, komUid=null){
         setChat("loding..")
@@ -62,7 +78,9 @@ export default function ListKomunitas() {
     
             return currentKom;
         }
+
         let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
+
         db.collection('Komunitas').doc(currentKom).onSnapshot(async(currentKomunitas)=>{
             const currentKomunitasData = currentKomunitas.data()
 
@@ -509,7 +527,7 @@ export default function ListKomunitas() {
                                             </div>
                                         </div>
                                         <div className="chat-container">
-                                            <ul className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
+                                            <ul id="container" className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
                                                 <li ref={dummy}></li>
                                                 {
                                                 onChat ? 

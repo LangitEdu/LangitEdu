@@ -9,14 +9,13 @@ export default function HasilKuis() {
     const [ListUser, setListUser] = useState([])
     const [KuisData, setKuisData] = useState('')
     useEffect(()=>{
-        let arrNilai = []
-        let arrUID = []
-
         const Query = db.collection('Kuis').doc(kuisID)
         Query.get().then(doc=>{
             setKuisData(doc.data())
         })
         const unsub = Query.collection('Nilai').onSnapshot(async(snapshot)=>{
+            let arrNilai = []
+            let arrUID = []
             snapshot.docs.forEach(doc=>{
                 const data = doc.data()
                 arrNilai.push(data)
@@ -31,6 +30,7 @@ export default function HasilKuis() {
                         res.docs.forEach(doc=>{
                             listUserData[doc.id] = doc.data()
                         })
+                        console.log(res.docs.length);
                         setListUser(listUserData);
                         setListNilai(arrNilai)
                     })
