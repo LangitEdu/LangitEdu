@@ -83,7 +83,7 @@ const Topik = ({match}) => {
                             <div className="thumbnail"></div>
                             <p className="desc">{Topik.deskripsi}</p>
                         </div>
-                        <button disabled={IsMember} onClick={handleJoinTopik} className={`btn-bordered-blue btn-shadow ${IsMember ? 'disableddd' : ''}`}>SUDAH TERDAFTAR</button>
+                        <button disabled={IsMember} onClick={handleJoinTopik} className={`btn-bordered-blue btn-shadow ${IsMember ? 'disableddd' : ''}`}>{IsMember ? "SUDAH TERDAFTAR" : "JOIN TOPIK"}</button>
                     </div>
                     <div className="journeylist">
                         <p>DAFTAR JOURNEY</p>
@@ -217,7 +217,7 @@ const Wrapper = Styled.div(({Topik}) =>`
 
             .thumbnail{
                 width: 240px;
-                height: 133px;
+                height: 240px;
                 background-image: url('${Topik.thumbnail}');
                 background-size: cover;
                 background-position: center;
