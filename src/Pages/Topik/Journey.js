@@ -20,7 +20,9 @@ const Journey = ({match}) => {
             const topikData = (await db.collection('Topik').doc(journeyData.topikID).get()).data()
             setJourney(journeyData)
             setTopik(topikData)
-            sethowManyKuis(journeyData.kuisList.length)
+            if(journeyData.kuisList){
+                sethowManyKuis(journeyData.kuisList.length)
+            }
         } 
 
         FireAction()
@@ -32,7 +34,7 @@ const Journey = ({match}) => {
         <Navbar />
         <Wrapper screen={screen}>
             {journeyID !== "default" && (
-                <div className="content-wrapper">
+                <div className="content-wrapper vh-100">
                     <div className="title-cont">
                         <h3>{Topik.nama}</h3>
                         <div>
@@ -41,9 +43,6 @@ const Journey = ({match}) => {
                         </div>
                     </div>
                     <div className="grid-area">
-                        { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
-                            <KuisCard key={i} kuisID={each.uid}/>
-                        ))} 
                         { Array.isArray(Journey.kuisList) && Journey.kuisList.map((each, i)=>(
                             <KuisCard key={i} kuisID={each.uid}/>
                         ))} 
