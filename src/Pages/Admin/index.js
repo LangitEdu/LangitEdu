@@ -266,62 +266,69 @@ const Admin = () => {
                 <h2 className="mb-3">Buat Topik</h2>
                 <div className="card">
                     <div className="card-body">
-                        <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatTopik}>
-
-                            <div className="thumbpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
-                                <img id="thumbpic" src={`https://avatars.dicebear.com/api/jdenticon/acsascaca.svg`} alt="Thumbnail" className="img-fluid"/>
-                            </div>
-                            <div className="form-group">
-                                <div className="custom-file">
-                                    <input ref={ThumbnailRef} type="file" className="custom-file-input" id="newProfilePic" onChange={handleThumbnailChange} accept=".png,.jpg,.jpeg"/>
-                                    <label id="labelNewThumbnail" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
+                        <div className="row p-md-3">
+                            <div className="col-md-3">
+                                <div className="thumbpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
+                                    <img id="thumbpic" src={`https://avatars.dicebear.com/api/jdenticon/acsascaca.svg`} alt="Thumbnail" className="img-fluid"/>
                                 </div>
                             </div>
+                            <div className="col-md-9">
+                                <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatTopik}>
 
-                            <div className="form-group">
-                                <label htmlFor="namaTopik">Nama Topik</label>
-                                <input ref={TopikNameRef} type="text" className="form-control" id="namaTopik"/>
+                                    <div className="form-group">
+                                        <div className="custom-file">
+                                            <input ref={ThumbnailRef} type="file" className="custom-file-input" id="newProfilePic" onChange={handleThumbnailChange} accept=".png,.jpg,.jpeg"/>
+                                            <label id="labelNewThumbnail" className="custom-file-label" htmlFor="newProfilePic">Choose file</label>
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label htmlFor="namaTopik">Nama Topik</label>
+                                        <input ref={TopikNameRef} type="text" className="form-control" id="namaTopik"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="topikKey">Topik Key</label>
+                                        <input ref={TopikKeyRef} type="text" className="form-control"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="deskripsiTopik">Deskripsi Topik</label>
+                                        <Editor
+                                            apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
+                                            init = {{
+                                                menubar: false,
+                                                plugins: [
+                                                    'advlist autolink lists link image charmap print preview anchor',
+                                                    'searchreplace visualblocks code fullscreen',
+                                                    'insertdatetime media table paste code help wordcount image '
+                                                ],
+                                                toolbar: 'undo redo | formatselect | ' +
+                                                'bold italic backcolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | image ',
+                                                min_height:400,
+                                                branding: false,
+                                                images_upload_handler: function (blobInfo, success, failure) {
+                                                    const file = blobInfo.blob()
+                                                    UploadImage(file, success, failure)
+                                                },
+                                            }}
+                                            value={TopikDeksripsi}
+                                            onEditorChange={setTopikDeksripsi}
+                                            
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="Jurusan">Pilih Jurusan</label>
+                                        <select ref={JurusanRef} className="form-control" id="Jurusan">
+                                            <option value='mipa'>MIPA</option>
+                                            <option value='ips'>IPS</option>
+                                    </select>
+                                    </div>
+                                    <button className="btn btn-primary btn-block" disabled={Loading} > {OnEdit ? 'Update Topik' : 'Buat Topik'} </button>
+                                </form>
+                                
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="topikKey">Topik Key</label>
-                                <input ref={TopikKeyRef} type="text" className="form-control"/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="deskripsiTopik">Deskripsi Topik</label>
-                                <Editor
-                                    apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
-                                    init = {{
-                                        menubar: false,
-                                        plugins: [
-                                            'advlist autolink lists link image charmap print preview anchor',
-                                            'searchreplace visualblocks code fullscreen',
-                                            'insertdatetime media table paste code help wordcount image '
-                                          ],
-                                          toolbar: 'undo redo | formatselect | ' +
-                                          'bold italic backcolor | alignleft aligncenter ' +
-                                          'alignright alignjustify | bullist numlist outdent indent | ' +
-                                          'removeformat | image ',
-                                        min_height:400,
-                                        branding: false,
-                                        images_upload_handler: function (blobInfo, success, failure) {
-                                            const file = blobInfo.blob()
-                                            UploadImage(file, success, failure)
-                                          },
-                                    }}
-                                    value={TopikDeksripsi}
-                                    onEditorChange={setTopikDeksripsi}
-                                    
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="Jurusan">Pilih Jurusan</label>
-                                <select ref={JurusanRef} className="form-control" id="Jurusan">
-                                    <option value='mipa'>MIPA</option>
-                                    <option value='ips'>IPS</option>
-                            </select>
-                            </div>
-                            <button className="btn btn-primary" disabled={Loading} > {OnEdit ? 'Update Topik' : 'Buat Topik'} </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
