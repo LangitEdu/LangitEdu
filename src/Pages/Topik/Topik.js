@@ -99,7 +99,6 @@ const Topik = ({match}) => {
                             <div key={i} className="journeybox">
                                 <div className="lefter">
                                     <p className="namajourney">{each.nama}</p>
-                                    {/* <p className="kuisjourney" id={each.uid}>{cekJumlahKuis(each.uid)}</p> */}
                                 </div>
                                 
                                 <Link className={`btn btn-see-journey ${IsMember ? '' : 'disabled'}`} to={`/journey/${each.uid}`} aria-disabled={IsMember} >
