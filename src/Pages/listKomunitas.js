@@ -57,7 +57,9 @@ export default function ListKomunitas() {
         document.getElementById('container').addEventListener('scroll', handleScrollChat)
         
         return ()=>{
-            document.getElementById('container').removeEventListener('scroll',handleScrollChat)
+            if(document.getElementById('container') !== null){
+                document.getElementById('container').removeEventListener('scroll',handleScrollChat)
+            }
         }
         
     }, [onChat])
