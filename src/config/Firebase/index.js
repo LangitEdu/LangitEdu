@@ -40,7 +40,7 @@ if (window.location.hostname === "localhost") {
   // auth.useEmulator('http://localhost:9099/')
   API_URL = `http://localhost:5001/langit-edu/asia-southeast2/api`
 }else{
-  API_URL='https://us-central1-langit-edu.cloudfunctions.net/api'
+  API_URL='https://asia-southeast2-langit-edu.cloudfunctions.net/api'
 }
 
 export {auth, EmailAuthProvider,db, FieldValue, storage, functions, API_URL }
