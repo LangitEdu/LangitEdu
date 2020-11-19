@@ -131,7 +131,7 @@ const Kuis = ({match}) => {
     useEffect(() => {
         
         const FireAction = async () => {
-            const testttt = (await db.collection('Kuis').doc('EXF1Pn8D5SsUq5niWeAy').collection('Answers').doc('kunci').get()).data()
+            const testttt = await db.collection('Kuis').doc('EXF1Pn8D5SsUq5niWeAy').collection('Answers').doc('kunci').get()
 
             console.log("haha");
             console.log(kuisID);
