@@ -18,7 +18,7 @@ const Kuis = ({match}) => {
     const [processingSubmit, setprocessingSubmit] = useState('false')
     const [ date, setDate ] = useState(Date.now() + 180*(60000))
     const [allowSession, setallowSession] = useState("load")
-    const [emptyAnswer, setemptyAnswer] = useState(0)
+    const [emptyAnswer, setemptyAnswer] = useState(-11291)
     const [showPopup, setshowPopup] = useState(false)
     const [questions, setquestions] = useState([])
     const [isSaved, setisSaved] = useState(false)
@@ -124,6 +124,7 @@ const Kuis = ({match}) => {
                 answer : answer
             });
             setshowPopup(true)
+            setprocessingSubmit(false)
         })
     }
 
@@ -262,6 +263,9 @@ const Kuis = ({match}) => {
                             <p>KONFIRMASI SUBMIT</p>                        
                             {emptyAnswer > 0 &&
                                 <p className="kok-kosong">Masih ada {emptyAnswer} soal belum terjawab</p>
+                            }        
+                            {emptyAnswer == -11291 &&
+                                <p className="kok-kosong">Semua soal belum terjawab</p>
                             }        
                             <button type="button" className="btn-bordered-gray openconfirm" onClick={()=> setprocessingSubmit('false')}>KEMBALI</button>
                             <button type="submit" className="btn-bordered submit">SUBMIT</button>
