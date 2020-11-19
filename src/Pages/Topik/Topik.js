@@ -5,6 +5,8 @@ import useResize from 'use-resize'
 import { db, FieldValue } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
 import { useAuth } from '../../contexts/AuthContext'
+import parse from 'html-react-parser'
+
 
 const Topik = ({match}) => {
     const topikKey = typeof match.params.topikKey == 'undefined' ? "default" : match.params.topikKey
@@ -84,7 +86,9 @@ const Topik = ({match}) => {
                         <div className="upper">
                             <p className="card-title">Deskripsi</p>
                             <div className="thumbnail"></div>
-                            <p className="desc">{Topik.deskripsi}</p>
+                            <div className="desc">
+                                {Topik.deskripsi && parse(Topik.deskripsi)}
+                            </div>
                         </div>
                         <button disabled={IsMember} onClick={handleJoinTopik} className={`btn-bordered-blue btn-shadow ${IsMember ? 'disableddd' : ''}`}>{IsMember ? "SUDAH TERDAFTAR" : "JOIN TOPIK"}</button>
                     </div>

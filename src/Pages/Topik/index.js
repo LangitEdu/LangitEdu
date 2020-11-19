@@ -70,8 +70,10 @@ const Topik = () => {
                     <div className="topik-card">
                         <img src={SearchedTopik.thumbnail} alt=""/>
                         <div className="topik-content">
-                            <p className="nama">{SearchedTopik.nama}</p>
-                            <p className="desc">{parse(SearchedTopik.deskripsi)}</p>
+                            <div>
+                                <p className="nama">{SearchedTopik.nama}</p>
+                                <div className="desc mt-2">{parse(SearchedTopik.deskripsi)}</div>
+                            </div>
                             <Link to={`/topik/${SearchedTopik.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
                         </div>
                     </div>
@@ -85,8 +87,10 @@ const Topik = () => {
                     <div key={i} className="topik-card">
                         <img src={top.thumbnail} alt=""/>
                         <div className="topik-content">
+                            <div>
                             <p className="nama">{top.nama}</p>
-                            <p className="desc">{parse(top.deskripsi)}</p>
+                            <div className="desc mt-2">{parse(top.deskripsi)}</div>
+                            </div>
                             <Link to={`/topik/${top.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
                         </div>
                     </div>
@@ -137,7 +141,7 @@ const Wrapper = Styled.div(() =>`
             color: #333333;
         }
 
-        p.desc{
+        .desc p{
             font-family: Oxygen;
             font-style: normal;
             font-weight: normal;
