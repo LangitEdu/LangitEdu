@@ -131,6 +131,13 @@ const Kuis = ({match}) => {
     useEffect(() => {
         
         const FireAction = async () => {
+            const testttt = (await db.collection('Kuis').doc('EXF1Pn8D5SsUq5niWeAy').collection('Answers').doc('kunci').get()).data()
+
+            console.log("haha");
+            console.log(kuisID);
+            console.log('EXF1Pn8D5SsUq5niWeAy');
+            console.log("haha");
+            console.log(testttt);
             //CALLING FIRESTORE TO CHECK IF KUIS ALREADY TAKEN
             const userKuis = await db.collection('Profile').doc(currentUser.uid).collection('Kuis').doc(kuisID).get()
             
