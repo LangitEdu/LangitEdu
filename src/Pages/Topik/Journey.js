@@ -38,7 +38,7 @@ const Journey = ({match}) => {
         <Navbar />
         <Wrapper screen={screen}>
             {journeyID !== "default" && (
-                <div className="content-wrapper vh-100">
+                <div className="content-wrapper">
                     <div className="title-cont">
                         <h3>{Topik.nama}</h3>
                         <div>

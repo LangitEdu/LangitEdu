@@ -260,7 +260,7 @@ const Kuis = ({match}) => {
                 {processingSubmit === 'confirm' && 
                     <div className="popup-cont">
                         <div className="popup-postsubmit">
-                            <p>KONFIRMASI SUBMIT</p>                        
+                            <p>KONFIRMASI SELESAI</p>                        
                             {emptyAnswer > 0 &&
                                 <p className="kok-kosong">Masih ada {emptyAnswer} soal belum terjawab</p>
                             }        
@@ -268,7 +268,7 @@ const Kuis = ({match}) => {
                                 <p className="kok-kosong">Semua soal belum terjawab</p>
                             }        
                             <button type="button" className="btn-bordered-gray openconfirm" onClick={()=> setprocessingSubmit('false')}>KEMBALI</button>
-                            <button type="submit" className="btn-bordered submit">SUBMIT</button>
+                            <button type="submit" className="btn-bordered submit">SELESAI</button>
                         </div>
                     </div>
                 }
@@ -295,7 +295,7 @@ const Kuis = ({match}) => {
             {processingSubmit === 'true' && 
                 <div className="popup-cont">
                     <div className="popup-postsubmit">
-                        <p>SUBMITING...</p>                        
+                        <p>MENGUMPULKAN...</p>                        
                     </div>
                 </div>
             }
