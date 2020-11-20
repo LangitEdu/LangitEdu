@@ -274,7 +274,7 @@ const Admin = () => {
                     <div className="makenewtopik" onClick={() => !openTopikForm ? setopenTopikForm(true) : ''}>
                         <p>{OnEdit ? 'Edit topik' : 'Buat topik baru'}</p>
                         {openTopikForm && 
-                            <button className="btn-bordered-red" onClick={() => setopenTopikForm(false)}>BATALKAN</button>
+                            <button className="btn-bordered-red" onClick={() => {setopenTopikForm(false); setOnEdit(false); setTopikDeksripsi("")}}>BATALKAN</button>
                         }
                         {!openTopikForm && <svg width="67" height="67" viewBox="0 0 67 67" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M29.6714 3.82857C29.6714 1.71411 31.3855 0 33.5 0C35.6145 0 37.3286 1.71411 37.3286 3.82857V63.1714C37.3286 65.2859 35.6145 67 33.5 67C31.3855 67 29.6714 65.2859 29.6714 63.1714L29.6714 3.82857Z" fill="#A9D8E3"/><path d="M63.1714 29.6714C65.2859 29.6714 67 31.3855 67 33.5C67 35.6145 65.2859 37.3286 63.1714 37.3286L3.82857 37.3286C1.71411 37.3286 -9.2426e-08 35.6145 0 33.5C9.2426e-08 31.3855 1.71411 29.6714 3.82857 29.6714L63.1714 29.6714Z" fill="#A9D8E3"/></svg>}
                     </div>
@@ -353,7 +353,7 @@ const Admin = () => {
                 </div>
             </div>
 
-            <div className="container mt-3 pb-5">
+            <div className="container con-ac pb-5">
                 <div className="accordion" id="listTopik">
                     {ListTopik}
                 </div>
@@ -368,6 +368,16 @@ const Wrapper = Styled.div(({screen, openTopikForm}) =>`
         max-width: 858px;
         width: 90%;
         min-width: 340px;
+    }
+
+    .con-ac{
+        width: 90%;
+        max-width: 858px;
+        padding: 0;
+    }
+    .accordion{
+        width: 100%;
+        max-width: 858px;
     }
 
     .kelolatopik{
@@ -405,6 +415,7 @@ const Wrapper = Styled.div(({screen, openTopikForm}) =>`
             display: flex;
             justify-content: space-between;
             padding: 0 32px;
+            margin-bottom: 24px;
             align-items: center;
 
             &:hover{

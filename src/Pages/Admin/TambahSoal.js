@@ -5,11 +5,14 @@ import OpsiItem from '../../component/TambahSoal/OpsiItem'
 import { db, FieldValue } from '../../config/Firebase'
 import Navbar from '../../component/Navbar/Navbar'
 import UploadImage from '../../utils/UploadImgInTinyMCE'
+import Styled from '@emotion/styled'
+import useResize from 'use-resize'
 
 export default function TambahSoal() {
     const [KuisData, setKuisData] = useState()
     const [OnEdit, setOnEdit] = useState(false)
     const {uid} = useParams()
+    const screen = useResize().width
     const [Error, setError] = useState()
     const [Loading, setLoading] = useState()  
     const defaultOpsiList = ['A','B','C','D','E']
@@ -387,133 +390,142 @@ export default function TambahSoal() {
     return (
         <>
         <Navbar />
-        <div className="container mt-4">
-            <h1>Tambah Soal {KuisData && KuisData.nama} </h1>
-            <div className="row mt-4">
-                <div className="col-md-8">
-                    {Error&&
-                    <div className="alert alert-danger">
-                        {Error.message}
-                    </div>
-                    }
-                    <div className="card">
-                        <div className="card-header">
-                            <h4 className="mb-0">
-                                {OnEdit ? 
-                                <>
-                                <span className="mr-3" >Edit Soal</span>
-                                <button className="btn btn-success" onClick={resetForm} >Cancel</button>
-                                </>
-                                : 
-                                'Tambah Soal'
-                                }
-                            </h4>
+        <Wrapper screen={screen}>
+            <div className="container mt-4">
+                <h1>Tambah Soal {KuisData && KuisData.nama} </h1>
+                <div className="row mt-4 flip">
+                    <div className="col-md-8">
+                        {Error&&
+                        <div className="alert alert-danger">
+                            {Error.message}
                         </div>
-                        <div className="card-body">
-                            <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatSoal}>
-                                <div className="form-group">
-                                    <label htmlFor="no ">No</label>
-                                    <input id="nomer" ref={NoRef} className="form-control" type="number" min='1'/>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="Soal">Soal</label>
-                                    <Editor
-                                        apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
-                                        init = {{
-                                            menubar: false,
-                                            min_height:400,
-                                            plugins: [
-                                                'advlist autolink lists link image charmap print preview anchor',
-                                                'searchreplace visualblocks code fullscreen',
-                                                'insertdatetime media table paste code help wordcount image '
-                                              ],
-                                              toolbar: 'undo redo | formatselect | ' +
-                                              'bold italic backcolor | alignleft aligncenter ' +
-                                              'alignright alignjustify | bullist numlist outdent indent | ' +
-                                              'removeformat | image ',
-                                            images_upload_handler: function (blobInfo, success, failure) {
-                                                const file = blobInfo.blob()
-                                                UploadImage(file, success, failure)
-                                            },
-                                            branding: false,
-                                        }}
-                                        value={BodySoal}
-                                        onEditorChange={setBodySoal}
-                                    />
-                                </div>
-                                {ItemOpsi}
-                                <button className="btn btn-primary mr-3" type="button" onClick={handleTambahOpsi} disabled={Loading} >Tambah Opsi</button>
-                                <button className="btn btn-warning" type="button" onClick={handleHapusOpsi} disabled={Loading} >Hapus Opsi</button>
-                                <div className="form-group">
-                                    <label htmlFor="Jawaban">Jawaban</label>
-                                    <select value={Jawaban} onChange={(e)=>{setJawaban(e.target.value)}} className="form-control">
-                                        {ListOpsi.map(type=>{
-                                            return <option key={type} value={type} >{type}</option>
-                                        })}
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="Pembahasan">Pembahasan</label>
-                                    <Editor
-                                        apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
-                                        init = {{
-                                            menubar: false,
-                                            min_height:400,
-                                            plugins: [
-                                                'advlist autolink lists link image charmap print preview anchor',
-                                                'searchreplace visualblocks code fullscreen',
-                                                'insertdatetime media table paste code help wordcount image '
-                                              ],
-                                              toolbar: 'undo redo | formatselect | ' +
-                                              'bold italic backcolor | alignleft aligncenter ' +
-                                              'alignright alignjustify | bullist numlist outdent indent | ' +
-                                              'removeformat | image ',
-                                            images_upload_handler: function (blobInfo, success, failure) {
-                                                const file = blobInfo.blob()
-                                                UploadImage(file, success, failure)
-                                            },
-                                            branding: false,
-                                        }}
-                                        value={BodyPembahasan}
-                                        onEditorChange={setBodyPembahasan}
-                                    />
-                                </div>
-                                <button className="btn btn-primary" disabled={Loading}>Submit</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-4">
-                    <div className="card">
-                        <div className="card-header">
-                            List Soal
-                        </div>
-                        <ul className="list-group list-group-flush">
-                            {KuisData && KuisData.listQuestion && 
-                            KuisData.listQuestion.sort((a,b)=>{
-                                if(parseInt(a.id) < parseInt(b.id)){
-                                    return -1
-                                }else{
-                                    return 1
-                                }
-                            }) &&
-                            KuisData.listQuestion.map(data=>{
-                                return (
-                                <li className="list-group-item d-flex justify-content-between" key={data.id} >
-                                    Soal #{parseInt(data.id)+1}
-                                    <div>
-                                        <button type="buttom" className="btn btn-success mr-3" data-id={data.id} disabled={Loading} onClick={handleEditSoal} >Edit</button>
-                                        <button type="buttom" className="btn btn-danger" data-id={data.id} onClick={handleHapusSoal} disabled={Loading} >Hapus</button>
+                        }
+                        <div className="card">
+                            <div className="card-header">
+                                <h4 className="mb-0">
+                                    {OnEdit ? 
+                                    <>
+                                    <span className="mr-3" >Edit Soal</span>
+                                    <button className="btn btn-success" onClick={resetForm} >Cancel</button>
+                                    </>
+                                    : 
+                                    'Tambah Soal'
+                                    }
+                                </h4>
+                            </div>
+                            <div className="card-body">
+                                <form onSubmit={ OnEdit ? handleSubmitEdit : handleBuatSoal}>
+                                    <div className="form-group">
+                                        <label htmlFor="no ">No</label>
+                                        <input id="nomer" ref={NoRef} className="form-control" type="number" min='1'/>
                                     </div>
-                                </li>
-                                )
-                            })
-                            }
-                        </ul>
+                                    <div className="form-group">
+                                        <label htmlFor="Soal">Soal</label>
+                                        <Editor
+                                            apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
+                                            init = {{
+                                                menubar: false,
+                                                min_height:400,
+                                                plugins: [
+                                                    'advlist autolink lists link image charmap print preview anchor',
+                                                    'searchreplace visualblocks code fullscreen',
+                                                    'insertdatetime media table paste code help wordcount image '
+                                                ],
+                                                toolbar: 'undo redo | formatselect | ' +
+                                                'bold italic backcolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | image ',
+                                                images_upload_handler: function (blobInfo, success, failure) {
+                                                    const file = blobInfo.blob()
+                                                    UploadImage(file, success, failure)
+                                                },
+                                                branding: false,
+                                            }}
+                                            value={BodySoal}
+                                            onEditorChange={setBodySoal}
+                                        />
+                                    </div>
+                                    {ItemOpsi}
+                                    <button className="btn btn-primary mr-3" type="button" onClick={handleTambahOpsi} disabled={Loading} >Tambah Opsi</button>
+                                    <button className="btn btn-warning" type="button" onClick={handleHapusOpsi} disabled={Loading} >Hapus Opsi</button>
+                                    <div className="form-group">
+                                        <label htmlFor="Jawaban">Jawaban</label>
+                                        <select value={Jawaban} onChange={(e)=>{setJawaban(e.target.value)}} className="form-control">
+                                            {ListOpsi.map(type=>{
+                                                return <option key={type} value={type} >{type}</option>
+                                            })}
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="Pembahasan">Pembahasan</label>
+                                        <Editor
+                                            apiKey = 'njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'
+                                            init = {{
+                                                menubar: false,
+                                                min_height:400,
+                                                plugins: [
+                                                    'advlist autolink lists link image charmap print preview anchor',
+                                                    'searchreplace visualblocks code fullscreen',
+                                                    'insertdatetime media table paste code help wordcount image '
+                                                ],
+                                                toolbar: 'undo redo | formatselect | ' +
+                                                'bold italic backcolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | image ',
+                                                images_upload_handler: function (blobInfo, success, failure) {
+                                                    const file = blobInfo.blob()
+                                                    UploadImage(file, success, failure)
+                                                },
+                                                branding: false,
+                                            }}
+                                            value={BodyPembahasan}
+                                            onEditorChange={setBodyPembahasan}
+                                        />
+                                    </div>
+                                    <button className="btn btn-primary" disabled={Loading}>Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-4 mb-4">
+                        <div className="card">
+                            <div className="card-header">
+                                List Soal
+                            </div>
+                            <ul className="list-group list-group-flush">
+                                {KuisData && KuisData.listQuestion && 
+                                KuisData.listQuestion.sort((a,b)=>{
+                                    if(parseInt(a.id) < parseInt(b.id)){
+                                        return -1
+                                    }else{
+                                        return 1
+                                    }
+                                }) &&
+                                KuisData.listQuestion.map(data=>{
+                                    return (
+                                    <li className="list-group-item d-flex justify-content-between" key={data.id} >
+                                        Soal #{parseInt(data.id)+1}
+                                        <div>
+                                            <button type="buttom" className="btn btn-success mr-3" data-id={data.id} disabled={Loading} onClick={handleEditSoal} >Edit</button>
+                                            <button type="buttom" className="btn btn-danger" data-id={data.id} onClick={handleHapusSoal} disabled={Loading} >Hapus</button>
+                                        </div>
+                                    </li>
+                                    )
+                                })
+                                }
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>            
+        </Wrapper>
         </>
     )
 }
+
+const Wrapper = Styled.div(({screen}) =>`
+    
+    .flip{
+        ${screen < 768 ? 'flex-direction: column-reverse;' : ''}
+    }
+`)

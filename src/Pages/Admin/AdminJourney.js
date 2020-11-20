@@ -4,6 +4,7 @@ import { Link, useHistory, useParams } from 'react-router-dom'
 import Navbar from '../../component/Navbar/Navbar';
 import { db, FieldValue } from '../../config/Firebase';
 import { routeSet } from '../../config/Route';
+import Styled from '@emotion/styled'
 
 export default function AdminJourney() {
     let {uid} = useParams()
@@ -137,7 +138,7 @@ export default function AdminJourney() {
                                 <h4>{data.nama} | ({data.durasi} Menit) </h4>
                                 <hr/>
                                 <div className="d-flex">
-                                    <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Tambah Soal</Link>
+                                    <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Kelola Soal</Link>
                                     <Link className="btn btn-primary mr-3" to={routeSet.lihatHasilKuis({kuisID : data.uid })} >Lihat Hasil</Link>
                                     <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-publish={data.publish} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
                                     <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Kuis</button>
@@ -166,41 +167,65 @@ export default function AdminJourney() {
             <title>Admin Journey | Langit Edu</title>
         </Helmet>
         <Navbar />
-        <div className="container mt-4">
-            <h1>{Journey && Journey.nama}</h1>
+        <div className="container mt-4 d-flex justify-content-center">
+            <Wrapper>
+                <h1>{Journey && Journey.nama}</h1>
 
-            <div className="card mt-5">
-                <div className="card-header">
-                    <h4 className="mb-0 font-weight-bold">{OnEdit ? 'Edit Kuis' : 'Tambah Kuis'}</h4>
+                <div className="card mt-5 btn-shadow">
+                    <div className="card-header">
+                        <h4 className="mb-0 font-weight-bold">{OnEdit ? 'Edit Kuis' : 'Tambah Kuis'}</h4>
+                    </div>
+                    <div className="card-body">
+                        <form onSubmit={OnEdit ? handleEditKuis : handleBuatKuis}>
+                            <div className="custom-control custom-switch">
+                                <input onChange={handlePublishChange} type="checkbox" className="custom-control-input" id="isPublish" checked={isPublish} />
+                                <label className="custom-control-label" htmlFor="isPublish">Publish Kuis</label>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="nama">Nama Kuis</label>
+                                <input className="form-control" type="text" ref={namaKuisRef} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="durasi">Durasi Kuis (menit)</label>
+                                <input ref={durasiKuisRef} className="form-control" type="number"/>
+                            </div>
+                            <button className="btn btn-primary mr-3" disabled={Loading} >Submit</button>
+                            {OnEdit && 
+                            <button type='button' className="btn btn-success" onClick={CancelEdit}>Cancel Edit</button>
+                            }
+                        </form>
+                    </div>
                 </div>
-                <div className="card-body">
-                    <form onSubmit={OnEdit ? handleEditKuis : handleBuatKuis}>
-                        <div className="custom-control custom-switch">
-                            <input onChange={handlePublishChange} type="checkbox" className="custom-control-input" id="isPublish" checked={isPublish} />
-                            <label className="custom-control-label" htmlFor="isPublish">Publish Kuis</label>
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="nama">Nama Kuis</label>
-                            <input className="form-control" type="text" ref={namaKuisRef} />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="durasi">Durasi Kuis (menit)</label>
-                            <input ref={durasiKuisRef} className="form-control" type="number"/>
-                        </div>
-                        <button className="btn btn-primary mr-3" disabled={Loading} >Submit</button>
-                        {OnEdit && 
-                        <button type='button' className="btn btn-success" onClick={CancelEdit}>Cancel Edit</button>
-                        }
-                    </form>
-                </div>
-            </div>
 
-            <div className="card mt-4">
-                <ul className="list-group list-group-flush">
-                    {ListKuis}
-                </ul>
-            </div>
+                <div className="card mt-4 btn-shadow">
+                    <ul className="list-group list-group-flush">
+                        {ListKuis}
+                    </ul>
+                </div>
+            </Wrapper>
         </div>
         </>
     )
 }
+
+const Wrapper = Styled.div(() =>`
+    max-width:850px;
+    width: 90%;
+    padding: 32px 0 54px 0;
+
+    h1{
+        font-family: Raleway;
+        font-style: normal;
+        font-weight: 800;
+        font-size: 51px;
+        line-height: 60px;
+
+        /* Gray 1 */
+
+        color: #333333;
+    }
+
+    .btn-shadow{
+        border-radius: 12px !important;
+    }
+`)
