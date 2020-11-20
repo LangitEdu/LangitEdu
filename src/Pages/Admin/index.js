@@ -99,6 +99,7 @@ const Admin = () => {
         })
     }
     async function handleChangetoEditTopik(e){
+        setopenTopikForm(true)
         const {uid} = e.target.dataset
         setCurrentTopikId(uid)
         db.collection('Topik').doc(uid).get().then(doc=>{
@@ -271,7 +272,7 @@ const Admin = () => {
                 <div className="contain-size">
                     <h2>KELOLA TOPIK</h2>
                     <div className="makenewtopik" onClick={() => !openTopikForm ? setopenTopikForm(true) : ''}>
-                        <p>Buat topik baru</p>
+                        <p>{OnEdit ? 'Edit topik' : 'Buat topik baru'}</p>
                         {openTopikForm && 
                             <button className="btn-bordered-red" onClick={() => setopenTopikForm(false)}>BATALKAN</button>
                         }
