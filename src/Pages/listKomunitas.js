@@ -17,6 +17,7 @@ import { Helmet } from 'react-helmet';
 // CSS
 import Styled from '@emotion/styled'
 import ModalMember from '../component/Chat/ModalMember';
+import FooterCopyright from '../component/FooterCopyright';
 
 export default function ListKomunitas() {
 
@@ -317,12 +318,6 @@ export default function ListKomunitas() {
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
                 
                 if(onSerach || (CurrentKomunitas && CurrentKomunitas.DontRefresh)){
-                    // querySnapshot.forEach(doc=>{
-                    //     console.log(doc.id);
-                    //     if(CurrentKomunitas && CurrentKomunitas.uid === doc.id){
-                    //         setCurrentKomunitas({...doc.data(),uid:doc.id})
-                    //     }
-                    // })
                     return;
                 }
 
@@ -698,6 +693,9 @@ export default function ListKomunitas() {
                 Loading={Loading}
         /> 
         }
+        <div className="mt-5">
+            <FooterCopyright />
+        </div>
     </Wrapper>
     )
 }
