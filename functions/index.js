@@ -4,7 +4,7 @@ const app = express();
 const cors = require("cors");
 app.use(cors());
 
-const admin = require('firebase-admin')
+const admin = require('firebase-admin');
 admin.initializeApp()
 const db = admin.firestore()
 
@@ -111,7 +111,13 @@ const db = admin.firestore()
                     });
         return admin.auth().setCustomUserClaims(user.uid, {
             admin: true
-        }).then(()=>{
+        }).then( async ()=>{
+            db.collection('Private').doc('Data').update({
+                ListAdmin : admin.firestore.FieldValue.arrayUnion(user.uid)
+            }).catch(err=>{
+                console.log(err);
+                return res.status(500).json({status:'error', message:err.message})
+            })
             return res.json({status:'sukses', message: `Berhasil membuat akun ${data.email} menjadi admin silahkan logout dan login kembali untuk merefresh akun`});
         })
         .catch(err=>{

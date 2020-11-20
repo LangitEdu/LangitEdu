@@ -4,6 +4,7 @@ import {storage, EmailAuthProvider, db} from '../config/Firebase'
 import Navbar from '../component/Navbar/Navbar'
 import FormGroup from '../component/EditProfile/FormGroup'
 import styled from '@emotion/styled'
+import FooterCopyright from '../component/FooterCopyright'
 
 export default function EditProfile() {
     const {currentUser} = useAuth()
@@ -216,9 +217,9 @@ export default function EditProfile() {
     return (
         <Wrapper>
         <Navbar />
-        <div className="container mt-4">
-            <h1 className="mb-2">Edit Profile</h1>
-            <hr className="mb-5"/>
+        <div className="container my-4 vh-100">
+            <h1 className="mb-1">Edit Profile</h1>
+            <hr className="mb-3"/>
             {newError && 
             <div className="alert alert-danger mb-4">
                 {newError.message}
@@ -252,6 +253,9 @@ export default function EditProfile() {
                     </div>
                 </div>
             </div>
+        </div>
+        <div className="mt-5">
+            <FooterCopyright />
         </div>
         </Wrapper>
     )
