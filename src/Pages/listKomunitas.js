@@ -45,7 +45,7 @@ export default function ListKomunitas() {
     const idKomunitasRef = useRef()
     const deskripsiKomunitasRef = useRef()
     const ProfileKomPicRef = useRef()
-    const [Loadng, setLoading] = useState(false)
+    const [Loading, setLoading] = useState(false)
 
 
     useEffect(()=>{
@@ -66,7 +66,7 @@ export default function ListKomunitas() {
     }, [onChat])
 
     async function LiatChat(e, langsungUID=false, komUid=null){
-        setChat("loding..")
+        setChat("loading..")
         document.getElementById('idRoom').innerHTML = "Loading..."
         document.getElementById('JudulRoom').innerHTML = "Loading..."
         searchKomunitas.current.value = ""
@@ -85,8 +85,11 @@ export default function ListKomunitas() {
         let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
 
         db.collection('Komunitas').doc(currentKom).onSnapshot(async(currentKomunitas)=>{
+            if(!currentKomunitas.exists){
+                setOnChat(false)
+                return;
+            }
             const currentKomunitasData = currentKomunitas.data()
-
             setListBanUser(currentKomunitasData.listBanUser)
             setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData, DontRefresh:true})   
             let {photoUrl, nama, id,member} = currentKomunitasData
@@ -96,29 +99,33 @@ export default function ListKomunitas() {
             if(document.getElementById('avaGroup') !== null){
                 document.getElementById('avaGroup').src = photoUrl
             }
-            await db.collection('Profile').where('uid','in',member).get().then(res=>{
-                res.docs.forEach(doc=>{
-                    dataMember[doc.id] = doc.data()
+            if(member.length > 0){
+                await db.collection('Profile').where('uid','in',member).get().then(res=>{
+                    res.docs.forEach(doc=>{
+                        dataMember[doc.id] = doc.data()
+                    })
+                    setDataMember(res.docs)
+                    let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
+                    docRef.onSnapshot((querySnapshot)=>{
+                        if(!querySnapshot.empty){
+                            setChat(querySnapshot.docs.map((doc)=>{
+                                return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
+                                            docid={doc.id} 
+                                            komuniastUID={currentKom} 
+                                            dataMember={dataMember[doc.data().sender_uid]} 
+                                            key={doc.id} />
+                            }))
+                        }else{
+                            setChat("Masih belum ada pesan dari room")
+                        }
+                        
+                    },(err)=>{
+                        console.log(err);
+                    })
                 })
-                setDataMember(res.docs)
-                let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
-                docRef.onSnapshot((querySnapshot)=>{
-                    if(!querySnapshot.empty){
-                        setChat(querySnapshot.docs.map((doc)=>{
-                            return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
-                                        docid={doc.id} 
-                                        komuniastUID={currentKom} 
-                                        dataMember={dataMember[doc.data().sender_uid]} 
-                                        key={doc.id} />
-                        }))
-                    }else{
-                        setChat("Masih belum ada pesan dari room")
-                    }
-                    
-                },(err)=>{
-                    console.log(err);
-                })
-        })
+            }else{
+                setChat("Kamu bukan member dari komunitas")
+            }
         })
 
     }
@@ -210,13 +217,22 @@ export default function ListKomunitas() {
     }
 
     async function handleExitGroup(){
-        await db.collection('Komunitas').doc(CurrentKomunitas.uid).update({
+        const DocRef = db.collection('Komunitas').doc(CurrentKomunitas.uid)
+        await DocRef.update({
             member: FieldValue.arrayRemove(currentUser.uid)
         })
         .then(async () => {
-            let currentKom = await db.collection('Komunitas').doc(CurrentKomunitas.uid).get()
+            let currentKom = await DocRef.get()
             const data = currentKom.data()
             if(data.member.length === 0){
+
+                const batch = db.batch()
+
+                const Pesans = await DocRef.collection('Pesan').get()
+                Pesans.docs.forEach(doc=>{
+                    batch.delete(doc.ref)
+                })
+                await batch.commit()
 
                 if(data.profileRef){
                     storage.ref().child(data.profileRef).then(res=>{
@@ -226,7 +242,7 @@ export default function ListKomunitas() {
                     })
                 }
 
-                db.collection('Komunitas').doc(CurrentKomunitas.uid).delete()
+                DocRef.delete()
                 .then(()=>{
                     console.log("Berhasil menghapus");
                 }).catch((err)=>{
@@ -237,6 +253,10 @@ export default function ListKomunitas() {
                 komunitas: FieldValue.arrayRemove(CurrentKomunitas.uid)
             }).then(() => {
                 setOnChat(false)
+                let newCurrentKomunitas = CurrentKomunitas
+                newCurrentKomunitas.DontRefresh = false
+                setCurrentKomunitas(newCurrentKomunitas)
+
                 document.getElementById('JudulRoom').innerHTML = ""
                 document.getElementById('idRoom').innerHTML = ""
             }).catch((err) => {
@@ -338,6 +358,47 @@ export default function ListKomunitas() {
         return result;
      }
 
+    const handleDeleteKomunitas = async (komUid)=>{
+        setLoading(true)
+        const DocRef = db.collection('Komunitas').doc(komUid)
+        let currentKom = await DocRef.get()
+        const data = currentKom.data()
+        const batch = db.batch()
+
+        const Pesans = await DocRef.collection('Pesan').get()
+        Pesans.docs.forEach(doc=>{
+            batch.delete(doc.ref)
+        })
+        await batch.commit()
+
+        if(data.profileRef){
+            storage.ref().child(data.profileRef).then(res=>{
+                console.log('berhasil menghapus foto profile');
+            }).catch(err=>{
+                console.log(err);
+            })
+        }
+
+        DocRef.delete()
+        .then(()=>{
+            console.log("Berhasil menghapus");
+            setLoading(true)
+            setShowModalEditKomunitas(false)
+            if(CurrentKomunitas){
+                let newCurrentKomunitas = CurrentKomunitas
+                newCurrentKomunitas.DontRefresh = false
+                setCurrentKomunitas(newCurrentKomunitas)
+            }else{
+                setCurrentKomunitas({})
+            }
+            document.getElementById('JudulRoom').innerHTML = ""
+            document.getElementById('idRoom').innerHTML = ""
+        }).catch((err)=>{
+            console.log(err);
+            setLoading(true)
+            setShowModalEditKomunitas(false)
+        })
+    }
 
     async function EditKomunitas(e){
         e.preventDefault()
@@ -391,6 +452,9 @@ export default function ListKomunitas() {
             console.log('Berhasil update', res);
             setLoading(false)
             setShowModalEditKomunitas(false)
+            let newCurrentKomunitas = CurrentKomunitas
+            newCurrentKomunitas.DontRefresh = false
+            setCurrentKomunitas(newCurrentKomunitas)
             return;
         })
         .catch(err=>{
@@ -451,7 +515,16 @@ export default function ListKomunitas() {
             if(KomProfilePicUrl){
                 data.profileRef = 'Komunitas/'+FileUID+"."+extention
             }
-            await db.collection("Komunitas").add(data).catch(err=>{
+            await db.collection("Komunitas").add(data)
+            .then(res=>{
+                console.log(res);
+                if(CurrentKomunitas){
+                    let newCurrentKomunitas = CurrentKomunitas
+                    newCurrentKomunitas.DontRefresh = false
+                    setCurrentKomunitas(newCurrentKomunitas)
+                }
+            })
+            .catch(err=>{
                 setError(err)
                 setShowModalAddKomunitas(false)
                 setLoading(false)
@@ -609,8 +682,9 @@ export default function ListKomunitas() {
                     idKomunitasRef = {idKomunitasRef}
                     deskripsiKomunitasRef={deskripsiKomunitasRef}
                     ProfileKomPicRef={ProfileKomPicRef}
-                    Loading={Loadng}
+                    Loading={Loading}
                     defaultValue={CurrentKomunitas}
+                    handleDeleteKomunitas={handleDeleteKomunitas}
             /> 
         }
         {ShowModalAddKomunitas && 
@@ -621,7 +695,7 @@ export default function ListKomunitas() {
                 idKomunitasRef = {idKomunitasRef}
                 deskripsiKomunitasRef={deskripsiKomunitasRef}
                 ProfileKomPicRef={ProfileKomPicRef}
-                Loading={Loadng}
+                Loading={Loading}
         /> 
         }
     </Wrapper>
