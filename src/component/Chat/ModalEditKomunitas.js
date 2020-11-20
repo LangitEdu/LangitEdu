@@ -20,7 +20,7 @@ const ModalEditKomunitas = (props)=>{
 
         
     }
-    
+
     const handleFileChange = (e)=>{
         setError()
         if(e.target.files.length > 0){
@@ -62,7 +62,7 @@ const ModalEditKomunitas = (props)=>{
         <div className="modal-dialog modal-lg">
         <div className="modal-content">
             <div className="modal-header">
-            <h5 className="modal-title">Buat Komunitas</h5>
+            <h5 className="modal-title">Edit Komunitas</h5>
             <button type="button" className="close" onClick={props.onClick} aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -73,10 +73,11 @@ const ModalEditKomunitas = (props)=>{
                     <NotDismissible type='danger' message={Error.message} />
                     }
                     <div className="row">
-                        <div className="col-md-4">
-                            <div className="profilpic mb-4" style={{maxWidth:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
+                        <div className="col-md-4 d-flex justify-content-start flex-column align-items-center">
+                            <div className="profilpic mb-4" style={{width:'10rem',maxHeight:'10rem',overflow:'hidden',borderRadius:"100%"}}>
                                 <img id="profilepic" src={ props.defaultValue.photoUrl } alt="Profile" className="img-fluid"/>
                             </div>
+                            <button type="button" className="btn btn-bordered-red shadow-sm" disabled={props.Loading} onClick={()=>{props.handleDeleteKomunitas(props.defaultValue.uid)}} >Hapus Komunitas</button>
                         </div>
                         <div className="col-md-8">
                             <div className="form-group">

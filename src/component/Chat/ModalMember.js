@@ -4,6 +4,7 @@ import { db, FieldValue } from '../../config/Firebase'
 export default function ModalMember(props) {
     const [Loading, setLoading] = useState(false)
     const [ListBanUser, setListBanUser] = useState([])
+    const [ListMember, setListMember] = useState([])
     const PotongString = (str)=>{
         const panjangString = 50
         if(str.length > 50){
@@ -83,6 +84,10 @@ export default function ModalMember(props) {
                 setListBanUser(res.docs)
             })
         }
+        const newMemberList = props.dataMember.filter(doc=>{
+            return props.currentUser.uid !==doc.id
+        })
+        setListMember(newMemberList)
     }, [props])
     return (
         <>
@@ -102,7 +107,7 @@ export default function ModalMember(props) {
                         <h4>Daftar Anggota : </h4>
                         <hr/>
                         <ul>
-                            {props.dataMember.map(doc=>{
+                            {ListMember.length >0 ? ListMember.map(doc=>{
                                 return props.currentUser.uid !==doc.id  && 
                                     <li className="mb-2 d-flex justify-content-between" key={doc.id} >
                                     {PotongString(doc.data().displayName)}
@@ -111,7 +116,10 @@ export default function ModalMember(props) {
                                         <button disabled={Loading} className="btn btn-danger" data-uid={doc.id} onClick={handleHapusMember} ><i className="fas fa-times"></i></button>
                                     </div>
                                     </li>
-                            })}
+                            })
+                            :
+                            <li>Belum ada Peserta Komunitas selain anda</li>
+                            }
                         </ul>
                     </div>
                     <div className="col-md-6">

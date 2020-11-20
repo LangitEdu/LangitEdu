@@ -86,12 +86,12 @@ const db = admin.firestore()
                 })
             })
     }
-
+    
     app.post('/make-admin',async (req,res)=>{
         const data = {
                 email: req.body.email,
                 tokenAdmin : req.body.tokenAdmin
-            }
+        }
         if(!(data.email || data.tokenAdmin)){
             return res.status(400).json({status:'error',message:'masukin param yang bener'})
         }
