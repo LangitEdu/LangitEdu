@@ -10,14 +10,17 @@ import ModalKomunitas from '../component/Chat/ModalKomunitas';
 import Navbar from '../component/Navbar/Navbar'
 import RichForm from '../component/Chat/RichForm';
 import ModalEditKomunitas from '../component/Chat/ModalEditKomunitas';
+import FooterCopyright from '../component/FooterCopyright';
 
 // Head
 import { Helmet } from 'react-helmet';
 
+// Size
+import useResize from 'use-resize'
+
 // CSS
 import Styled from '@emotion/styled'
 import ModalMember from '../component/Chat/ModalMember';
-import FooterCopyright from '../component/FooterCopyright';
 
 export default function ListKomunitas() {
 
@@ -37,6 +40,7 @@ export default function ListKomunitas() {
     const [ShowModalMember, setShowModalMember] = useState(false)
     const [DataMember, setDataMember] = useState([])
     const [ListBanUser, setListBanUser] = useState([])
+    const screen = useResize().width
 
     // const [LoadiedChat, setLoadiedChat] = useState()
     const searchKomunitas = useRef()
@@ -537,7 +541,7 @@ export default function ListKomunitas() {
         setLoading(false)
     }  
     return (
-        <Wrapper IsAdmin={IsAdmin}>
+        <Wrapper IsAdmin={IsAdmin} onChat={onChat}>
         <Navbar />
         <Helmet>
             <title>Komunitas | Langit Edu</title>
@@ -548,16 +552,59 @@ export default function ListKomunitas() {
                 {Error}
                 </div>
             }
+
+            {screen < 769 &&
+            <>
+            <div className="chat-search-box mt-5 mb-3">
+                <form className="input-group align-items-center" onSubmit={handleSearchKomunitas}>
+                    {onSerach && 
+                    <div className="input-group-btn">
+                        <button type="button" className="btn btn-warning text-white" onClick={cancelSearch} >
+                            <i className="fas fa-times"></i>
+                        </button>
+                    </div>
+                    }
+                    <input ref={searchKomunitas} className="form-control mr-3 py-4" placeholder="Search" onChange={handleSearchTextChange} />
+                    <button type="submit" className="btn btn-info align-self-stretch px-3" id="btnSearch" disabled={!CanSearch}>
+                        <i className="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+
+            <div className="accordion" id="accordionKomunitas">
+                <div className="card shadow">
+                    <div className="card-header" id="headingOne">
+                        <h2 className="mb-0">
+                            <button className="btn text-dark font-weight-bold btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                {onSerach ? 'Hasil Search' : 'Komunitas Diikuti'}
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionKomunitas">
+                    <div className="card-body">
+                        <ul className="users position-relative">
+                            {ListKomunitas}
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            </>
+            }
+
             <div className="content-wrapper">
 
                 <div className="row gutters">
 
-                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div className="col-12">
 
                         <div className="card bg-transparent m-0">
 
                             <div className="row no-gutters">
-                                <div className="col-xl-4 col-lg-4 col-md-4 col-sm-3 col-3">
+                                {screen > 768 &&
+                                <div className="col-md-4 col-3">
                                     <div className="users-container">
                                         <div className="chat-search-box">
                                             <form className="input-group align-items-center" onSubmit={handleSearchKomunitas}>
@@ -582,10 +629,10 @@ export default function ListKomunitas() {
                                             <i className="fas fa-plus"></i>
                                         </button>
                                     </div>
-                                </div>
-                                <div className=" card shadow col-xl-8 col-lg-8 col-md-8 col-sm-9 col-9">
+                                </div>}
+                                <div className=" card shadow col-md-8 ">
                                     <div className="card-body">
-                                        <div className="selected-user d-flex justify-content-between flex-wrap align-items-center">
+                                        <div className="selected-user d-flex justify-content-md-between flex-wrap align-items-md-center flex-md-row flex-column">
                                             <div className="d-flex">
                                                 {onChat && 
                                                 CurrentKomunitas &&
@@ -602,7 +649,7 @@ export default function ListKomunitas() {
                                                     <span className="idRoom" id="idRoom"></span>
                                                 </div>
                                             </div>
-                                            <div>
+                                            <div className="btn-wrapper" >
                                             {onChat && 
                                             <>
                                                 {IsAdmin && 
@@ -700,7 +747,7 @@ export default function ListKomunitas() {
     )
 }
 
-const Wrapper = Styled.div(({IsAdmin}) =>`
+const Wrapper = Styled.div(({IsAdmin, onChat}) =>`
 body{
     background : white;
 }
@@ -711,16 +758,34 @@ strong{
     ${IsAdmin? 'cursor: pointer' : '' }
 }
 
+.accordion{
+    .card{
+        border-radius: 10px;
+        .card-header{
+            border: 2px solid #fff;
+            border: 2px solid #e4e1e1;
+            margin-bottom: 0px;
+            border-radius: 10px;
+            .btn:focus{
+                border:none;
+                box-shadow:none;
+            }
+        }
+    }
+}
+
 .card .card{
     border-radius:2rem;
 }
 
 .modal{
     z-index: 9999;
+
     .modal-body{
         overflow-y: auto;
         max-height: 80vh;
     }
+
 }
 .selected-user .chat-avatar {
     overflow: hidden;
@@ -755,12 +820,6 @@ strong{
 
 button#btnSearch, .chat-search-box .input-group .form-control {
     border-radius: .75rem;
-}
-
-@media (max-width: 767px) {
-    .chat-search-box {
-        display: none;
-    }
 }
 
 .users-container {
@@ -890,6 +949,16 @@ button#btnSearch, .chat-search-box .input-group .form-control {
     }
     .users .person p.name-time .time {
         display: none;
+    }
+    .btn-wrapper{
+        margin:1.5rem 0;
+    }
+    .selected-user{
+        border-bottom : ${onChat ? '2px' : '0'} solid #ddd;
+        padding: .5rem 1.75rem !important;
+    }
+    .card-body{
+        padding: 1.25rem 0;
     }
 }
 
@@ -1032,17 +1101,16 @@ button#btnSearch, .chat-search-box .input-group .form-control {
 }
 
 @media (max-width: 767px) {
-    .chat-container li.chat-left,
-    .chat-container li.chat-right {
-        flex-direction: column;
-        margin-bottom: 30px;
+    .chat-container li.chat-left {
+        .chat-avatar{
+            margin-right: 1rem;
+        }
     }
     .chat-container li img {
         width: 32px;
         height: 32px;
     }
     .chat-container li.chat-left .chat-avatar {
-        margin: 0 0 5px 0;
         display: flex;
         align-items: center;
     }
@@ -1068,7 +1136,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
         margin-right: 5px;
     }
     .chat-container li .chat-text {
-        font-size: .8rem;
+        font-size: 1.2rem;
     }
 }
 

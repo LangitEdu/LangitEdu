@@ -7,7 +7,7 @@ const Komunitas = (props)=>{
                 <img src={props.photoUrl} alt={props.nama} />
             </div>
             <div className="d-flex justify-content-between w-100 align-items-center">
-            <div className="d-none d-md-block" >
+            <div >
                 <h5 className="name align-self-center" id={`namaRoom_${props.komunitas_uid}`} >{props.nama}</h5>
                 <p className="name-time d-flex justify-content-between w-100 align-items-center">
                     <span className="time">{moment.unix(props.lastChat.seconds).fromNow()}</span>
