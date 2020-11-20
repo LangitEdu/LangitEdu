@@ -3,7 +3,7 @@ import { Editor } from '@tinymce/tinymce-react';
 export default function RichForm(props) {
     return (
         <>
-        <textarea className="d-none"  ref={props.reference} value={props.pesan} id="myTextArea" readOnly></textarea>
+        <textarea className="d-none" data-currentkom={props.KomunitasUID}  ref={props.reference} value={props.pesan} id="myTextArea" readOnly></textarea>
         <Editor
             initialValue=""
             apiKey='njsvutrsf1m8e3koexowpglc5grb0z21ujbxpll08y9gvt23'

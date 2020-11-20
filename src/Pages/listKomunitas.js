@@ -36,6 +36,7 @@ export default function ListKomunitas() {
     const [ShowModalMember, setShowModalMember] = useState(false)
     const [DataMember, setDataMember] = useState([])
     const [ListBanUser, setListBanUser] = useState([])
+
     // const [LoadiedChat, setLoadiedChat] = useState()
     const searchKomunitas = useRef()
     const dummy = useRef()
@@ -136,17 +137,31 @@ export default function ListKomunitas() {
         if(!e.komunitasUID){
             e.preventDefault();
         }
-        currentKomunitasUID = CurrentKomunitas ? CurrentKomunitas.uid : e.KomunitasUID
+        currentKomunitasUID = PesanRef.current.dataset.currentkom
         setError('')
         if(PesanRef.current.value.length > 0){
-            const PesanYangDikirim = PesanRef.current.value
+            let PesanYangDikirim = PesanRef.current.value
             setPesan('')
             const patt = /((<script.*?>|<script>).*?<\/script>)/
             if(patt.test(PesanYangDikirim)){
                 setError('Dilarang Mengirimkan script text')
                 return;
             }
-            
+            const urlPatt = /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/ig
+            const links = PesanYangDikirim.match(urlPatt)
+            if(links && links.length >0 ){
+                links.forEach(link=>{
+                    const httpPatt = /[(http(s)?)://]{7,8}/ig
+                    let newLink
+                    if(!httpPatt.test(link)){
+                        newLink='https://'+link
+                    }else{
+                        newLink = link
+                    }
+                    PesanYangDikirim = PesanYangDikirim.replace(link,`<a href=${newLink} target="_blank" rel="noopener noreferrer">${link}</a>`)
+                })
+                console.log(PesanYangDikirim);
+            }
             await db.collection('Komunitas').doc(currentKomunitasUID).collection('Pesan').add({
                 sender_uid: currentUser.uid,
                 timestamp: FieldValue.serverTimestamp(),
@@ -282,6 +297,12 @@ export default function ListKomunitas() {
         let unsub =  docRef.onSnapshot(function(querySnapshot) {
                 
                 if(onSerach || (CurrentKomunitas && CurrentKomunitas.DontRefresh)){
+                    // querySnapshot.forEach(doc=>{
+                    //     console.log(doc.id);
+                    //     if(CurrentKomunitas && CurrentKomunitas.uid === doc.id){
+                    //         setCurrentKomunitas({...doc.data(),uid:doc.id})
+                    //     }
+                    // })
                     return;
                 }
 
@@ -857,6 +878,11 @@ button#btnSearch, .chat-search-box .input-group .form-control {
 }
 .chat-container li.chat-right > div div .chat-text {
     float: right;
+
+    a{
+        color:#ffcb9e;
+    }
+
 }
 .chat-container li .chat-name {
     font-size: .75rem;

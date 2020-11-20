@@ -1,7 +1,7 @@
 import { storage } from '../config/Firebase'
 import MakeID from './MakeID'
 
-const UploadImage = (file, success, failure)=>{
+const UploadImage = (file, success, failure, ref='Media/Topik/')=>{
     let extention = file.name.split('.').pop().toLowerCase()
     let arrOfAcceptableExtention = ['jpg','png','jpeg']
     if(!arrOfAcceptableExtention.includes(extention)){
@@ -13,7 +13,7 @@ const UploadImage = (file, success, failure)=>{
         return
     }
 
-    storage.ref('Media/Topik/').child(`${MakeID(10)}.${extention}`).put(file)
+    storage.ref(ref).child(`${MakeID(10)}.${extention}`).put(file)
     .then(res=>{
         res.ref.getDownloadURL().then(url=>{
             success(url)
