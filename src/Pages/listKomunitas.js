@@ -290,7 +290,7 @@ export default function ListKomunitas() {
                 }else{
                     let newDocs = querySnapshot.docs.filter(doc=>{
                         const data= doc.data()
-                        return !data.listBanUser.includes(currentUser.uid)
+                        return !(data.listBanUser.includes(currentUser.uid))
                     })
                     setListKomunitas(newDocs.map(doc=>{
                         return (
