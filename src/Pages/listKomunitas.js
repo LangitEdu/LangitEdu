@@ -704,7 +704,9 @@ const Wrapper = Styled.div(({IsAdmin}) =>`
 body{
     background : white;
 }
-
+strong{
+    font-weight:bold;
+}
 #JudulRoom{
     ${IsAdmin? 'cursor: pointer' : '' }
 }
@@ -715,6 +717,10 @@ body{
 
 .modal{
     z-index: 9999;
+    .modal-body{
+        overflow-y: auto;
+        max-height: 80vh;
+    }
 }
 .selected-user .chat-avatar {
     overflow: hidden;
