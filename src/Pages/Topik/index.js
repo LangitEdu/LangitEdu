@@ -113,6 +113,10 @@ const Wrapper = Styled.div(() =>`
     padding: 54px 0;
     min-height: 1000px;
 
+    .topik-tersedia{
+        width: 100%;
+    }
+
     .topik-card{
         max-width: 553px;
         width: 90%;
@@ -135,13 +139,14 @@ const Wrapper = Styled.div(() =>`
             font-weight: bold;
             font-size: 35px;
             line-height: 41px;
-
+            
             /* Gray 1 */
-
+            
             color: #333333;
         }
-
+        
         .desc p{
+            width: 100%;
             font-family: Oxygen;
             font-style: normal;
             font-weight: normal;
