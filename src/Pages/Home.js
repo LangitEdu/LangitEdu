@@ -31,7 +31,7 @@ const Home = () => {
 
             <div className="supertron">
                 <div className="contain-size">
-                    <img className="img-fluid" src="/img/ilus/study.svg" alt=""/>
+                    <img className={`img-fluid ${screen < 768 ? 'mb-4' : ''}`} src="/img/ilus/study.svg" alt=""/>
                     <div className="telling-cont">
                         <h1>Belajar dimanapun <br/>dan kapanpun </h1>
                         <Link className="btn-bordered" to={RouteName.register}>MULAI BELAJAR</Link>
@@ -42,7 +42,7 @@ const Home = () => {
             <div className="supersecond">
                 <div className="contain-size">
                     <h2 className="tosca-text">Membuat belajar bersama teman lebih menyenangkan</h2>
-                    <img className="img-fluid" src="/img/ilus/bersama.svg" alt=""/>
+                    <img className={`img-fluid ${screen < 768 ? 'mb-4' : ''}`} src="/img/ilus/bersama.svg" alt=""/>
                 </div>
             </div>
 
@@ -60,8 +60,8 @@ const Home = () => {
 
                     <div className="post-item row mb-5">
                         <div className="col-md-4">
-                            <div className="thumbnail">
-                                <img className="img-fluid" src="/img/thumbnail.png" alt="thumbnail.png"/>
+                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
+                                <img className="img-fluid" src="/img/thumbnail1.svg" alt="thumbnail.png"/>
                             </div>
                         </div>
                         <div className="col-md-8">
@@ -76,8 +76,8 @@ const Home = () => {
 
                     <div className="post-item row mb-5">
                         <div className="col-md-4">
-                            <div className="thumbnail">
-                                <img className="img-fluid" src="/img/thumbnail.png" alt="thumbnail.png"/>
+                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
+                                <img className="img-fluid" src="/img/thumbnail2.svg" alt="thumbnail.png"/>
                             </div>
                         </div>
                         <div className="col-md-8">
@@ -92,8 +92,8 @@ const Home = () => {
 
                     <div className="post-item row mb-5">
                         <div className="col-md-4">
-                            <div className="thumbnail">
-                                <img className="img-fluid" src="/img/thumbnail-2.png" alt="thumbnail.png"/>
+                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
+                                <img className="img-fluid" src="/img/thumbnail3.svg" alt="thumbnail.png"/>
                             </div>
                         </div>
                         <div className="col-md-8">

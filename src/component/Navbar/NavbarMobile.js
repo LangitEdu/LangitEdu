@@ -5,7 +5,7 @@ import RouteName, { routeSet } from '../../config/Route'
     
 const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout, IsAdmin}) => {
     return (
-        <Wrapper currentUser={currentUser} openAction={openAction}>
+        <Wrapper currentUser={currentUser} openAction={openAction} IsAdmin={IsAdmin}>
             <nav>
                     <div className="contain-height">
                         <Link to={RouteName.home} className="logo-cont">
@@ -41,14 +41,14 @@ const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout, IsA
     );
 }
     
-const Wrapper = Styled.div(({currentUser, openAction}) =>`
+const Wrapper = Styled.div(({currentUser, openAction, IsAdmin}) =>`
     position: sticky;
     top: 0;
     z-index: 99;
 
     nav{
         width: 100%;
-        height: ${openAction && currentUser ? "368px" : openAction ? "306px" : "80px"};
+        height: ${openAction && IsAdmin ? "358px" : openAction ? "308px" : "80px"};
         background: #FAFAFA;
         box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.2);
         padding: 0 16px;
