@@ -247,7 +247,7 @@ const Admin = () => {
                     {Verify.message}
                 </div>}
             </div>
-            <div className="vh-100">
+            <div className="gantivh">
             <div className="setadmin">
                 <div className="contain-size">
                     <h1>Admin Control</h1>
@@ -369,6 +369,9 @@ const Admin = () => {
     
 const Wrapper = Styled.div(({screen, openTopikForm}) =>`
 
+    .gantivh{
+        min-height: 100vh;
+    }
     .contain-size{
         max-width: 858px;
         width: 90%;
