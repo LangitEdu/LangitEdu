@@ -9,6 +9,7 @@ import { Helmet } from 'react-helmet'
 import { Editor } from '@tinymce/tinymce-react'
 import UploadImage from '../../utils/UploadImgInTinyMCE'
 import useResize from 'use-resize'
+import FooterCopyright from '../../component/FooterCopyright';
 
 const Admin = () => {
     const [openTopikForm, setopenTopikForm] = useState(false)
@@ -246,7 +247,7 @@ const Admin = () => {
                     {Verify.message}
                 </div>}
             </div>
-            
+            <div className="vh-100">
             <div className="setadmin">
                 <div className="contain-size">
                     <h1>Admin Control</h1>
@@ -357,6 +358,10 @@ const Admin = () => {
                 <div className="accordion" id="listTopik">
                     {ListTopik}
                 </div>
+            </div>
+            </div>
+            <div className="mt-5">
+                <FooterCopyright />
             </div>
         </Wrapper>
     );

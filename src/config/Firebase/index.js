@@ -13,11 +13,9 @@ const firebaseConfig = {
   projectId: "langit-edu",
   storageBucket: "langit-edu.appspot.com",
   messagingSenderId: "1043332770295",
-  appId: "1:1043332770295:web:ac8096202d179f753766f2",
-  measurementId: "G-8RFQS90YJ3"
+  appId: "1:1043332770295:web:5a59e4bced1989aa3766f2",
+  measurementId: "G-ZN7E8FGQYE"
 };
-
-
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);

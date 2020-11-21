@@ -39,7 +39,7 @@ function App() {
           <GuestOnlyRoute path={RouteName.login} component={Login} />
           <GuestOnlyRoute path={RouteName.forgetPassword} component={ForgotPassword} />
           
-          <AdminRoute exact path={RouteName.admin} component={Admin} />
+          <UserRoute exact path={RouteName.admin} component={Admin} />
           <AdminRoute exact path={RouteName.liatJourney} component={AdminJourney} />
           <AdminRoute exact path={RouteName.tambahSoal} component={TambahSoal} />
           <AdminRoute exact path={RouteName.lihatHasilKuis} component={HasilKuis} />

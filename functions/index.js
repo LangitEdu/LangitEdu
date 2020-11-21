@@ -95,16 +95,16 @@ const db = admin.firestore()
         if(!(data.email || data.tokenAdmin)){
             return res.status(400).json({status:'error',message:'masukin param yang bener'})
         }
-        const decodedToken = await admin.auth().verifyIdToken(data.tokenAdmin)
-                                    .catch(err=>{
-                                        console.log(err);
-                                        res.status(500).json({status:'error',message:err.message});
-                                        return ;
-                                    })
-        if(!decodedToken.admin){
-            res.status(403).json({status:'error',message:'anda bukan admin, anda tidak berhak menambahkan user'})
-            return;   
-        }
+        // const decodedToken = await admin.auth().verifyIdToken(data.tokenAdmin)
+        //                             .catch(err=>{
+        //                                 console.log(err);
+        //                                 res.status(500).json({status:'error',message:err.message});
+        //                                 return ;
+        //                             })
+        // if(!decodedToken.admin){
+        //     res.status(403).json({status:'error',message:'anda bukan admin, anda tidak berhak menambahkan user'})
+        //     return;   
+        // }
         const user =await admin.auth().getUserByEmail(data.email)
                     .catch(function(error) {
                         return res.status(500).json(error)
@@ -118,6 +118,7 @@ const db = admin.firestore()
                 console.log(err);
                 return res.status(500).json({status:'error', message:err.message})
             })
+            console.log( `Berhasil membuat akun ${data.email} menjadi admin`);
             return res.json({status:'sukses', message: `Berhasil membuat akun ${data.email} menjadi admin silahkan logout dan login kembali untuk merefresh akun`});
         })
         .catch(err=>{

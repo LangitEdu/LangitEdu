@@ -541,7 +541,7 @@ export default function ListKomunitas() {
         setLoading(false)
     }  
     return (
-        <Wrapper IsAdmin={IsAdmin} onChat={onChat}>
+        <Wrapper IsAdmin={IsAdmin} OnChat={onChat}>
         <Navbar />
         <Helmet>
             <title>Komunitas | Langit Edu</title>
@@ -747,12 +747,15 @@ export default function ListKomunitas() {
     )
 }
 
-const Wrapper = Styled.div(({IsAdmin, onChat}) =>`
+const Wrapper = Styled.div(({IsAdmin, OnChat}) =>`
 body{
     background : white;
 }
 strong{
     font-weight:bold;
+}
+.input-group-text{
+    cursor:pointer;
 }
 #JudulRoom{
     ${IsAdmin? 'cursor: pointer' : '' }
@@ -954,7 +957,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
         margin:1.5rem 0;
     }
     .selected-user{
-        border-bottom : ${onChat ? '2px' : '0'} solid #ddd;
+        border-bottom : ${OnChat ? '2px' : '0'} solid #ddd;
         padding: .5rem 1.75rem !important;
     }
     .card-body{
@@ -1075,7 +1078,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
 }
 
 .chat-container li.chat-right > div .chat-text:before {
-    right: -20px;
+    right: -18px;
     border-color: transparent transparent transparent #007A95;
     left: inherit;
 }

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import MakeID from "../../utils/MakeID"
 import NotDismissible from "../Alert/NotDismissible"
 
 const ModalKomunitas = (props)=>{
     const [Error, setError] = useState(false)
     const [SubmitAble, setSubmitAble] = useState(false)
     const [ProfileTempUrl, setProfileTempUrl] = useState('')
+    
     const handleInputChange = (e)=>{
         // Id ga boleh ada whitespace
         setError()
@@ -21,7 +23,10 @@ const ModalKomunitas = (props)=>{
 
         
     }
-    
+    const genarateId = ()=>{
+        props.idKomunitasRef.current.value = MakeID(6)
+        handleInputChange()
+    }
     const handleFileChange = (e)=>{
         setError()
         if(e.target.files.length > 0){
@@ -98,7 +103,7 @@ const ModalKomunitas = (props)=>{
                                 <label>ID Komunitas</label>
                                 <div className="input-group mb-2 mr-sm-2">
                                 <div className="input-group-prepend">
-                                    <div className="input-group-text">@</div>
+                                    <div className="input-group-text" onClick={genarateId} >@</div>
                                     </div>
                                     <input ref={props.idKomunitasRef} type="text" className="form-control" onChange={handleInputChange} required />
                                 </div>
