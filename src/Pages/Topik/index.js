@@ -115,7 +115,7 @@ const Wrapper = Styled.div(() =>`
 
 
     .cut-height{
-        max-width: 54px;
+        max-height: 54px;
         overflow: hidden
     }
 
