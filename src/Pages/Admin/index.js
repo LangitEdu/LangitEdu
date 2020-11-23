@@ -59,14 +59,15 @@ const Admin = () => {
         if(ThumbnailRef.current.files.length > 0){
             const file = ThumbnailRef.current.files[0]
             let extention = file.name.split('.').pop();
-            let res = await storage.ref('TopikThumbnail')
+            URL = await storage.ref('TopikThumbnail')
                     .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .then(async (res)=>{
+                        return await res.ref.getDownloadURL()
+                    })
                     .catch(function(error) {
                         setError(error);
                         return;
                       });
-            console.log(res);
-            URL = await res.ref.getDownloadURL()
             Ref = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
         }
         db.collection('Topik').add({
@@ -129,14 +130,16 @@ const Admin = () => {
         if(ThumbnailRef.current.files.length > 0){
             const file = ThumbnailRef.current.files[0]
             let extention = file.name.split('.').pop();
-            let res = await storage.ref('TopikThumbnail')
+            data.thumbnail =  await storage.ref('TopikThumbnail')
                     .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .then(async (res)=>{
+                        return await res.ref.getDownloadURL()
+                    })
                     .catch(function(error) {
                         setError(error);
                         return;
                       });
-            console.log(res);
-            data.thumbnail = await res.ref.getDownloadURL()
+           
             data.thumbnailRef = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
         }
         await db.collection('Topik').doc(CurrentTopikId).update(data)
