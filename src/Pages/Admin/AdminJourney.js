@@ -99,7 +99,8 @@ export default function AdminJourney() {
                     const KuisUID = e.target.dataset.uid
                     const durasi = e.target.dataset.durasi
                     const namaKuis = e.target.dataset.nama
-        
+                    const publish = e.target.dataset.publish==='true'
+                     
                     db.collection('Kuis').doc(KuisUID).delete()
                     .then(()=>{
                             db.collection('Journey').doc(uid).update({
@@ -107,6 +108,7 @@ export default function AdminJourney() {
                                     uid:KuisUID, 
                                     nama:namaKuis, 
                                     durasi:durasi,
+                                    publish:publish
                                 })
                             })
                             .then(()=>{
@@ -141,7 +143,7 @@ export default function AdminJourney() {
                                     <Link className="btn btn-primary mr-3" to={routeSet.tambahSoal({uid:data.uid})} >Kelola Soal</Link>
                                     <Link className="btn btn-primary mr-3" to={routeSet.lihatHasilKuis({kuisID : data.uid })} >Lihat Hasil</Link>
                                     <button className="btn btn-info mr-3" onClick={ChangeToEdit} data-publish={data.publish} data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama}>Edit Kuis</button>
-                                    <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis}>Hapus Kuis</button>
+                                    <button className="btn btn-danger" data-durasi={data.durasi} data-uid={data.uid} data-nama={data.nama} onClick={hapusKuis} data-publish={data.publish} >Hapus Kuis</button>
                                 </div>
                             </li>
                         )
