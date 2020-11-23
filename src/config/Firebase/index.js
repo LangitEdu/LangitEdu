@@ -36,6 +36,7 @@ firebase.analytics();
 firebase.auth().useDeviceLanguage();
 const auth = app.auth();
 const EmailAuthProvider = firebase.auth.EmailAuthProvider
+var googleProvider = new firebase.auth.GoogleAuthProvider();
 // Firestore
 const db = firebase.firestore();
 const FieldValue = firebase.firestore.FieldValue;
@@ -53,5 +54,5 @@ if (window.location.hostname === "localhost") {
   API_URL='https://asia-southeast2-langitedubackup.cloudfunctions.net/api'
 }
 
-export {auth, EmailAuthProvider,db, FieldValue, storage, functions, API_URL }
+export {auth, EmailAuthProvider,db,googleProvider, FieldValue, storage, functions, API_URL }
 export default app;

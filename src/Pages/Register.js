@@ -1,49 +1,33 @@
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import {Link, useHistory} from "react-router-dom";
 import Dismissible from '../component/Alert/Dismissible';
 import RouteName from '../config/Route';
 import {useAuth} from '../contexts/AuthContext'
 import Styled from '@emotion/styled'
 import useResize from "use-resize"
-import BtnBlue from '../component/Buttons/BtnBlue'
 import { Helmet } from 'react-helmet';
 
 export default function Register() {
-    // Ref
-    let emailRef =  useRef()
-    let passwordRef = useRef()
-    let confirmPasswordref = useRef()
-    let nameRef = useRef()
     // State
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     // Auth method
-    const {signup} = useAuth()
+    const {signInWithGoogle} = useAuth()
     // Other
     const history = useHistory()
     const size = useResize()
 
     const handleSubmit = async (e)=>{
-        e.preventDefault()
-        setLoading(true)
-        setError('')
-        if(passwordRef.current.value !== confirmPasswordref.current.value){
-            setError("Password dan Confirm Password tidak sama !")
-            setLoading(false)
-            return
-        }
+        e.preventDefault();
         try{
-            await signup({
-                email : emailRef.current.value,
-                password : passwordRef.current.value,
-                name : nameRef.current.value
-            }).then(()=>{
-                history.push(RouteName.dashboard)
-            })
-        }catch(err){
-            setError(err.message)
-            setLoading(false)
+            setError('')
+            setLoading(true)
+            await signInWithGoogle()
+            history.push(RouteName.dashboard)
+        } catch(err){
+            setError(err.message);
         }
+        setLoading(false)
     }
 
     return (
@@ -59,24 +43,13 @@ export default function Register() {
                 <h1 className="font-weight-bold" >Register</h1>
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <input ref={nameRef} type="text" className="form-control" placeholder="Name" required />
-                        </div>
-                        <div className="form-group">
-                            <input ref={emailRef} type="email" className="form-control" placeholder="Email address" required />
-                        </div>
-                        <div className="form-group">
-                            <input ref={passwordRef} type="password" className="form-control" placeholder="Password" required />
-                        </div>
-                        <div className="form-group">
-                            <input ref={confirmPasswordref} type="password" className="form-control" placeholder="Password" required />
-                        </div>
-                        <BtnBlue type="submit" title="Sign Up" loading={loading} customClass="shadow" />
+                    <button className="btn btn-lg btn-google px-5 text-uppercase btn-outline" to="#" disabled={loading}>
+                            <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="logo Google" /> Signup Using Google
+                        </button>
                     </form>
                 </div>
             </div>
-            <p className="mt-5">Sudah punya akun ? <Link to={RouteName.login}>Ayo Login!</Link> </p>
-            <p><Link to={RouteName.home}>Back to Home</Link> </p>
+            <p className="mt-5"><Link to={RouteName.home}>Back to Home</Link> </p>
         </div>
         </Wrapper>
     )
@@ -87,6 +60,11 @@ const Wrapper = Styled.div(({screen})=>`
     a{
         color : #007A95;
     }
+    .btn-google {
+        color: #545454;
+        background-color: #ffffff;
+        box-shadow: 0 1px 2px 1px #ddd
+    } 
     .card{
         width : ${screen < 769 ? '90% !important' : '50% !important'};
         border-radius : 20px;
