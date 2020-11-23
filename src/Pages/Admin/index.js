@@ -178,6 +178,7 @@ const Admin = () => {
                     setLoading(false)
                     return false;
                 })
+        
         const batch = db.batch();
         await db.collection("Journey")
             .where("topikID", "==", e.target.dataset.uid)
@@ -188,6 +189,7 @@ const Admin = () => {
                     ListJourney.push(doc.id)
                     batch.delete(doc.ref)
                 })
+                batch.commit();
                 if(ListJourney.length > 0){
                     const ListKuis = await db.collection("Kuis")
                                     .where("journeyID", "in", ListJourney)
@@ -197,26 +199,28 @@ const Admin = () => {
                                         setError(err)
                                         return false;
                                     })
-                    ListKuis.forEach(async (doc)=>{
-                        batch.delete(doc.ref)
-                        const ListQuestions = await doc.ref.collection('Questions').get()
-                        ListQuestions.forEach(docQuestion=>{
-                            batch.delete(docQuestion.ref)
+                    const batch2 = db.batch()
+                    if(ListKuis.length > 0){
+                        ListKuis.forEach(async (doc)=>{
+                            batch2.delete(doc.ref)
+                            const ListQuestions = await doc.ref.collection('Questions').get()
+                            ListQuestions.forEach(docQuestion=>{
+                                batch2.delete(docQuestion.ref)
+                            })
+                            const ListAnswers = await doc.ref.collection('Answers').get()
+                            ListAnswers.forEach(docAnswer=>{
+                                batch2.delete(docAnswer.ref)
+                            })
+                            const ListNilai = await doc.ref.collection('Nilai').get()
+                            ListNilai.forEach(docNilai=>{
+                                batch2.delete(docNilai.ref)
+                            })
                         })
-                        const ListAnswers = await doc.ref.collection('Answers').get()
-                        ListAnswers.forEach(docAnswer=>{
-                            batch.delete(docAnswer.ref)
-                        })
-                        const ListNilai = await doc.ref.collection('Nilai').get()
-                        ListNilai.forEach(docNilai=>{
-                            batch.delete(docNilai.ref)
-                        })
-                    })
+                    }
+                    batch2.commit()
                 }
                 setLoading(false)
             })
-            batch.commit()
-        
 
     }
     const handleThumbnailChange = (e)=>{
