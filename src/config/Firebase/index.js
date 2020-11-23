@@ -34,13 +34,18 @@ const storage = app.storage();
 // Functions
 const functions = firebase.functions();
 let API_URL;
+const backup = false;
 if (window.location.hostname === "localhost") {
   // db.useEmulator("localhost", 8080);
   // functions.useEmulator('localhost', 5001)
   // auth.useEmulator('http://localhost:9099/')
   API_URL = `http://localhost:5001/langitedubackup/asia-southeast2/api`
 }else{
-  API_URL='https://asia-southeast2-langitedubackup.cloudfunctions.net/api'
+  if(backup){
+    API_URL='https://asia-southeast2-langitedubackup.cloudfunctions.net/api'
+  }else{
+    API_URL='https://asia-southeast2-langit-edu.cloudfunctions.net/api'
+  }
 }
 
 export {auth, EmailAuthProvider,db,googleProvider, FieldValue, storage, functions, API_URL }
