@@ -70,14 +70,18 @@ export default function TambahSoal() {
         }
         let NumberExist = false
         let Urut = false
-        KuisData.listQuestion.forEach(data=>{
-            if(data.id === String(NoRef.current.value-2) || nomer === '0'){
-                Urut=true
-            }
-            if(data.id === nomer){
-                NumberExist=true
-            }
-        })
+        if(KuisData.listQuestion.length === 0){
+            Urut=true
+        }else{
+            KuisData.listQuestion.forEach(data=>{
+                if(data.id === String(NoRef.current.value-2) || nomer === '0'){
+                    Urut=true
+                }
+                if(data.id === nomer){
+                    NumberExist=true
+                }
+            })
+        }
         if(!Urut){
             setLoading(false)
             setError({message:"Nomor yang km masukan harus urut"})

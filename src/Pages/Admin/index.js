@@ -169,15 +169,55 @@ const Admin = () => {
                 return;
             })
         }
-       
-        return db.collection('Topik').doc(e.target.dataset.uid).delete()
+        await db.collection('Topik').doc(e.target.dataset.uid).delete()
                 .then(()=>{
                     console.log('Berhasil dihapus');
                     setLoading(false)
                 }).catch(err=>{
                     setError(err)
                     setLoading(false)
+                    return false;
                 })
+        const batch = db.batch();
+        await db.collection("Journey")
+            .where("topikID", "==", e.target.dataset.uid)
+            .get()
+            .then(async (res)=>{
+                const ListJourney = []
+                res.docs.forEach(doc=>{
+                    ListJourney.push(doc.id)
+                    batch.delete(doc.ref)
+                })
+                if(ListJourney.length > 0){
+                    const ListKuis = await db.collection("Kuis")
+                                    .where("journeyID", "in", ListJourney)
+                                    .get().catch(err=>{
+                                        console.log(err);
+                                        setLoading(false)
+                                        setError(err)
+                                        return false;
+                                    })
+                    ListKuis.forEach(async (doc)=>{
+                        batch.delete(doc.ref)
+                        const ListQuestions = await doc.ref.collection('Questions').get()
+                        ListQuestions.forEach(docQuestion=>{
+                            batch.delete(docQuestion.ref)
+                        })
+                        const ListAnswers = await doc.ref.collection('Answers').get()
+                        ListAnswers.forEach(docAnswer=>{
+                            batch.delete(docAnswer.ref)
+                        })
+                        const ListNilai = await doc.ref.collection('Nilai').get()
+                        ListNilai.forEach(docNilai=>{
+                            batch.delete(docNilai.ref)
+                        })
+                    })
+                }
+                setLoading(false)
+            })
+            batch.commit()
+        
+
     }
     const handleThumbnailChange = (e)=>{
         setError()
