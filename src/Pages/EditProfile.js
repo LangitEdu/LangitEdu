@@ -130,14 +130,15 @@ export default function EditProfile() {
         }
         const uploadProfilePic = async(file)=>{
             let extention = file.name.split('.').pop();
-            let res = await storage.ref('ProfilePic')
+            let url = await storage.ref('ProfilePic')
                     .child(currentUser.uid+"."+extention).put(file)
+                    .then(async(res)=>{
+                        return await res.ref.getDownloadURL()
+                    })
                     .catch(function(error) {
                         setError(error);
                         throw new Error(error.message)
                       });
-            let url = res.ref.getDownloadURL()
-            
             return {url:url, ref:'ProfilePic/'+currentUser.uid+"."+extention}
         }
         if(emailRef.current.value !== currentUser.email){

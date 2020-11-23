@@ -14,7 +14,6 @@ const firebaseConfig = {
   storageBucket: "langitedubackup.appspot.com",
   messagingSenderId: "1042775536571",
   appId: "1:1042775536571:web:0de98e9201de06c2010a9e",
-  measurementId: "G-DCSK59C593"
 };
 
 // Initialize Firebase
