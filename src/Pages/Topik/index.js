@@ -76,7 +76,7 @@ const Topik = () => {
                         <div className="topik-content">
                             <div>
                                 <p className="nama">{SearchedTopik.nama}</p>
-                                <div className="desc mt-2">{parse(SearchedTopik.deskripsi)}</div>
+                                <div className="desc mt-2 cut-height">{parse(SearchedTopik.deskripsi)}</div>
                             </div>
                             <Link to={`/topik/${SearchedTopik.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
                         </div>
@@ -93,7 +93,7 @@ const Topik = () => {
                         <div className="topik-content">
                             <div>
                             <p className="nama">{top.nama}</p>
-                            <div className="desc mt-2">{parse(top.deskripsi)}</div>
+                            <div className="desc mt-2 cut-height">{parse(top.deskripsi)}</div>
                             </div>
                             <Link to={`/topik/${top.topikKey}`}><p className="button"><span>LIHAT TOPIK</span>&ensp;<svg width="9" height="12" viewBox="0 0 9 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L7 6L1 11" stroke="#209FBC" strokeWidth="1.5"/></svg></p></Link>
                         </div>
@@ -116,6 +116,12 @@ const Wrapper = Styled.div(() =>`
     flex-direction: column;
     padding: 54px 0;
     min-height: 1000px;
+
+
+    .cut-height{
+        max-width: 54px;
+        overflow: hidden
+    }
 
     .topik-tersedia{
         width: 100%;
