@@ -79,11 +79,6 @@ export default function TambahSoal() {
                 NumberExist=true
             }
         })
-        if(!Urut){
-            setLoading(false)
-            setError({message:"Nomor Tidak urut, silahkan masukin nilai yang urut"})
-            return;
-        }
         if(NumberExist){
             setLoading(false)
             setError({message:"Nomor sudah ada, silahkan diganti"})
