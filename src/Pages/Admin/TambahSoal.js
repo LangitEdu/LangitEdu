@@ -68,13 +68,8 @@ export default function TambahSoal() {
             setError({message:"Nomor Tidak boleh dibawah 1"})
             return;
         }
-
-        let Urut = false
         let NumberExist = false
         KuisData.listQuestion.forEach(data=>{
-            if(String(NoRef.current.value-2) === data.id || nomer === '0'){
-                Urut = true
-            }
             if(data.id === nomer){
                 NumberExist=true
             }
