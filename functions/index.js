@@ -11,8 +11,7 @@ const db = admin.firestore()
     const submit = (req, res) => {
         const { kuis, journeyID, topikID, userID, answer } = req.body
 
-        db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(
-            async function(doc) {
+        db.collection('Kuis').doc(kuis.kuisID).collection('Answers').doc('kunci').get().then(async (doc)=>{
 
                 // console.log(doc);
                 let kunciArr = new Array(doc.data().body.length).fill("")
@@ -63,9 +62,10 @@ const db = admin.firestore()
                         .then(()=>{
                             console.log('Berhasil menyimpan nilai untuk user : ', userID);
                             console.log(admin.firestore.Timestamp.now());
+                            return true
                         }).catch(err=>{
                             console.log(err);
-                            res.status(500).json({
+                            return res.status(500).json({
                                 body : `failed with error : ${err}`
                             })
                         })
@@ -74,8 +74,7 @@ const db = admin.firestore()
                     return false
                 })
                 
-        
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Data successfully stored",
                     body: isSaved
                 })
@@ -95,16 +94,16 @@ const db = admin.firestore()
         if(!(data.email || data.tokenAdmin)){
             return res.status(400).json({status:'error',message:'masukin param yang bener'})
         }
-        // const decodedToken = await admin.auth().verifyIdToken(data.tokenAdmin)
-        //                             .catch(err=>{
-        //                                 console.log(err);
-        //                                 res.status(500).json({status:'error',message:err.message});
-        //                                 return ;
-        //                             })
-        // if(!decodedToken.admin){
-        //     res.status(403).json({status:'error',message:'anda bukan admin, anda tidak berhak menambahkan user'})
-        //     return;   
-        // }
+        const decodedToken = await admin.auth().verifyIdToken(data.tokenAdmin)
+                                    .catch(err=>{
+                                        console.log(err);
+                                        res.status(500).json({status:'error',message:err.message});
+                                        return ;
+                                    })
+        if(!decodedToken.admin){
+            res.status(403).json({status:'error',message:'anda bukan admin, anda tidak berhak menambahkan user'})
+            return;   
+        }
         const user =await admin.auth().getUserByEmail(data.email)
                     .catch(function(error) {
                         return res.status(500).json(error)
