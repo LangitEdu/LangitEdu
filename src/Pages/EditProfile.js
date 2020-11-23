@@ -5,6 +5,7 @@ import Navbar from '../component/Navbar/Navbar'
 import FormGroup from '../component/EditProfile/FormGroup'
 import styled from '@emotion/styled'
 import FooterCopyright from '../component/FooterCopyright'
+import { Helmet } from 'react-helmet'
 
 export default function EditProfile() {
     const {currentUser} = useAuth()
@@ -217,6 +218,9 @@ export default function EditProfile() {
 
     return (
         <Wrapper>
+        <Helmet>
+            <title>Ubah Profile | Langit Edu</title>
+        </Helmet>
         <Navbar />
         <div className="container my-4 vh-100">
             <h1 className="mb-1">Edit Profile</h1>

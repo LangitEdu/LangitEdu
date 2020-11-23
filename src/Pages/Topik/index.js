@@ -5,6 +5,7 @@ import { db } from '../../config/Firebase'
 import parse from 'html-react-parser'
 import Styled from '@emotion/styled'
 import FooterCopyright from '../../component/FooterCopyright'
+import { Helmet } from 'react-helmet'
 
 
 const Topik = () => {
@@ -58,6 +59,9 @@ const Topik = () => {
     return (
     <>
         <Navbar />
+        <Helmet>
+            <title>Topik | Langit Edu</title>
+        </Helmet>
         <Wrapper>
             <h1>Jelajahi Topik</h1>
             <form onSubmit={handleSubmit}>
