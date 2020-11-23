@@ -14,6 +14,7 @@ import KomunitasItem from '../component/Dashboard/KomunitasItem';
 import HasilKuisItem from '../component/Dashboard/HasilKuisItem';
 import Plus from '../component/Dashboard/Plus';
 import parse from 'html-react-parser'
+import { Helmet } from 'react-helmet';
 
 export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
@@ -51,6 +52,9 @@ export default function Dashboard() {
     return (
         <Wrapper screen={size.width}>
         <Navbar />
+        <Helmet>
+            <title>Beranda | Langit Edu</title>
+        </Helmet>
         <div className="container mt-5 min-vh-100">
             <h1>Beranda</h1>
             <hr className="mt-4 mb-4" />

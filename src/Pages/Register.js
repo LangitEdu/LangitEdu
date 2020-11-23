@@ -6,6 +6,7 @@ import {useAuth} from '../contexts/AuthContext'
 import Styled from '@emotion/styled'
 import useResize from "use-resize"
 import BtnBlue from '../component/Buttons/BtnBlue'
+import { Helmet } from 'react-helmet';
 
 export default function Register() {
     // Ref
@@ -47,6 +48,9 @@ export default function Register() {
 
     return (
         <Wrapper screen={size.width}>
+        <Helmet>
+            <title>Register | Langit Edu</title>
+        </Helmet>
         <div className="container d-flex align-items-center justify-content-center flex-column vh-100">
             {error &&
                 <Dismissible type="danger" message={error} onClick={()=>{setError(false)}} />

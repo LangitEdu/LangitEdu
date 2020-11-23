@@ -5,6 +5,7 @@ import RouteName from '../config/Route'
 import Styled from '@emotion/styled'
 import useResize from "use-resize"
 import FooterCopyright from '../component/FooterCopyright'
+import { Helmet } from 'react-helmet'
 
 const Home = () => {
 
@@ -27,6 +28,9 @@ const Home = () => {
     return (
     <>
         <Navbar />
+        <Helmet>
+            <title>Langit Edu</title>
+        </Helmet>
         <Wrapper screen={screen} >
 
             <div className="supertron">

@@ -6,6 +6,7 @@ import 'firebase/storage';
 import 'firebase/functions';
 // Required for side-effects
 
+// Backup
 const firebaseConfig = {
   apiKey: "AIzaSyBy2iVQ44v9Upg2QljlUq5_Z-jM51l9kQM",
   authDomain: "langitedubackup.firebaseapp.com",
@@ -15,6 +16,18 @@ const firebaseConfig = {
   messagingSenderId: "1042775536571",
   appId: "1:1042775536571:web:0de98e9201de06c2010a9e",
 };
+
+// Main
+// const firebaseConfig = {
+//   apiKey: "AIzaSyADdV20RUzhl30KtRkQnJUVin-0scEZaRw",
+//   authDomain: "langit-edu.firebaseapp.com",
+//   databaseURL: "https://langit-edu.firebaseio.com",
+//   projectId: "langit-edu",
+//   storageBucket: "langit-edu.appspot.com",
+//   messagingSenderId: "1043332770295",
+//   appId: "1:1043332770295:web:5a59e4bced1989aa3766f2",
+//   measurementId: "G-ZN7E8FGQYE"
+// };
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);

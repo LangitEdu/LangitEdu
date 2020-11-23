@@ -6,6 +6,7 @@ import {useAuth} from '../contexts/AuthContext'
 import Styled from '@emotion/styled'
 import useResize from "use-resize"
 import BtnOrange from '../component/Buttons/BtnOrange';
+import { Helmet } from 'react-helmet';
 
 export default function Login() {
 
@@ -37,6 +38,9 @@ export default function Login() {
 
     return (
         <Wrapper screen={size.width}>
+        <Helmet>
+            <title>Login | Langit Edu</title>
+        </Helmet>
         <div className="container d-flex align-items-center justify-content-center flex-column vh-100">
             {error &&
                 <Dismissible type="danger" message={error} onClick={()=>{setError(false)}} />
