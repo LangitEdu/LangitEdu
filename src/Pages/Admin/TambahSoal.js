@@ -69,11 +69,20 @@ export default function TambahSoal() {
             return;
         }
         let NumberExist = false
+        let Urut = false
         KuisData.listQuestion.forEach(data=>{
+            if(data.id === String(NoRef.current.value-2) || nomer === '0'){
+                Urut=true
+            }
             if(data.id === nomer){
                 NumberExist=true
             }
         })
+        if(!Urut){
+            setLoading(false)
+            setError({message:"Nomor yang km masukan harus urut"})
+            return;
+        }
         if(NumberExist){
             setLoading(false)
             setError({message:"Nomor sudah ada, silahkan diganti"})
