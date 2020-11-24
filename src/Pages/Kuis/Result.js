@@ -128,11 +128,6 @@ const Wrapper = Styled.div(() =>`
             width: 100%;
             margin-bottom: 12px;
             padding: 18px 24px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
             // background: #FFFFFF;
             // box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 2px rgba(0, 0, 0, 0.5);
             border: 1px solid #CCC;
