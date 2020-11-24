@@ -43,19 +43,19 @@ export default function HasilKuis() {
     const handleDeleteNilai = async(e)=>{
         const {uid} = e.target.dataset
         setLoading(true)
-        return db.collection('Kuis').doc(kuisID).collection('nilai').doc(uid).delete()
+        return db.collection('Kuis').doc(kuisID).collection('Nilai').doc(uid).delete()
         .then(()=>{
             db.collection('Profile').doc(uid).collection('Kuis').doc(kuisID).delete()
             .then(()=>{
                 setLoading(false)
             })
             .catch(err=>{
-                console.log(err);
+                console.log('err di profile',err);
                 setLoading(false)
             })
         })
         .catch(err=>{
-            console.log(err);
+            console.log('error di kuis',err);
             setLoading(false)
         })
     }
