@@ -59,14 +59,15 @@ const Admin = () => {
         if(ThumbnailRef.current.files.length > 0){
             const file = ThumbnailRef.current.files[0]
             let extention = file.name.split('.').pop();
-            let res = await storage.ref('TopikThumbnail')
+            URL = await storage.ref('TopikThumbnail')
                     .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .then(async (res)=>{
+                        return await res.ref.getDownloadURL()
+                    })
                     .catch(function(error) {
                         setError(error);
                         return;
                       });
-            console.log(res);
-            URL = await res.ref.getDownloadURL()
             Ref = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
         }
         db.collection('Topik').add({
@@ -129,14 +130,16 @@ const Admin = () => {
         if(ThumbnailRef.current.files.length > 0){
             const file = ThumbnailRef.current.files[0]
             let extention = file.name.split('.').pop();
-            let res = await storage.ref('TopikThumbnail')
+            data.thumbnail =  await storage.ref('TopikThumbnail')
                     .child(TopikNameRef.current.value+"."+extention).put(file)
+                    .then(async (res)=>{
+                        return await res.ref.getDownloadURL()
+                    })
                     .catch(function(error) {
                         setError(error);
                         return;
                       });
-            console.log(res);
-            data.thumbnail = await res.ref.getDownloadURL()
+           
             data.thumbnailRef = `TopikThumbnail/${TopikNameRef.current.value}.${extention}`
         }
         await db.collection('Topik').doc(CurrentTopikId).update(data)
@@ -169,15 +172,59 @@ const Admin = () => {
                 return;
             })
         }
-       
-        return db.collection('Topik').doc(e.target.dataset.uid).delete()
+        await db.collection('Topik').doc(e.target.dataset.uid).delete()
                 .then(()=>{
                     console.log('Berhasil dihapus');
                     setLoading(false)
                 }).catch(err=>{
                     setError(err)
                     setLoading(false)
+                    return false;
                 })
+        
+        const batch = db.batch();
+        await db.collection("Journey")
+            .where("topikID", "==", e.target.dataset.uid)
+            .get()
+            .then(async (res)=>{
+                const ListJourney = []
+                res.docs.forEach(doc=>{
+                    ListJourney.push(doc.id)
+                    batch.delete(doc.ref)
+                })
+                batch.commit();
+                if(ListJourney.length > 0){
+                    const ListKuis = await db.collection("Kuis")
+                                    .where("journeyID", "in", ListJourney)
+                                    .get().catch(err=>{
+                                        console.log(err);
+                                        setLoading(false)
+                                        setError(err)
+                                        return false;
+                                    })
+                    const batch2 = db.batch()
+                    if(ListKuis.length > 0){
+                        ListKuis.forEach(async (doc)=>{
+                            batch2.delete(doc.ref)
+                            const ListQuestions = await doc.ref.collection('Questions').get()
+                            ListQuestions.forEach(docQuestion=>{
+                                batch2.delete(docQuestion.ref)
+                            })
+                            const ListAnswers = await doc.ref.collection('Answers').get()
+                            ListAnswers.forEach(docAnswer=>{
+                                batch2.delete(docAnswer.ref)
+                            })
+                            const ListNilai = await doc.ref.collection('Nilai').get()
+                            ListNilai.forEach(docNilai=>{
+                                batch2.delete(docNilai.ref)
+                            })
+                        })
+                    }
+                    batch2.commit()
+                }
+                setLoading(false)
+            })
+
     }
     const handleThumbnailChange = (e)=>{
         setError()

@@ -1,5 +1,5 @@
 import React,{ useContext,useState, useEffect } from 'react'
-import { auth, db } from '../config/Firebase';
+import { auth, db, googleProvider } from '../config/Firebase';
 
 const AuthContext = React.createContext()
 
@@ -37,6 +37,28 @@ export function AuthProvider({ children }) {
     }
     async function SendEmailVerification() {
         return currentUser.sendEmailVerification()
+    }
+    async function signInWithGoogle(){
+        googleProvider.addScope('profile');
+        googleProvider.addScope('email');
+        return auth.signInWithPopup(googleProvider).then((result)=>{
+            if(result.additionalUserInfo.isNewUser){
+                db.collection("Profile").doc(result.user.uid).set({
+                    uid : result.user.uid,
+                    displayName : result.user.displayName,
+                    photoURL : result.user.photoURL,
+                    topik: [],
+                    komunitas: [],
+                    progress: [],
+                })
+                .then(function() {
+                    console.log("Document successfully written!");
+                })
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+        })
     }
     async function getDashboardData(UserUid){
         let docRef = db.collection("Profile").doc(UserUid);
@@ -94,7 +116,8 @@ export function AuthProvider({ children }) {
         resetPassword,
         updateProfile,
         SendEmailVerification,
-        getDashboardData
+        getDashboardData,
+        signInWithGoogle
     }
 
     return (

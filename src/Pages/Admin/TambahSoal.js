@@ -68,17 +68,25 @@ export default function TambahSoal() {
             setError({message:"Nomor Tidak boleh dibawah 1"})
             return;
         }
-
-        let Urut = false
         let NumberExist = false
-        KuisData.listQuestion.forEach(data=>{
-            if(String(NoRef.current.value-2) === data.id || nomer === '0'){
-                Urut = true
-            }
-            if(data.id === nomer){
-                NumberExist=true
-            }
-        })
+        let Urut = false
+        if(KuisData.listQuestion.length === 0){
+            Urut=true
+        }else{
+            KuisData.listQuestion.forEach(data=>{
+                if(data.id === String(NoRef.current.value-2) || nomer === '0'){
+                    Urut=true
+                }
+                if(data.id === nomer){
+                    NumberExist=true
+                }
+            })
+        }
+        if(!Urut){
+            setLoading(false)
+            setError({message:"Nomor yang km masukan harus urut"})
+            return;
+        }
         if(NumberExist){
             setLoading(false)
             setError({message:"Nomor sudah ada, silahkan diganti"})

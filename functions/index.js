@@ -127,7 +127,19 @@ const db = admin.firestore()
     })
     
     app.post("/submit", submit)
-
+    app.get('/get-user', async(req, res)=>{
+        return admin.auth().listUsers(1000)
+            .then(function(listUsersResult) {
+                listUsersResult.users.forEach(function(userRecord) {
+                    console.log('user', userRecord.toJSON());
+                });
+                return res.json({pesan:'berhasil'});
+            })
+            .catch(function(error) {
+                console.log('Error listing users:', error);
+                return res.json({pesan:'gagal'});
+            });
+    })
     app.get('/halo', (req,res) => {
         res.status(200).json({
             message: 'halo world'

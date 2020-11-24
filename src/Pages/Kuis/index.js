@@ -603,12 +603,7 @@ const Wrapper = Styled.div(({screen, processingSubmit}) =>`
                 }
             }
             .the-question{
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                
                 margin-bottom: 36px;
-
                 .nomornempel{
                     ${screen < 882 ? '' : 'display: none;'}
                     

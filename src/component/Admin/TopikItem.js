@@ -30,7 +30,6 @@ export default function TopikItem(props) {
             created_by : {
                 name : currentUser.displayName,
                 uid : currentUser.uid,
-                JourneyList : []
             },
             created_at : FieldValue.serverTimestamp(),
             topikID : props.docid
@@ -107,8 +106,8 @@ export default function TopikItem(props) {
             <div id={`collapse${props.docid}`} className="collapse" aria-labelledby={`heading${props.docid}`} data-parent="#listTopik">
                 <div className="card-body">
                     <div className="ml-3 mt-2">                    
-                        <p><strong>Topik key : {parse(props.topikKey)}</strong></p>
-                        <p>{parse(props.deskripsi)}</p>
+                        <p><strong>Topik key : {props.topikKey}</strong></p>
+                        {parse(props.deskripsi)}
                     </div>
                     <br/>
                     <div className="card mt-4">
