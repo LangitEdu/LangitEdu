@@ -39,7 +39,11 @@ if (window.location.hostname === "localhost") {
   // db.useEmulator("localhost", 8080);
   // functions.useEmulator('localhost', 5001)
   // auth.useEmulator('http://localhost:9099/')
-  API_URL = `http://localhost:5001/langitedubackup/asia-southeast2/api`
+  if (backup) {
+    API_URL = `http://localhost:5001/langitedubackup/asia-southeast2/api`
+  }else{
+    API_URL = 'http://localhost:5001/langit-edu/asia-southeast2/api'
+  }
 }else{
   if(backup){
     API_URL='https://asia-southeast2-langitedubackup.cloudfunctions.net/api'

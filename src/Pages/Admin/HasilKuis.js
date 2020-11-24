@@ -9,6 +9,7 @@ export default function HasilKuis() {
     const [ListUser, setListUser] = useState([])
     const [KuisData, setKuisData] = useState('')
     const [Loading, setLoading] = useState(false)
+    
     useEffect(()=>{
         const Query = db.collection('Kuis').doc(kuisID)
         Query.get().then(doc=>{
@@ -43,9 +44,9 @@ export default function HasilKuis() {
     const handleDeleteNilai = async(e)=>{
         const {uid} = e.target.dataset
         setLoading(true)
-        return db.collection('Profile').doc(uid).collection('Kuis').doc(kuisID).delete()
-        .then(()=>{
-            db.collection('Kuis').doc(kuisID).collection('Nilai').doc(uid).delete()
+        return await db.collection('Profile').doc(uid).collection('Kuis').doc(kuisID).delete()
+        .then(async()=>{
+            return await db.collection('Kuis').doc(kuisID).collection('Nilai').doc(uid).delete()
             .then(()=>{
                 setLoading(false)
             })
@@ -81,7 +82,7 @@ export default function HasilKuis() {
                                 {ListNilai.length > 0 ? ListNilai.map((data,i)=>(
                                     <tr key={data.uid}>
                                         <th scope="row">{i+1}</th>
-                                        <td>{ListUser[data.uid].displayName}</td>
+                                        <td>{ ListUser[data.uid] ? ListUser[data.uid].displayName : '-'}</td>
                                         <td> {data.nilai} </td>
                                         <td>
                                             <button className="btn btn-danger" data-uid={data.uid} onClick={handleDeleteNilai} disabled={Loading} >Hapus</button>
