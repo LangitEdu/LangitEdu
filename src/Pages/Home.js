@@ -8,7 +8,7 @@ import FooterCopyright from '../component/FooterCopyright'
 import { Helmet } from 'react-helmet'
 
 const Home = () => {
-
+    const [showCredits, setshowCredits] = useState(false)
     const [screen, setScreen] = useState()
     const size = useResize()
     
@@ -125,6 +125,7 @@ const Home = () => {
                                 <li><i className="fas fa-envelope mr-2"></i>Info@langitedu.com</li>
                                 <li><i className="fab fa-whatsapp mr-2"></i>089889883637</li>
                             </ul>
+                            <button onClick={() => setshowCredits(!showCredits)} className="typical-button img-credits">{showCredits ? 'Close' : 'Image'} Credits</button>
                         </div>
                         <div className="col-md-4">
                             <h4 className="mb-3">Sosial Media</h4>
@@ -137,6 +138,17 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+            {showCredits &&
+                <section className="credits">
+                    <div className="credits-cont">
+                        <a href="https://www.freepik.com/vectors/people">People vector created by pch.vector - www.freepik.com</a>
+                        <a href="https://www.freepik.com/vectors/school">School vector created by pch.vector - www.freepik.com</a>
+                        <a href="https://www.freepik.com/vectors/medical">Medical vector created by freepik - www.freepik.com</a>
+                        <a href="https://www.freepik.com/vectors/school">School vector created by pch.vector - www.freepik.com</a>
+                        <a href="https://www.freepik.com/vectors/background">Background vector created by freepik - www.freepik.com</a>
+                    </div>
+                </section>
+            }
             <FooterCopyright />
         </Wrapper>
     </>
@@ -144,6 +156,42 @@ const Home = () => {
 }
 
 const Wrapper = Styled.div(({screen}) =>`
+
+    .img-credits{
+        font-size: 16px;
+        font-weight: normal;
+        padding: 4px 12px;
+        border-radius: 8px;
+        margin-top: 32px;
+        background: #007A95AA;
+        
+        &:hover{
+            background: #007A95DD;
+        }
+    }
+
+    section.credits{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+        background:  #007A95BB;
+
+        .credits-cont{
+            max-width: 1112px;
+            width: 90%;
+            min-width: 340px;
+
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+
+            a{
+                color: white;
+            }
+        }
+    }
 
     .btn{
         text-transform: uppercase;
