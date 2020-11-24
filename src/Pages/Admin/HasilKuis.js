@@ -8,6 +8,7 @@ export default function HasilKuis() {
     const [ListNilai, setListNilai] = useState([])
     const [ListUser, setListUser] = useState([])
     const [KuisData, setKuisData] = useState('')
+    const [Loading, setLoading] = useState(false)
     useEffect(()=>{
         const Query = db.collection('Kuis').doc(kuisID)
         Query.get().then(doc=>{
@@ -30,7 +31,6 @@ export default function HasilKuis() {
                         res.docs.forEach(doc=>{
                             listUserData[doc.id] = doc.data()
                         })
-                        console.log(res.docs.length);
                         setListUser(listUserData);
                         setListNilai(arrNilai)
                     })
@@ -40,9 +40,24 @@ export default function HasilKuis() {
         return unsub
     }, [kuisID])
 
-    const handleDeleteNilai = (e)=>{
+    const handleDeleteNilai = async(e)=>{
         const {uid} = e.target.dataset
-        console.log(uid);
+        setLoading(true)
+        return db.collection('Kuis').doc(kuisID).collection('nilai').doc(uid).delete()
+        .then(()=>{
+            db.collection('Profile').doc(uid).collection('Kuis').doc(kuisID).delete()
+            .then(()=>{
+                setLoading(false)
+            })
+            .catch(err=>{
+                console.log(err);
+                setLoading(false)
+            })
+        })
+        .catch(err=>{
+            console.log(err);
+            setLoading(false)
+        })
     }
 
     return (
@@ -69,7 +84,7 @@ export default function HasilKuis() {
                                         <td>{ListUser[data.uid].displayName}</td>
                                         <td> {data.nilai} </td>
                                         <td>
-                                            <button className="btn btn-danger" data-uid={data.uid} onClick={handleDeleteNilai} >Hapus</button>
+                                            <button className="btn btn-danger" data-uid={data.uid} onClick={handleDeleteNilai} disabled={Loading} >Hapus</button>
                                         </td>
                                     </tr>
                                     ))
