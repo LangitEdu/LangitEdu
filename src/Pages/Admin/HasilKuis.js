@@ -25,16 +25,14 @@ export default function HasilKuis() {
             })
             
             if(arrNilai.length > 0){
-                await db.collection('Profile').where('uid','in',arrUID)
-                    .get()
-                    .then(res=>{
-                        let listUserData = []
-                        res.docs.forEach(doc=>{
-                            listUserData[doc.id] = doc.data()
-                        })
+                let listUserData = []
+                arrUID.forEach(async(uid, i, arr)=>{
+                    listUserData[uid] = (await db.collection('Profile').doc(uid).get()).data()
+                    if(arr.length-1 === i){
                         setListUser(listUserData);
-                        setListNilai(arrNilai)
-                    })
+                    }
+                })
+                setListNilai(arrNilai)
             }
         })
 
