@@ -1,21 +1,21 @@
-import firebase from 'firebase/app';
-import 'firebase/analytics';
-import 'firebase/auth';
-import 'firebase/firestore';
-import 'firebase/storage';
-import 'firebase/functions';
+import firebase from "firebase/app";
+import "firebase/analytics";
+import "firebase/auth";
+import "firebase/firestore";
+import "firebase/storage";
+import "firebase/functions";
 // Required for side-effects
 
 // Main
 const firebaseConfig = {
   apiKey: "AIzaSyADdV20RUzhl30KtRkQnJUVin-0scEZaRw",
-  authDomain: "langit-edu.firebaseapp.com",
+  authDomain: "langitedu.com",
   databaseURL: "https://langit-edu.firebaseio.com",
   projectId: "langit-edu",
   storageBucket: "langit-edu.appspot.com",
   messagingSenderId: "1043332770295",
   appId: "1:1043332770295:web:5a59e4bced1989aa3766f2",
-  measurementId: "G-ZN7E8FGQYE"
+  measurementId: "G-ZN7E8FGQYE",
 };
 
 // Initialize Firebase
@@ -24,7 +24,7 @@ firebase.analytics();
 // Auth
 firebase.auth().useDeviceLanguage();
 const auth = app.auth();
-const EmailAuthProvider = firebase.auth.EmailAuthProvider
+const EmailAuthProvider = firebase.auth.EmailAuthProvider;
 var googleProvider = new firebase.auth.GoogleAuthProvider();
 // Firestore
 const db = firebase.firestore();
@@ -40,17 +40,26 @@ if (window.location.hostname === "localhost") {
   // functions.useEmulator('localhost', 5001)
   // auth.useEmulator('http://localhost:9099/')
   if (backup) {
-    API_URL = `http://localhost:5001/langitedubackup/asia-southeast2/api`
-  }else{
-    API_URL = 'http://localhost:5001/langit-edu/asia-southeast2/api'
+    API_URL = `http://localhost:5001/langitedubackup/asia-southeast2/api`;
+  } else {
+    API_URL = "http://localhost:5001/langit-edu/asia-southeast2/api";
   }
-}else{
-  if(backup){
-    API_URL='https://asia-southeast2-langitedubackup.cloudfunctions.net/api'
-  }else{
-    API_URL='https://asia-southeast2-langit-edu.cloudfunctions.net/api'
+} else {
+  if (backup) {
+    API_URL = "https://asia-southeast2-langitedubackup.cloudfunctions.net/api";
+  } else {
+    API_URL = "https://asia-southeast2-langit-edu.cloudfunctions.net/api";
   }
 }
 
-export {auth, EmailAuthProvider,db,googleProvider, FieldValue, storage, functions, API_URL }
+export {
+  auth,
+  EmailAuthProvider,
+  db,
+  googleProvider,
+  FieldValue,
+  storage,
+  functions,
+  API_URL,
+};
 export default app;
