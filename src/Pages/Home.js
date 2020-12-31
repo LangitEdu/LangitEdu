@@ -102,8 +102,8 @@ const Home = () => {
                         </div>
                         <div className="col-md-8">
                             <div className="detail py-md-3">
-                                <h3 className="mb-3" >Kuis yang dikemas dengan seru</h3>
-                                <p>Dengan konsep berbeda, langit edu membawakan kuis dengan cara yang menyenangkan seperti permainan</p>
+                                <h3 className="mb-3" >Sistem Rekomendasi</h3>
+                                <p>Informasi lengkap terkait pendidikan yang sesuai dengan kemampuan dan hasil pembelajaran kamu dapat didapatkan disini</p>
                                 <br/>
                             </div>
                         </div>
@@ -117,7 +117,7 @@ const Home = () => {
                         <div className="col-md-4 mb-4">
                             <img className="img-fluid" src="/img/logo-blue.png" alt="Logo"/>
                             <h4 className="mt-4 mb-3" >Tentang kami</h4>
-                            <p>Dengan konsep berbeda, di langitedu.com membawakan kuis dengan cara yang menyenangkan seperti permainan</p>
+                            <p>Dengan konsep berbeda, di langitedu membawakan menciptakan sebuah social education platform yang dapat memberikan rekomendasi pendidikan, informasi seputar dunia pendidikan, dan analisis karakter</p>
                         </div>
                         <div className="col-md-4 mb-4">
                             <h4 className="mb-3" >Kontak Kami</h4>
