@@ -56,10 +56,17 @@ const Kluster = ({kluster, setkluster, setstep}) => {
                     {kluster === 'soshum' && subjects.soshum.map((subject, i) => 
                         <InputNilai subject={subject} key={i} index={i} nilai={nilai} handleInput={handleInput}/>
                     )}
-                    <div className="action">
-                        <button type="reset" onClick={() => setnilai(['','','','','',''])}>Reset Form</button>
-                    </div>
-                    <button type="submit" className="btn-bordered-blue">JELAJAHI JURUSAN</button>
+                    {kluster === 'initial' &&
+                        <div className="warning-select">
+                            <p>Pilih kluster jurusan terlebih dahulu</p>
+                        </div>
+                    }
+                    {kluster !== 'initial' && 
+                        <div className="action">
+                            <button type="reset" onClick={() => setnilai(['','','','','',''])}>Reset Form</button>
+                        </div>
+                    }
+                    <button type="submit" className="btn-bordered-blue" disabled={kluster === 'initial'}>JELAJAHI JURUSAN</button>
                 </form>
             </div>
         </Wrapper>
@@ -77,6 +84,7 @@ const InputNilai = ({subject, index, nilai, handleInput}) => {
                 min="0" 
                 max="100" 
                 placeholder='-'
+                // required
             />
         </div>
     )
@@ -84,6 +92,19 @@ const InputNilai = ({subject, index, nilai, handleInput}) => {
 
 
 const Wrapper = Styled.div(({screen}) =>`
+    .warning-select{
+        width: 100%;
+        background: rgba(255, 162, 82, 0.07);
+        border: 1px solid #FFA252;
+        box-sizing: border-box;
+        border-radius: 8px;
+        
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 32px 12px 32px 20px;
+    }
+
     form{
         max-width: 580px;
         width: 90%;
@@ -181,6 +202,11 @@ const Wrapper = Styled.div(({screen}) =>`
         button[type=submit]{
             margin-top: 32px;
             width: 100%;
+            box-shadow: 0 0 4px rgba(0,0,0,0.5);
+
+            &:disabled, &[disabled]{
+                background-color: #cccccc;
+            }
         }
     }
 
