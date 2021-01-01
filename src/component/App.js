@@ -15,6 +15,7 @@ import Dashboard from "../Pages/Dashboard";
 import EditProfile from "../Pages/EditProfile";
 import Home from "../Pages/Home";
 import RekomendasiJurusan from "../Pages/RekomendasiJurusan";
+import Jurusan from "../Pages/Jurusan";
 import ListKomunitas from "../Pages/listKomunitas";
 import Topik from "../Pages/Topik";
 import GoToTopik from "../Pages/Topik/Topik";
@@ -74,11 +75,8 @@ function App() {
           />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
-          <UserRoute
-            exact
-            path={RouteName.RekomendasiJurusan}
-            component={RekomendasiJurusan}
-          />
+          <UserRoute exact path={RouteName.RekomendasiJurusan} component={RekomendasiJurusan} />
+          <UserRoute exact path="/jurusan" component={Jurusan} />
 
           <Route path={RouteName.authAction} component={EmailActionHandle} />
           <Route exact path={RouteName.home} component={Home} />
