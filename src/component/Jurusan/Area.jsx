@@ -7,8 +7,8 @@ const Area = ({kluster, area, setarea, setstep}) => {
     const screen = useResize().width
 
     const options = {
-        saintek: ['TEKNIK', 'KESEHATAN', 'PERTANIAN', 'MIPA'],
-        soshum: ['EKONOMI', 'SOSIAL', 'HUMANIORA']
+        saintek: ['teknik', 'kesehatan', 'pertanian', 'mipa'],
+        soshum: ['ekonomi', 'sosial', 'humaniora']
     }
 
     const handleClick = (option) => {
@@ -23,12 +23,7 @@ const Area = ({kluster, area, setarea, setstep}) => {
             </div>
             <p className="instruction">Pilih Area Program Studi</p>
             <div className="select">
-                {kluster === 'saintek' && options.saintek.map((option, i) => 
-                    <div className={`card ${area !== option && area !== 'initial' ? 'dimm' : ''}`} onClick={() => handleClick(option)} key={i}>
-                        <p>{option}</p>
-                    </div>
-                )}
-                {kluster === 'soshum' && options.soshum.map((option, i) => 
+                {options[kluster].map((option, i) => 
                     <div className={`card ${area !== option && area !== 'initial' ? 'dimm' : ''}`} onClick={() => handleClick(option)} key={i}>
                         <p>{option}</p>
                     </div>
@@ -81,20 +76,21 @@ const Wrapper = Styled.div(({screen}) =>`
             font-size: 35px;
             line-height: 43px;
             text-align: center;
+            text-transform: uppercase;
 
             color: #FFFFFF;
         }
 
-        &:nth-child(1) {
+        &:nth-of-type(1) {
             background: #007A95;
         }
-        &:nth-child(2) {
-            background:  #E8464A;
+        &:nth-of-type(2) {
+            background: #E8464A;
         }
-        &:nth-child(3) {
+        &:nth-of-type(3) {
             background: #15B86A;
         }
-        &:nth-child(4) {
+        &:nth-of-type(4) {
             background: #9B51E0;
         }
 
@@ -112,7 +108,9 @@ const Wrapper = Styled.div(({screen}) =>`
     }   
 
     .kluster-head{
-        width: 548px;
+        max-width: 572px;
+        width: 90%;
+        min-width: 320px;
         height: 104px;
         display: flex;
         justify-content: center;

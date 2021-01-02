@@ -22,8 +22,8 @@ const Kluster = ({kluster, setkluster, setstep}) => {
     }
 
     const subjects = {
-        saintek: ['MATEMATIKA', 'B. INDONESIA', 'B. INGGRIS', 'FISIKA', 'KIMIA', 'BIOLOGI'],
-        soshum: ['MATEMATIKA', 'B. INDONESIA', 'B. INGGRIS', 'EKONOMI', 'SOSIOLOGI', 'GEOGRAFI']
+        saintek: ['matematika', 'b.indonesia', 'b.inggris', 'fisika', 'kimia', 'biologi'],
+        soshum: ['matematika', 'b.indonesia', 'b.inggris', 'ekonomi', 'sosiologi', 'geografi']
     }
 
     return (
@@ -50,21 +50,19 @@ const Kluster = ({kluster, setkluster, setstep}) => {
             <div className="input-nilai">
                 <h2>Analisa Nilai</h2>
                 <form onSubmit={handleSubmit}>
-                    {kluster === 'saintek' && subjects.saintek.map((subject, i) => 
-                        <InputNilai subject={subject} key={i} index={i} nilai={nilai} handleInput={handleInput}/>
-                    )}
-                    {kluster === 'soshum' && subjects.soshum.map((subject, i) => 
-                        <InputNilai subject={subject} key={i} index={i} nilai={nilai} handleInput={handleInput}/>
-                    )}
-                    {kluster === 'initial' &&
+                    {kluster === 'initial' ?
                         <div className="warning-select">
                             <p>Pilih kluster jurusan terlebih dahulu</p>
                         </div>
-                    }
-                    {kluster !== 'initial' && 
+                    :
+                    <>
+                        {subjects[kluster].map((subject, i) => 
+                            <InputNilai subject={subject} key={i} index={i} nilai={nilai} handleInput={handleInput}/>
+                        )}
                         <div className="action">
                             <button type="reset" onClick={() => setnilai(['','','','','',''])}>Reset Form</button>
                         </div>
+                    </>
                     }
                     <button type="submit" className="btn-bordered-blue" disabled={kluster === 'initial'}>JELAJAHI JURUSAN</button>
                 </form>
@@ -130,6 +128,8 @@ const Wrapper = Styled.div(({screen}) =>`
             font-weight: bold;
             font-size: ${screen > 440 ? '28px' : '20px'};
             line-height: 34px;
+            text-transform: uppercase;
+
             margin: 0;
             /* Gray 1 */
 
