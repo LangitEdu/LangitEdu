@@ -21,6 +21,7 @@ const NavbarMobile = ({currentUser, openAction, setopenAction, handleLogout, IsA
                     {currentUser  && <Link to={RouteName.dashboard} className="link">BERANDA</Link>}
                     <Link to={RouteName.listKomunitas} className="link">KOMUNITAS</Link>
                     <Link to={RouteName.topik} className="link">TOPIK</Link>
+                    <Link to={RouteName.RekomendasiJurusan} className="link">REKOMENDASI</Link>
                     {!currentUser && <Link to={RouteName.login} className="link">MASUK</Link>}
                     {!currentUser && <Link to={RouteName.register} className="link">DAFTAR</Link>}
                     {IsAdmin  && <Link to={RouteName.admin} className="link">ADMIN</Link>}
@@ -48,7 +49,7 @@ const Wrapper = Styled.div(({currentUser, openAction, IsAdmin}) =>`
 
     nav{
         width: 100%;
-        height: ${openAction && IsAdmin ? "358px" : openAction ? "308px" : "80px"};
+        height: ${openAction && IsAdmin ? "407px" : openAction ? "357px" : "80px"};
         background: #FAFAFA;
         box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.2);
         padding: 0 16px;

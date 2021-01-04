@@ -21,10 +21,11 @@ const Home = () => {
         setScreen(width)
         window.addEventListener('resize', handleWindowSizeChange)
 
-        return ()=>{
+        return () => {
             window.removeEventListener('resize',handleWindowSizeChange )
         }
     },[size])
+    
     return (
     <>
         <Navbar />
@@ -283,7 +284,7 @@ const Wrapper = Styled.div(({screen}) =>`
 
     .supertron{
         width: 100%;
-        height: ${screen <769 ? 'fit-content' : '454px'};
+        height: ${screen < 769 ? 'fit-content' : '454px'};
         background-image: url('/img/bg-jumbotron.svg');
         background-size: cover;
         background-position: bottom;

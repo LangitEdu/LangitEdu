@@ -183,7 +183,7 @@ const Wrapper = Styled.div(({screen}) =>`
         align-items: center;
         flex-direction: column;
 
-        box-shadow: 0 0 16px rgba(0,0,0,0.25);
+        box-shadow: 0 -16px 16px rgba(0,0,0,0.1);
 
         h2{
             margin-bottom: 32px;

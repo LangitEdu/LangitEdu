@@ -11,9 +11,8 @@ const BackButton = ({tostep, setstep}) => {
 }
 
 const Wrapper = Styled.div(() =>`
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
+    position: relative;
+    left: 0;
 
     button{
         background: #bbb;

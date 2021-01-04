@@ -18,6 +18,7 @@ import { Helmet } from 'react-helmet';
 
 export default function Dashboard() {
     const {currentUser, SendEmailVerification} = useAuth()
+    const [savedJurusan, setsavedJurusan] = useState()
     const [success, setSuccess] = useState(false)
     const [topikCard, setTopikCard] = useState([])
     const [KomunitasCard, setKomunitasCard] = useState([])
@@ -36,7 +37,6 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-
         db.collection("Topik")
         .where("member", "array-contains", currentUser.uid).get().then(snapshot=>{
             setTopikCard(snapshot.docs)
@@ -46,6 +46,9 @@ export default function Dashboard() {
         })
         db.collection('Profile').doc(currentUser.uid).collection('Kuis').get().then(res=>{
             setKuisCard(res.docs)
+        })
+        db.collection('Profile').doc(currentUser.uid).get().then(doc=>{
+            setsavedJurusan(doc.data().savedJurusan)
         })
     }, [currentUser])
     
@@ -78,7 +81,7 @@ export default function Dashboard() {
             <div className="row py-4 py-md-1">
 
                 <div className="col-md-3 mb-4">
-                    <h2><b>Profil</b></h2>
+                    <h2><strong>Profil</strong></h2>
                     <div className="card mt-4">
                         <div className="card-body d-flex justify-content-center flex-column align-items-center">
                             <div className="profile mb-4 ">
@@ -96,7 +99,7 @@ export default function Dashboard() {
 
                 </div>
                 <div className="col-md-8">
-                    <h2><b>Topik Terdaftar</b></h2>
+                    <h2><strong>Topik Terdaftar</strong></h2>
                     
                     <div className="listTopik my-4">
                         {topikCard.length > 0 &&
@@ -122,7 +125,7 @@ export default function Dashboard() {
 
                     </div>
                     <br/>
-                    <h2><b>Komunitas dan Diskusi</b></h2>
+                    <h2><strong>Komunitas dan Diskusi</strong></h2>
                     <div className="listKomunitas my-4">
                         {KomunitasCard.length > 0 &&
                             KomunitasCard.map(doc=>{
@@ -145,8 +148,14 @@ export default function Dashboard() {
                     </div>
                     
                     <br/>
+                    <h2><strong>Jurusan Tersimpan</strong></h2>
+                    <div className="jurusan-card card p-4 mt-4">
+                        <p>{savedJurusan}</p>
+                        <Link to={RouteName.RekomendasiJurusan}>Jelajahi Jurusan <i className="fas fa-angle-right"></i></Link>
+                    </div>
+                    <br/>
                     
-                    <h2><b>Hasil Kuis Terbaru</b></h2>
+                    <h2><strong>Hasil Kuis Terbaru</strong></h2>
                     <div className="listHasilKuis my-4">
                         
                         {KuisCard.length > 0 &&
@@ -183,6 +192,14 @@ export default function Dashboard() {
 }
 
 const Wrapper = styled.div(({screen})=>`
+    .jurusan-card{
+        
+        p{
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: capitalize;
+        }
+    }
 
     h1{
         color : #209FBC;

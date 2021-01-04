@@ -29,17 +29,25 @@ const Jurusan = ({area, jurusan, setjurusan, setstep}) => {
                     </div>
                 )}
             </div>
-            <BackButton tostep={1} setstep={setstep}/>
+            <div className="back">
+                <BackButton tostep={1} setstep={setstep}/>
+            </div>
         </Wrapper>
     )
 }
 
-const Wrapper = Styled.div(() =>`
+const Wrapper = Styled.div(`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding-top: 52px;
+
+    .back{
+        margin-top: 32px;
+        max-width: 578px;
+        width: 90%;
+    }
 
     .dimm{
         opacity: 0.5;

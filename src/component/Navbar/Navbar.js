@@ -38,6 +38,7 @@ const Navbar = ({SetError}) => {
                         {currentUser  && <Link to={RouteName.dashboard} className="link">BERANDA</Link>}
                         <Link to={RouteName.listKomunitas} className="link">KOMUNITAS</Link>
                         <Link to={RouteName.topik} className="link">TOPIK</Link>
+                        <Link to={RouteName.RekomendasiJurusan} className="link">REKOMENDASI</Link>
                         {!currentUser && <Link to={RouteName.login} className="link">MASUK</Link>}
                         {!currentUser && <Link to={RouteName.register} className="link orange-btn">DAFTAR</Link>}
                         {IsAdmin  && <Link to={RouteName.admin} className="link">ADMIN</Link>}
@@ -124,10 +125,10 @@ const Wrapper = Styled.div(({currentUser, openAction}) =>`
 
                 .link{
                     font-family: Oxygen;
-letter-spacing: 0.5px;
+                    letter-spacing: 0.5px;
                     font-style: normal;
                     font-weight: bold;
-                    font-size: 20px;
+                    font-size: 18px;
                     line-height: 25px;
                     text-align: center;
                     margin: 0 16px;

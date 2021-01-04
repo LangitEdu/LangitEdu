@@ -1,9 +1,26 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Styled from '@emotion/styled'
 import BackButton from './BackButton'
+import { useAuth } from '../../contexts/AuthContext'
+import { db } from '../../config/Firebase'
 
 const DetailJurusan = ({jurusan, setstep}) => {
+    const [savedJurusan, setsavedJurusan] = useState(null)
     const options = ['universitas gadjah mada', 'universitas indonesia', 'institut teknologi bandung', 'universitas diponegoro']
+    
+    const { currentUser } = useAuth()
+
+    const handleSaveJurusan = () => {
+        db.collection('Profile').doc(currentUser.uid).update({
+            savedJurusan : jurusan
+        })
+    }
+
+    useEffect(() => {
+        db.collection('Profile').doc(currentUser.uid).onSnapshot(doc => {
+            setsavedJurusan(doc.data().savedJurusan)
+        })
+    }, [currentUser])
 
     return (
         <Wrapper>
@@ -13,6 +30,7 @@ const DetailJurusan = ({jurusan, setstep}) => {
             <div className="desc">
                 <p className="desc">Jurusan seputar mendesain bangunan supaya memiliki nilai estetika dan fungsi yang baik</p>
             </div>
+            <button className={`btn-bordered${savedJurusan === jurusan ? '-gray' : ''}`} onClick={handleSaveJurusan}>{savedJurusan !== jurusan ? 'SIMPAN JURUSAN' : 'TERSIMPAN'}</button>
             <p className="instruction">PILIHAN UNIVERSITAS</p>
             {options.map((option, i) => (
                 <div key={i} className="each-univ">
@@ -20,17 +38,25 @@ const DetailJurusan = ({jurusan, setstep}) => {
                     <p>{option}</p>
                 </div>
             ))}
-            <BackButton tostep={3} setstep={setstep}/>
+            <div className="back">
+                <BackButton tostep={3} setstep={setstep}/>
+            </div>
         </Wrapper>
     )
 }
 
-const Wrapper = Styled.div(() =>`
+const Wrapper = Styled.div(`
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     padding: 54px 0;
+    
+    .back{
+        margin-top: 32px;
+        max-width: 560px;
+        width: 90%;
+    }
     
     p.instruction{
         font-family: Montserrat;

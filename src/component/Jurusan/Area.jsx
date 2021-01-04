@@ -30,7 +30,9 @@ const Area = ({kluster, area, setarea, setstep}) => {
                     </div>
                 )}
             </div>
-            <BackButton tostep={0} setstep={setstep}/>
+            <div className="back">
+                <BackButton tostep={0} setstep={setstep}/>
+            </div>
         </Wrapper>
     )
 }
@@ -54,6 +56,12 @@ const Wrapper = Styled.div(({screen}) =>`
         justify-content: ${screen > 588 ? 'flex-start' : 'center'};
         align-items: center;
         flex-wrap: wrap;
+    }
+
+    .back{
+        margin-top: 32px;
+        max-width: 552px;
+        width: 90%;
     }
 
     .card{
