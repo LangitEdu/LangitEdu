@@ -2,12 +2,15 @@ import React from 'react'
 import Styled from '@emotion/styled'
 import BackButton from './BackButton'
 
-const Area = ({klasifikasi, jurusan, setjurusan, setstep}) => {
+const Jurusan = ({area, jurusan, setjurusan, setstep}) => {
     const options = {
-        bangunan: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota'],
-        kebumian: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota'],
-        kelautan: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota'],
-        komputer: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota']
+        teknik: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota'],
+        kesehatan: ['kedokteran umum', 'keperawatan', 'kedoteran gigi', 'farmasi'],
+        pertanian: ['pertanian tropis', 'ternak umum', 'teknologi pertanian'],
+        mipa: ['matematika', 'kimia', 'fisika', 'biologi'],
+        ekonomi: ['bangunan', 'kebumian', 'kelautan', 'komputer'],
+        sosial: ['bangunan', 'kebumian', 'kelautan', 'komputer'],
+        humaniora: ['bangunan', 'kebumian', 'kelautan', 'komputer']
     }
 
     const handleClick = (option) => {
@@ -19,14 +22,14 @@ const Area = ({klasifikasi, jurusan, setjurusan, setstep}) => {
         <Wrapper>
             <p className="instruction">JURUSAN UNTUKMU</p>
             <div className="select">
-                {options[klasifikasi].map((option, i) => 
+                {options[area].map((option, i) => 
                     <div className={`card ${jurusan !== option && jurusan !== 'initial' ? 'dimm' : ''}`} onClick={() => handleClick(option)} key={i}>
                         <p>{option}</p>
-                        <p className="link">LEBIH LANJUT <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L8 8L1 15" stroke="#209FBC" strokeWidth="1.5"/></svg></p>
+                        <p className="link">LEBIH LANJUT<svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L8 8L1 15" stroke="#209FBC" strokeWidth="1.5"/></svg></p>
                     </div>
                 )}
             </div>
-            <BackButton tostep={2} setstep={setstep}/>
+            <BackButton tostep={1} setstep={setstep}/>
         </Wrapper>
     )
 }
@@ -154,4 +157,4 @@ const Wrapper = Styled.div(() =>`
     }
 `)
 
-export default Area
+export default Jurusan

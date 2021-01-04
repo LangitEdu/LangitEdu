@@ -13,7 +13,8 @@ const Area = ({kluster, area, setarea, setstep}) => {
 
     const handleClick = (option) => {
         setarea(option)
-        setstep(2)
+        // setstep(2)
+        setstep(3)
     }
 
     return (

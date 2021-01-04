@@ -29,10 +29,10 @@ const RekomendasiJurusan = () => {
               return <Kluster kluster={kluster} setkluster={setkluster} setstep={setstep}/>
             case 1:
               return <Area kluster={kluster} area={area} setarea={setarea} setstep={setstep}/>
-            case 2:
-              return <Klasifikasi area={area} klasifikasi={klasifikasi} setklasifikasi={setklasifikasi} setstep={setstep} kluster={kluster}/>
+            // case 2:
+            //   return <Klasifikasi area={area} klasifikasi={klasifikasi} setklasifikasi={setklasifikasi} setstep={setstep} kluster={kluster}/>
             case 3:
-              return <Jurusan klasifikasi={klasifikasi} jurusan={jurusan} setjurusan={setjurusan} setstep={setstep}/>
+              return <Jurusan area={area} jurusan={jurusan} setjurusan={setjurusan} setstep={setstep}/>
             case 4:
               return <DetailJurusan jurusan={jurusan} setstep={setstep}/>
             default:
