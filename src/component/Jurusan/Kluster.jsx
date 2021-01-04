@@ -1,30 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Styled from '@emotion/styled'
 import useResize from 'use-resizing'
+import { useAuth } from '../../contexts/AuthContext'
+import { db } from '../../config/Firebase'
 
 const Kluster = ({kluster, setkluster, setstep}) => {
     const [nilai, setnilai] = useState(['', '', '', '', '', ''])
+    const { currentUser } = useAuth()
     const screen = useResize().width
-
-    const handleInput = (value, index) => {
-        if (value > 100) value = 100
-        if (value < 0) value = 0
-
-        let data = nilai
-        data[index] = value
-        setnilai([...data])
-    }
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-
-        setstep(1)
-    }
 
     const subjects = {
         saintek: ['matematika', 'b.indonesia', 'b.inggris', 'fisika', 'kimia', 'biologi'],
         soshum: ['matematika', 'b.indonesia', 'b.inggris', 'ekonomi', 'sosiologi', 'geografi']
     }
+
+    const handleInput = (value, index) => {
+        let data = nilai
+        data[index] = value
+        if (value <= 100 && value >= 0) setnilai([...data])
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        db.collection('Profile').doc(currentUser.uid).update({
+            savedNilai: nilai
+        })
+        setstep(1)
+    }
+
+    const handleKlusterChange = (selected) => {
+        setkluster(selected)
+        db.collection('Profile').doc(currentUser.uid).update({
+            savedKluster: selected
+        })
+    }
+
+    useEffect(() => {
+        db.collection('Profile').doc(currentUser.uid).get().then(doc => {
+            if(doc.data().savedNilai) setnilai(doc.data().savedNilai)
+            if(doc.data().savedKluster) setkluster(doc.data().savedKluster)
+        })
+    }, [])
 
     return (
         <Wrapper screen={screen}>
@@ -32,14 +48,14 @@ const Kluster = ({kluster, setkluster, setstep}) => {
                 <h2>Pilih Kluster</h2>
                 <div className="select">
                     <div className="card-cont">
-                        <div className={`card-kluster saintek ${kluster === 'saintek' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => setkluster('saintek')}>
+                        <div className={`card-kluster saintek ${kluster === 'saintek' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => handleKlusterChange('saintek')}>
                             <p className="main">SAINTEK</p>
                             <p className="sub">KLUSTER IPA</p>
                         </div>
                         <p className="desc">Ilmu-ilmu Sains, Teknologi, dan Pengetahuan Alam</p>
                     </div>
                     <div className="card-cont">
-                        <div className={`card-kluster soshum ${kluster === 'soshum' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => setkluster('soshum')}>
+                        <div className={`card-kluster soshum ${kluster === 'soshum' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => handleKlusterChange('soshum')}>
                             <p className="main">SOSHUM</p>
                             <p className="sub">KLUSTER IPS</p>
                         </div>
