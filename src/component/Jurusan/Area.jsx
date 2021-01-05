@@ -1,43 +1,84 @@
-import React from 'react'
-import Styled from '@emotion/styled'
-import useResize from 'use-resizing'
-import BackButton from './BackButton'
+import React, { useEffect, useState } from "react";
+import Styled from "@emotion/styled";
+import useResize from "use-resizing";
+import BackButton from "./BackButton";
+import { db } from "../../config/Firebase";
 
-const Area = ({kluster, area, setarea, setstep}) => {
-    const screen = useResize().width
+const Area = ({ kluster, area, setarea, setstep }) => {
+  const screen = useResize().width;
+  const [Loading, setLoading] = useState(false);
+  const [options, setOptions] = useState({
+    saintek: [],
+    soshum: [],
+  });
+  useEffect(() => {
+    setLoading(true);
+    db.collection("Private")
+      .doc("Data")
+      .get()
+      .then((res) => {
+        if (kluster === "saintek") {
+          setOptions({
+            saintek: res.data().ListAreaProdiSaintek,
+          });
+        } else {
+          setOptions({
+            soshum: res.data().ListAreaProdiSoshum,
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+    return () => {
+      setOptions({
+        saintek: [],
+        soshum: [],
+      });
+      setLoading(false);
+    };
+  }, [kluster]);
 
-    const options = {
-        saintek: ['teknik', 'kesehatan', 'pertanian', 'mipa'],
-        soshum: ['ekonomi', 'sosial', 'humaniora']
-    }
+  const handleClick = (option) => {
+    setarea(option);
+    // setstep(2)
+    setstep(3);
+  };
 
-    const handleClick = (option) => {
-        setarea(option)
-        // setstep(2)
-        setstep(3)
-    }
-
-    return (
-        <Wrapper screen={screen}>
-            <div className={`${kluster} kluster-head`}>
-                <h2>{kluster}</h2>
+  return (
+    <Wrapper screen={screen}>
+      <div className={`${kluster} kluster-head`}>
+        <h2>{kluster}</h2>
+      </div>
+      <p className="instruction">Pilih Area Program Studi</p>
+      <div className="select">
+        {Loading ? (
+          <div className="spinner-border" role="status"></div>
+        ) : (
+          options[kluster].map((option, i) => (
+            <div
+              className={`card ${
+                area !== option && area !== "initial" ? "dimm" : ""
+              }`}
+              onClick={() => handleClick(option)}
+              key={i}
+            >
+              <p>{option}</p>
             </div>
-            <p className="instruction">Pilih Area Program Studi</p>
-            <div className="select">
-                {options[kluster].map((option, i) => 
-                    <div className={`card ${area !== option && area !== 'initial' ? 'dimm' : ''}`} onClick={() => handleClick(option)} key={i}>
-                        <p>{option}</p>
-                    </div>
-                )}
-            </div>
-            <div className="back">
-                <BackButton tostep={0} setstep={setstep}/>
-            </div>
-        </Wrapper>
-    )
-}
+          ))
+        )}
+      </div>
+      <div className="back">
+        <BackButton tostep={0} setstep={setstep} />
+      </div>
+    </Wrapper>
+  );
+};
 
-const Wrapper = Styled.div(({screen}) =>`
+const Wrapper = Styled.div(
+  ({ screen }) => `
     display: flex;
     justify-content: center;
     align-items: center;
@@ -53,7 +94,7 @@ const Wrapper = Styled.div(({screen}) =>`
         max-width: 572px;
 
         display: flex;
-        justify-content: ${screen > 588 ? 'flex-start' : 'center'};
+        justify-content: ${screen > 588 ? "flex-start" : "center"};
         align-items: center;
         flex-wrap: wrap;
     }
@@ -158,6 +199,7 @@ const Wrapper = Styled.div(({screen}) =>`
         margin-bottom: 32px;
         color: #4F4F4F;
     }
-`)
+`
+);
 
-export default Area
+export default Area;

@@ -184,6 +184,30 @@ app.get("/halo", (req, res) => {
   });
 });
 
+app.get("/list-prodi", async (req, res) => {
+  let results = [];
+  fs.createReadStream("DataKampus/KlasifikasiJurusan.csv")
+    .pipe(csv())
+    .on("data", (data) => {
+      results.push(data);
+    })
+    .on("end", () => {
+      let ListKlasifikasiProdi = {};
+      results.forEach((prodi) => {
+        if (ListKlasifikasiProdi[prodi.study_program_area] === undefined) {
+          ListKlasifikasiProdi[prodi.study_program_area] = [];
+        }
+        ListKlasifikasiProdi[prodi.study_program_area].push(
+          prodi.study_program
+        );
+      });
+      db.collection("Private").doc("Data").update({
+        ListKlasifikasiProdi: ListKlasifikasiProdi,
+      });
+      res.json(ListKlasifikasiProdi);
+    });
+});
+
 app.get("/masukin-data-prodi", async (req, res) => {
   let results = [];
   fs.createReadStream("DataKampus/KAMPUS/UT.csv")

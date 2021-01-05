@@ -1,40 +1,73 @@
-import React from 'react'
-import Styled from '@emotion/styled'
-import BackButton from './BackButton'
+import React, { useEffect, useState } from "react";
+import Styled from "@emotion/styled";
+import BackButton from "./BackButton";
+import { db } from "../../config/Firebase";
 
-const Jurusan = ({area, jurusan, setjurusan, setstep}) => {
-    const options = {
-        teknik: ['arsitektur', 'teknik sipil', 'perencanaan wilayah dan tata kota'],
-        kesehatan: ['kedokteran umum', 'keperawatan', 'kedoteran gigi', 'farmasi'],
-        pertanian: ['pertanian tropis', 'ternak umum', 'teknologi pertanian'],
-        mipa: ['matematika', 'kimia', 'fisika', 'biologi'],
-        ekonomi: ['bangunan', 'kebumian', 'kelautan', 'komputer'],
-        sosial: ['bangunan', 'kebumian', 'kelautan', 'komputer'],
-        humaniora: ['bangunan', 'kebumian', 'kelautan', 'komputer']
-    }
+const Jurusan = ({ area, jurusan, setjurusan, setstep }) => {
+  const [options, setOptions] = useState([]);
+  const [Loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    db.collection("Private")
+      .doc("Data")
+      .get()
+      .then((doc) => {
+        const { ListKlasifikasiProdi } = doc.data();
+        setOptions(ListKlasifikasiProdi[area]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+    return () => {
+      setOptions();
+      setLoading(false);
+    };
+  }, [area]);
+  const handleClick = (option) => {
+    setjurusan(option);
+    setstep(4);
+  };
 
-    const handleClick = (option) => {
-        setjurusan(option)
-        setstep(4)
-    }
-
-    return (
-        <Wrapper>
-            <p className="instruction">JURUSAN UNTUKMU</p>
-            <div className="select">
-                {options[area].map((option, i) => 
-                    <div className={`card ${jurusan !== option && jurusan !== 'initial' ? 'dimm' : ''}`} onClick={() => handleClick(option)} key={i}>
-                        <p>{option}</p>
-                        <p className="link">LEBIH LANJUT<svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L8 8L1 15" stroke="#209FBC" strokeWidth="1.5"/></svg></p>
-                    </div>
-                )}
+  return (
+    <Wrapper>
+      <p className="instruction">JURUSAN UNTUKMU</p>
+      <div className="select">
+        {Loading ? (
+          <div className="spinner-border" role="status"></div>
+        ) : (
+          options.map((option, i) => (
+            <div
+              className={`card ${
+                jurusan !== option && jurusan !== "initial" ? "dimm" : ""
+              }`}
+              onClick={() => handleClick(option)}
+              key={i}
+            >
+              <p>{option}</p>
+              <p className="link">
+                LEBIH LANJUT
+                <svg
+                  width="10"
+                  height="16"
+                  viewBox="0 0 10 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M1 1L8 8L1 15" stroke="#209FBC" strokeWidth="1.5" />
+                </svg>
+              </p>
             </div>
-            <div className="back">
-                <BackButton tostep={1} setstep={setstep}/>
-            </div>
-        </Wrapper>
-    )
-}
+          ))
+        )}
+      </div>
+      <div className="back">
+        <BackButton tostep={1} setstep={setstep} />
+      </div>
+    </Wrapper>
+  );
+};
 
 const Wrapper = Styled.div(`
     display: flex;
@@ -163,6 +196,6 @@ const Wrapper = Styled.div(`
 
         color: #007A95;
     }
-`)
+`);
 
-export default Jurusan
+export default Jurusan;

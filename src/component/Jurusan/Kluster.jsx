@@ -1,111 +1,141 @@
-import React, { useState, useEffect } from 'react'
-import Styled from '@emotion/styled'
-import useResize from 'use-resizing'
-import { useAuth } from '../../contexts/AuthContext'
-import { db } from '../../config/Firebase'
+import React, { useState } from "react";
+import Styled from "@emotion/styled";
+import useResize from "use-resizing";
 
-const Kluster = ({kluster, setkluster, setstep}) => {
-    const [nilai, setnilai] = useState(['', '', '', '', '', ''])
-    const { currentUser } = useAuth()
-    const screen = useResize().width
+const Kluster = ({ kluster, setkluster, setstep }) => {
+  const [nilai, setnilai] = useState(["", "", "", "", "", ""]);
+  const screen = useResize().width;
 
-    const subjects = {
-        saintek: ['matematika', 'b.indonesia', 'b.inggris', 'fisika', 'kimia', 'biologi'],
-        soshum: ['matematika', 'b.indonesia', 'b.inggris', 'ekonomi', 'sosiologi', 'geografi']
-    }
+  const subjects = {
+    saintek: [
+      "matematika",
+      "b.indonesia",
+      "b.inggris",
+      "fisika",
+      "kimia",
+      "biologi",
+    ],
+    soshum: [
+      "matematika",
+      "b.indonesia",
+      "b.inggris",
+      "ekonomi",
+      "sosiologi",
+      "geografi",
+    ],
+  };
 
-    const handleInput = (value, index) => {
-        let data = nilai
-        data[index] = value
-        if (value <= 100 && value >= 0) setnilai([...data])
-    }
+  const handleInput = (value, index) => {
+    let data = nilai;
+    data[index] = value;
+    if (value <= 100 && value >= 0) setnilai([...data]);
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        db.collection('Profile').doc(currentUser.uid).update({
-            savedNilai: nilai
-        })
-        setstep(1)
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setstep(1);
+  };
 
-    const handleKlusterChange = (selected) => {
-        setkluster(selected)
-        db.collection('Profile').doc(currentUser.uid).update({
-            savedKluster: selected
-        })
-    }
+  const handleKlusterChange = (selected) => {
+    setkluster(selected);
+  };
 
-    useEffect(() => {
-        db.collection('Profile').doc(currentUser.uid).get().then(doc => {
-            // if(doc.data().savedNilai) setnilai(doc.data().savedNilai)
-            // if(doc.data().savedKluster) setkluster(doc.data().savedKluster)
-        })
-    }, [])
-
-    return (
-        <Wrapper screen={screen}>
-            <div className="select-kluster">
-                <h2>Pilih Kluster</h2>
-                <div className="select">
-                    <div className="card-cont">
-                        <div className={`card-kluster saintek ${kluster === 'saintek' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => handleKlusterChange('saintek')}>
-                            <p className="main">SAINTEK</p>
-                            <p className="sub">KLUSTER IPA</p>
-                        </div>
-                        <p className="desc">Ilmu-ilmu Sains, Teknologi, dan Pengetahuan Alam</p>
-                    </div>
-                    <div className="card-cont">
-                        <div className={`card-kluster soshum ${kluster === 'soshum' || kluster === 'initial' ? '' : 'dimm'}`} onClick={() => handleKlusterChange('soshum')}>
-                            <p className="main">SOSHUM</p>
-                            <p className="sub">KLUSTER IPS</p>
-                        </div>
-                        <p className="desc">Ilmu-ilmu Sosial, Hukum, Ekonomi dan Humaniora</p>
-                    </div>
-                </div>
+  return (
+    <Wrapper screen={screen}>
+      <div className="select-kluster">
+        <h2>Pilih Kluster</h2>
+        <div className="select">
+          <div className="card-cont">
+            <div
+              className={`card-kluster saintek ${
+                kluster === "saintek" || kluster === "initial" ? "" : "dimm"
+              }`}
+              onClick={() => handleKlusterChange("saintek")}
+            >
+              <p className="main">SAINTEK</p>
+              <p className="sub">KLUSTER IPA</p>
             </div>
-            <div className="input-nilai">
-                <h2>Analisa Nilai</h2>
-                <form onSubmit={handleSubmit}>
-                    {kluster === 'initial' ?
-                        <div className="warning-select">
-                            <p>Pilih kluster jurusan terlebih dahulu</p>
-                        </div>
-                    :
-                    <>
-                        {subjects[kluster].map((subject, i) => 
-                            <InputNilai subject={subject} key={i} index={i} nilai={nilai} handleInput={handleInput}/>
-                        )}
-                        <div className="action">
-                            <button type="reset" onClick={() => setnilai(['','','','','',''])}>Reset Form</button>
-                        </div>
-                    </>
-                    }
-                    <button type="submit" className="btn-bordered-blue" disabled={kluster === 'initial'}>JELAJAHI JURUSAN</button>
-                </form>
+            <p className="desc">
+              Ilmu-ilmu Sains, Teknologi, dan Pengetahuan Alam
+            </p>
+          </div>
+          <div className="card-cont">
+            <div
+              className={`card-kluster soshum ${
+                kluster === "soshum" || kluster === "initial" ? "" : "dimm"
+              }`}
+              onClick={() => handleKlusterChange("soshum")}
+            >
+              <p className="main">SOSHUM</p>
+              <p className="sub">KLUSTER IPS</p>
             </div>
-        </Wrapper>
-    )
-}
-
-const InputNilai = ({subject, index, nilai, handleInput}) => {
-    return (
-        <div className="each-input">
-            <label htmlFor={index}>{subject}</label>
-            <input type="number" 
-                id={index}
-                value={nilai[index]} 
-                onChange={e => handleInput(e.target.value, index)} 
-                min="0" 
-                max="100" 
-                placeholder='-'
-                // required
-            />
+            <p className="desc">
+              Ilmu-ilmu Sosial, Hukum, Ekonomi dan Humaniora
+            </p>
+          </div>
         </div>
-    )
-}
+      </div>
+      <div className="input-nilai">
+        <h2>Analisa Nilai</h2>
+        <form onSubmit={handleSubmit}>
+          {kluster === "initial" ? (
+            <div className="warning-select">
+              <p>Pilih kluster jurusan terlebih dahulu</p>
+            </div>
+          ) : (
+            <>
+              {subjects[kluster].map((subject, i) => (
+                <InputNilai
+                  subject={subject}
+                  key={i}
+                  index={i}
+                  nilai={nilai}
+                  handleInput={handleInput}
+                />
+              ))}
+              <div className="action">
+                <button
+                  type="reset"
+                  onClick={() => setnilai(["", "", "", "", "", ""])}
+                >
+                  Reset Form
+                </button>
+              </div>
+            </>
+          )}
+          <button
+            type="submit"
+            className="btn-bordered-blue"
+            disabled={kluster === "initial"}
+          >
+            JELAJAHI JURUSAN
+          </button>
+        </form>
+      </div>
+    </Wrapper>
+  );
+};
 
+const InputNilai = ({ subject, index, nilai, handleInput }) => {
+  return (
+    <div className="each-input">
+      <label htmlFor={index}>{subject}</label>
+      <input
+        type="number"
+        id={index}
+        value={nilai[index]}
+        onChange={(e) => handleInput(e.target.value, index)}
+        min="0"
+        max="100"
+        placeholder="-"
+        // required
+      />
+    </div>
+  );
+};
 
-const Wrapper = Styled.div(({screen}) =>`
+const Wrapper = Styled.div(
+  ({ screen }) => `
     .warning-select{
         width: 100%;
         background: rgba(255, 162, 82, 0.07);
@@ -142,7 +172,7 @@ const Wrapper = Styled.div(({screen}) =>`
             font-family: Montserrat;
             font-style: normal;
             font-weight: bold;
-            font-size: ${screen > 440 ? '28px' : '20px'};
+            font-size: ${screen > 440 ? "28px" : "20px"};
             line-height: 34px;
             text-transform: uppercase;
 
@@ -235,7 +265,7 @@ const Wrapper = Styled.div(({screen}) =>`
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: ${screen > 850 ? 'row' : 'column'};
+        flex-direction: ${screen > 850 ? "row" : "column"};
     }
 
     .saintek{
@@ -322,7 +352,7 @@ const Wrapper = Styled.div(({screen}) =>`
     }
     
     .select-kluster{
-        height: ${screen > 850 ? '448px' : '640px'};
+        height: ${screen > 850 ? "448px" : "640px"};
         width: 100%;
 
         display: flex;
@@ -343,6 +373,7 @@ const Wrapper = Styled.div(({screen}) =>`
 
         color: #4F4F4F;
     }
-`)
+`
+);
 
-export default Kluster
+export default Kluster;

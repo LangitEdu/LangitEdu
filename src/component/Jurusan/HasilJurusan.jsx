@@ -1,75 +1,164 @@
-import React, { useState, useEffect } from 'react'
-import Styled from '@emotion/styled'
-import BackButton from './BackButton'
-import { useAuth } from '../../contexts/AuthContext'
-import { db } from '../../config/Firebase'
+import React, { useState, useEffect } from "react";
+import Styled from "@emotion/styled";
+import BackButton from "./BackButton";
+import { useAuth } from "../../contexts/AuthContext";
+import { db } from "../../config/Firebase";
 
-const HasilJurusan = ({jurusan, univ, setstep}) => {
-    const [savedJurusan, setsavedJurusan] = useState(null)
-
-    const { currentUser } = useAuth()
-
-    const handleSaveJurusan = () => {
-        db.collection('Profile').doc(currentUser.uid).update({
-            savedJurusan : jurusan
-        })
+const HasilJurusan = ({ jurusan, univ, setstep, area, kluster }) => {
+  const [savedJurusan, setsavedJurusan] = useState(null);
+  const [Loading, setLoading] = useState(true);
+  const [SaveLoading, setSaveLoading] = useState(true);
+  const { currentUser } = useAuth();
+  const [ProdiDetail, setProdiDetail] = useState({});
+  useEffect(() => {
+    async function getProdiData() {
+      setLoading(true);
+      const resUniv = await db
+        .collection("University")
+        .where("nama", "==", univ)
+        .limit(1)
+        .get()
+        .then((res) => {
+          return res.docs[0].data();
+        });
+      const DetailProdi = await db
+        .collection("Jurusans")
+        .where("Campus_Code", "==", resUniv.code)
+        .where("Study_Program", "==", jurusan)
+        .get()
+        .then((res) => {
+          return res.docs[0].data();
+        });
+      setProdiDetail(DetailProdi);
+      setLoading(false);
     }
+    async function CheckedSavedJurusan() {
+      const hasilSavedJurusan = await db
+        .collection("ListHasilRekomendasi")
+        .where("uid", "==", currentUser.uid)
+        .where("jurusan", "==", jurusan)
+        .where("univ", "==", univ)
+        .limit(1)
+        .get()
+        .then((res) => {
+          if (res.empty) {
+            return {
+              jurusan: "initial",
+            };
+          }
+          return res.docs[0].data();
+        });
+      setsavedJurusan(hasilSavedJurusan.jurusan);
+      setSaveLoading(false);
+    }
+    CheckedSavedJurusan();
+    getProdiData();
+    return () => {
+      setLoading(false);
+    };
+  }, [univ, jurusan, currentUser]);
 
-    useEffect(() => {
-        db.collection('Profile').doc(currentUser.uid).onSnapshot(doc => {
-            setsavedJurusan(doc.data().savedJurusan)
-        })
-    }, [currentUser])
+  const handleSaveJurusan = () => {
+    setSaveLoading(true);
+    return db
+      .collection("ListHasilRekomendasi")
+      .add({
+        uid: currentUser.uid,
+        area: area,
+        kluster: kluster,
+        jurusan: jurusan,
+        univ: univ,
+      })
+      .then(() => {
+        setsavedJurusan(jurusan);
+        setSaveLoading(false);
+      })
+      .catch((err) => {
+        setSaveLoading(false);
+        console.log(err);
+      });
+  };
 
-    return (
-        <Wrapper>
-            <div className="header-detail">
-                <h2>{jurusan}</h2>
+  return (
+    <Wrapper>
+      <div className="header-detail">
+        <h2>{jurusan}</h2>
+      </div>
+      {Loading ? (
+        <div className="spinner-border" role="status"></div>
+      ) : (
+        <>
+          <div className="each-univ">
+            <div
+              className="img"
+              style={{
+                background: `url('/img/jurusan/univ.svg'), ${"#676726"}`,
+              }}
+            ></div>
+            <p>{univ}</p>
+          </div>
+          <div className="data-basic">
+            <p>Status</p>
+            <div className="box">
+              <p>{ProdiDetail.Status}</p> {/* nanti merah kalo tutup */}
             </div>
-            <div className="each-univ">
-                <div className="img" style={{background: `url('/img/jurusan/univ.svg'), ${ '#676726' }`}}></div>
-                <p>{univ}</p>
+          </div>
+          <div className="data-basic">
+            <p>Akreditasi</p>
+            <div className="box">
+              <p>{ProdiDetail.Accreditation}</p>
             </div>
-            <div className="data-basic">
-                <p>Status</p>
-                <div className="box">
-                    <p>AKTIF</p> {/* nanti merah kalo tutup */}
-                </div>
+          </div>
+          <div className="jumlah-orang">
+            <div className="box">
+              <p className="number">
+                {ProdiDetail.Number_of_Permanent_Lecturers}
+              </p>
+              <div>
+                <div className="line"></div>
+                <p className="text">Pengajar/Dosen</p>
+              </div>
             </div>
-            <div className="data-basic">
-                <p>Akreditasi</p>
-                <div className="box">
-                    <p>A</p>
-                </div>
+            <div className="box">
+              <p className="number">{ProdiDetail.Number_of_Students}</p>
+              <div>
+                <div className="line"></div>
+                <p className="text">Mahasiswa</p>
+              </div>
             </div>
-            <div className="jumlah-orang">
-                <div className="box">
-                    <p className="number">53</p>
-                    <div>
-                        <div className="line"></div>
-                        <p className="text">Pengajar/Dosen</p>
-                    </div>
-                </div>
-                <div className="box">
-                    <p className="number">1020</p>
-                    <div>
-                        <div className="line"></div>
-                        <p className="text">Mahasiswa</p>
-                    </div>
-                </div>
+          </div>
+          <div className="rasio-cont">
+            <div className="rasio">
+              <p>Rasio {ProdiDetail.Ratio}</p>
             </div>
-            <div className="rasio-cont">
-                <div className="rasio">
-                    <p>Rasio 1:19.8</p>
-                </div>
-            </div>
-            <div className="back">
-                <BackButton tostep={4} setstep={setstep}/>
-                <button className={`btn-bordered${savedJurusan === jurusan ? '-gray' : ''}`} onClick={handleSaveJurusan}>{savedJurusan !== jurusan ? 'SIMPAN JURUSAN' : 'TERSIMPAN'}</button>
-            </div>
-        </Wrapper>
-    )
-}
+          </div>
+        </>
+      )}
+
+      <div className="back">
+        <BackButton tostep={4} setstep={setstep} />
+        <button
+          className={`btn-bordered${savedJurusan === jurusan ? "-gray" : ""}`}
+          onClick={handleSaveJurusan}
+        >
+          {SaveLoading ? (
+            <>
+              <div
+                className="spinner-border text-light mr-2 spinner-border-sm"
+                role="status"
+              ></div>
+              {"Loading"}
+            </>
+          ) : savedJurusan !== jurusan ? (
+            "SIMPAN JURUSAN"
+          ) : (
+            "TERSIMPAN"
+          )}
+        </button>
+      </div>
+    </Wrapper>
+  );
+};
 
 const Wrapper = Styled.div(`
     display: flex;
@@ -307,6 +396,6 @@ const Wrapper = Styled.div(`
             color: #333333;
         }
     }
-`)
+`);
 
-export default HasilJurusan
+export default HasilJurusan;

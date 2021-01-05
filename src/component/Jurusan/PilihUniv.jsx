@@ -1,33 +1,70 @@
-import React from 'react'
-import Styled from '@emotion/styled'
-import BackButton from './BackButton'
+import React, { useEffect, useState } from "react";
+import Styled from "@emotion/styled";
+import BackButton from "./BackButton";
+import { db } from "../../config/Firebase";
 
-const DetailJurusan = ({jurusan, setstep, univ, setuniv}) => {
-    const options = ['universitas gadjah mada', 'universitas indonesia', 'institut teknologi bandung', 'universitas diponegoro']
-    
-    const handleClick = (selectedUniv) => {
-        setuniv(selectedUniv)
-        setstep(5)
-    }
-    
-    return (
-        <Wrapper>
-            <div className="header-detail">
-                <h2>{jurusan}</h2>
-            </div>
-            <p className="instruction">PILIHAN UNIVERSITAS</p>
-            {options.map((option, i) => (
-                <div key={i} className={`each-univ ${univ !== option && univ !== 'initial' ? 'dimm' : ''}`} onClick={()=>handleClick(option)}>
-                    <div className="img" style={{background: `url('/img/jurusan/univ.svg'), ${ '#676726' }`}}></div>
-                    <p>{option}</p>
-                </div>
-            ))}
-            <div className="back">
-                <BackButton tostep={3} setstep={setstep}/>
-            </div>
-        </Wrapper>
-    )
-}
+const DetailJurusan = ({ jurusan, setstep, univ, setuniv }) => {
+  const [options, setOptions] = useState([]);
+  const [Loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(true);
+    db.collection("University")
+      .where("listProdi", "array-contains", jurusan)
+      .get()
+      .then((res) => {
+        const univs = res.docs.map((doc) => {
+          return doc.data().nama;
+        });
+        setOptions(univs);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+    return () => {
+      setLoading(true);
+    };
+  }, [jurusan]);
+
+  const handleClick = (selectedUniv) => {
+    setuniv(selectedUniv);
+    setstep(5);
+  };
+
+  return (
+    <Wrapper>
+      <div className="header-detail">
+        <h2>{jurusan}</h2>
+      </div>
+      <p className="instruction">PILIHAN UNIVERSITAS</p>
+      {Loading ? (
+        <div className="spinner-border" role="status"></div>
+      ) : (
+        options.map((option, i) => (
+          <div
+            key={i}
+            className={`each-univ ${
+              univ !== option && univ !== "initial" ? "dimm" : ""
+            }`}
+            onClick={() => handleClick(option)}
+          >
+            <div
+              className="img"
+              style={{
+                background: `url('/img/jurusan/univ.svg'), ${"#676726"}`,
+              }}
+            ></div>
+            <p>{option}</p>
+          </div>
+        ))
+      )}
+      <div className="back">
+        <BackButton tostep={3} setstep={setstep} />
+      </div>
+    </Wrapper>
+  );
+};
 
 const Wrapper = Styled.div(`
     display: flex;
@@ -134,6 +171,6 @@ const Wrapper = Styled.div(`
             color: #333333;
         }
     }
-`)
+`);
 
-export default DetailJurusan
+export default DetailJurusan;
