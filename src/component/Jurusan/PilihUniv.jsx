@@ -1,39 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import Styled from '@emotion/styled'
 import BackButton from './BackButton'
-import { useAuth } from '../../contexts/AuthContext'
-import { db } from '../../config/Firebase'
 
-const DetailJurusan = ({jurusan, setstep}) => {
-    const [savedJurusan, setsavedJurusan] = useState(null)
+const DetailJurusan = ({jurusan, setstep, univ, setuniv}) => {
     const options = ['universitas gadjah mada', 'universitas indonesia', 'institut teknologi bandung', 'universitas diponegoro']
     
-    const { currentUser } = useAuth()
-
-    const handleSaveJurusan = () => {
-        db.collection('Profile').doc(currentUser.uid).update({
-            savedJurusan : jurusan
-        })
+    const handleClick = (selectedUniv) => {
+        setuniv(selectedUniv)
+        setstep(5)
     }
-
-    useEffect(() => {
-        db.collection('Profile').doc(currentUser.uid).onSnapshot(doc => {
-            setsavedJurusan(doc.data().savedJurusan)
-        })
-    }, [currentUser])
-
+    
     return (
         <Wrapper>
             <div className="header-detail">
                 <h2>{jurusan}</h2>
             </div>
-            <div className="desc">
-                <p className="desc">Jurusan seputar mendesain bangunan supaya memiliki nilai estetika dan fungsi yang baik</p>
-            </div>
-            <button className={`btn-bordered${savedJurusan === jurusan ? '-gray' : ''}`} onClick={handleSaveJurusan}>{savedJurusan !== jurusan ? 'SIMPAN JURUSAN' : 'TERSIMPAN'}</button>
             <p className="instruction">PILIHAN UNIVERSITAS</p>
             {options.map((option, i) => (
-                <div key={i} className="each-univ">
+                <div key={i} className={`each-univ ${univ !== option && univ !== 'initial' ? 'dimm' : ''}`} onClick={()=>handleClick(option)}>
                     <div className="img" style={{background: `url('/img/jurusan/univ.svg'), ${ '#676726' }`}}></div>
                     <p>{option}</p>
                 </div>
@@ -51,6 +35,11 @@ const Wrapper = Styled.div(`
     align-items: center;
     flex-direction: column;
     padding: 54px 0;
+
+    .dimm{
+        opacity: 0.5;
+        filter: saturate(0)
+    }
     
     .back{
         margin-top: 32px;
@@ -63,7 +52,7 @@ const Wrapper = Styled.div(`
         font-style: normal;
         font-weight: 800;
         font-size: 32px;
-        margin: 24px 0;
+        margin: 48px 0 32px 0;
         line-height: 54px;
         /* identical to box height */
         
