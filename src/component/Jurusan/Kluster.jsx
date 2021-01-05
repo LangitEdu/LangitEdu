@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Styled from "@emotion/styled";
 import useResize from "use-resizing";
 
 const Kluster = ({ kluster, setkluster, setstep }) => {
-  const [nilai, setnilai] = useState(["", "", "", "", "", ""]);
+  const [nilai, setnilai] = useState(["", "", "", "", "", ""])
   const screen = useResize().width;
 
   const subjects = {
@@ -39,6 +39,16 @@ const Kluster = ({ kluster, setkluster, setstep }) => {
   const handleKlusterChange = (selected) => {
     setkluster(selected);
   };
+
+  useEffect(() => {
+    const fromFirebase = {
+      nilai: [100,90,70,60,50,40],
+      kluster: 'saintek'
+    }
+
+    setnilai(fromFirebase.nilai)
+    setkluster(fromFirebase.kluster)
+  }, [])
 
   return (
     <Wrapper screen={screen}>
@@ -128,7 +138,7 @@ const InputNilai = ({ subject, index, nilai, handleInput }) => {
         min="0"
         max="100"
         placeholder="-"
-        // required
+        required
       />
     </div>
   );

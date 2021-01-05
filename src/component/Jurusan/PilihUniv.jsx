@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import Styled from "@emotion/styled";
 import BackButton from "./BackButton";
 import { db } from "../../config/Firebase";
+import randomColor from 'randomcolor';
 
 const DetailJurusan = ({ jurusan, setstep, univ, setuniv }) => {
   const [options, setOptions] = useState([]);
   const [Loading, setLoading] = useState(true);
+
   useEffect(() => {
     setLoading(true);
     db.collection("University")
@@ -52,7 +54,7 @@ const DetailJurusan = ({ jurusan, setstep, univ, setuniv }) => {
             <div
               className="img"
               style={{
-                background: `url('/img/jurusan/univ.svg'), ${"#676726"}`,
+                background: `url('/img/jurusan/univ.svg'), ${randomColor({luminosity: 'dark'})}`,
               }}
             ></div>
             <p>{option}</p>

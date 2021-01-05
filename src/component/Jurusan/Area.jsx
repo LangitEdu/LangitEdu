@@ -3,6 +3,7 @@ import Styled from "@emotion/styled";
 import useResize from "use-resizing";
 import BackButton from "./BackButton";
 import { db } from "../../config/Firebase";
+import randomColor from 'randomcolor';
 
 const Area = ({ kluster, area, setarea, setstep }) => {
   const screen = useResize().width;
@@ -62,6 +63,7 @@ const Area = ({ kluster, area, setarea, setstep }) => {
               className={`card ${
                 area !== option && area !== "initial" ? "dimm" : ""
               }`}
+              style={{background: randomColor({luminosity: 'dark'})}}
               onClick={() => handleClick(option)}
               key={i}
             >
@@ -129,19 +131,6 @@ const Wrapper = Styled.div(
             text-transform: uppercase;
 
             color: #FFFFFF;
-        }
-
-        &:nth-of-type(1) {
-            background: #007A95;
-        }
-        &:nth-of-type(2) {
-            background: #E8464A;
-        }
-        &:nth-of-type(3) {
-            background: #15B86A;
-        }
-        &:nth-of-type(4) {
-            background: #9B51E0;
         }
 
         &:hover{

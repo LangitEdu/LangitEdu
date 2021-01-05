@@ -10,6 +10,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster }) => {
   const [SaveLoading, setSaveLoading] = useState(true);
   const { currentUser } = useAuth();
   const [ProdiDetail, setProdiDetail] = useState({});
+  
   useEffect(() => {
     async function getProdiData() {
       setLoading(true);
