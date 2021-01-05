@@ -37,8 +37,8 @@ const Kluster = ({kluster, setkluster, setstep}) => {
 
     useEffect(() => {
         db.collection('Profile').doc(currentUser.uid).get().then(doc => {
-            if(doc.data().savedNilai) setnilai(doc.data().savedNilai)
-            if(doc.data().savedKluster) setkluster(doc.data().savedKluster)
+            // if(doc.data().savedNilai) setnilai(doc.data().savedNilai)
+            // if(doc.data().savedKluster) setkluster(doc.data().savedKluster)
         })
     }, [])
 
