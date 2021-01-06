@@ -1,37 +1,57 @@
-import React, { useEffect, useState } from "react";
-import Styled from "@emotion/styled";
-import BackButton from "./BackButton";
-import { db } from "../../config/Firebase";
+import React, { useEffect, useState } from "react"
+import Styled from "@emotion/styled"
+import BackButton from "./BackButton"
+import { db } from "../../config/Firebase"
 
-const Jurusan = ({ area, jurusan, setjurusan, setstep }) => {
-  const [options, setOptions] = useState([]);
-  const [Loading, setLoading] = useState(true);
+const Data = {
+  pendidikan: 'Sebuah ilmu yang akan membuatmu mendalami cara atau metode pembelajaran terkait pengetahuan, keterampilan, dan kebiasaan sekelompok lintas generasi ke generasi melalui pengajaran, pelatihan, atau penelitian.',
+  ekonomi: 'Sebuah ilmu yang akan membimbingmu untuk lebih memahami aktivitas manusia yang berhubungan dengan proses yang menggerakkan roda perekonomian : produksi, distribusi, dan konsumsi barang dan jasa',
+  sosial: 'Ilmu utama dalam hidup manusia yang bertujuan untuk mendalami aspek yang berhubungan dengan perilaku manusia dan lingkungan sosialnya dengan menggunakan metode ilmiah',
+  teknik: 'Ilmu dasar yang mampu melatih kamu tentang pengetahuan dan kepandaian dalam menciptakan produk yang bermanfaat berkenaan dengan industri',
+  kesehatan: 'Sebuah ilmu untuk kamu yang sayang terhadap kesehatan umat manusia, baik keluarga maupun masyarakat sekitar. Mempelajari kesehatan fisik, mental, dan sosial.',
+  pertanian: 'Sebuah ilmu yang memanfaatkan dan memodifikasi sumber daya hayati untuk menghasilkan bahan pangan, bahan baku industri, atau sumber energi, serta untuk mengelola lingkungan',
+  mipa: 'Sebuah bidang studi untuk kamu yang mencintai ilmu abstrak , yaitu gabungan ilmu yang mempelajari matematika dan ilmu alam (biologi, fisika, kimia, dll.)',
+  agama: 'Sebuah ilmu yang akan membuat kamu semakin mendalami kepercayaan dan peribadatan Kepada Tuhan Yang Mahakuasa serta tata kaidah yang berhubungan dengan budaya, dan pandangan dunia',
+  humaniora: 'Sebuah ilmu untuk kamu pecinta sejarah manusia yang akan memperdalam tentang cara membuat atau mengangkat manusia menjadi lebih manusiawi dan berbudaya di era mendatang',
+  seni: 'Sebuah ilmu yang melatih keahlian kamu dalam membuat karya yang ber nilai seni meliputi seluruh kegiatan manusia dalam menciptakan untuk dihargai keindahannya atau kekuatan emosinya.'
+}
+
+const Jurusan = ({ area, kluster, jurusan, setjurusan, setstep }) => {
+  const [options, setOptions] = useState([])
+  const [Loading, setLoading] = useState(true)
+  const deskripsi = Data[area]
+
   useEffect(() => {
-    setLoading(true);
+    setLoading(true)
     db.collection("Private")
       .doc("Data")
       .get()
       .then((doc) => {
-        const { ListKlasifikasiProdi } = doc.data();
-        setOptions(ListKlasifikasiProdi[area]);
-        setLoading(false);
+        const { ListKlasifikasiProdi } = doc.data()
+        setOptions(ListKlasifikasiProdi[area])
+        setLoading(false)
       })
       .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+        console.log(err)
+        setLoading(false)
+      })
     return () => {
-      setOptions();
-      setLoading(false);
-    };
-  }, [area]);
+      setOptions()
+      setLoading(false)
+    }
+  }, [area])
+
   const handleClick = (option) => {
-    setjurusan(option);
-    setstep(4);
-  };
+    setjurusan(option)
+    setstep(4)
+  }
 
   return (
     <Wrapper>
+      <div className={`${kluster} kluster-head`}>
+        <h2>{area}</h2>
+      </div>
+      <p className="desc">{deskripsi}</p>
       <p className="instruction">JURUSAN UNTUKMU</p>
       <div className="select">
         {Loading ? (
@@ -75,6 +95,59 @@ const Wrapper = Styled.div(`
     align-items: center;
     flex-direction: column;
     padding-top: 52px;
+
+    p.desc{
+      text-align: center;
+      max-width: 572px;
+      width: 90%;
+      min-width: 320px;
+      margin-bottom: 52px;
+
+      font-family: Montserrat;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 23px;
+      color: #575757;
+    }
+
+    .saintek{
+        background: url('/img/jurusan/area/saright.svg'), url('/img/jurusan/area/saleft.svg'), #9B51E0;
+    }
+        
+    .soshum{
+        background: url('/img/jurusan/area/sosright.svg'), url('/img/jurusan/area/sosleft.svg'), #00A37C;
+    }   
+
+    .kluster-head{
+        max-width: 572px;
+        width: 90%;
+        min-width: 320px;
+        height: 104px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 12px;
+
+        background-position: left, right;
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        box-shadow: -8px -8px 6px #FFFFFF, 8px 8px 10px rgba(174, 174, 192, 0.38);
+        border-radius: 16px;
+
+        h2{
+            font-family: Montserrat;
+            font-style: normal;
+            font-weight: bold;
+            font-size: 43px;
+            line-height: 50px;
+            text-align: center;
+            text-transform: uppercase;
+    
+            color: #FFFFFF;
+        }
+    }
 
     .back{
         margin-top: 32px;

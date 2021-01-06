@@ -62,6 +62,7 @@ const RekomendasiJurusan = () => {
         return (
           <Jurusan
             area={area}
+            kluster={kluster}
             jurusan={jurusan}
             setjurusan={setjurusan}
             setstep={setstep}
