@@ -17,14 +17,14 @@ const RouteName = {
   authAction: "/Auth",
   lihatHasilKuis: "/admin/lihat-hasil-kuis/:kuisID",
   RekomendasiJurusan: "/rekomendasi-jurusan",
-  HasilJurusan: "/hasil/:kodeUniv/:kodeProdi/:uid",
+  HasilJurusan: "/hasil/:univ/:jurusan/:KampusCode",
 };
 
 const generateUrlWithParams = (data, oldUrl) => {
-  let newUrl;
+  let newUrl = oldUrl;
   let key;
   for (key in data) {
-    newUrl = oldUrl.replace(`:${key}`, data[key]);
+    newUrl = newUrl.replace(`:${key}`, data[key]);
   }
   return newUrl;
 };

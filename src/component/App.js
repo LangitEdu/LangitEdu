@@ -21,7 +21,7 @@ import GoToTopik from "../Pages/Topik/Topik";
 import Journey from "../Pages/Topik/Journey";
 import Kuis from "../Pages/Kuis";
 import KuisResult from "../Pages/Kuis/Result";
-import MultipleMenus from "../Pages/SimpleMenu";
+import HasilRekomendasi from "../Pages/HasilRekomendasi";
 
 import Admin from "../Pages/Admin";
 import AdminJourney from "../Pages/Admin/AdminJourney";
@@ -79,7 +79,11 @@ function App() {
             path={RouteName.RekomendasiJurusan}
             component={RekomendasiJurusan}
           />
-
+          <UserRoute
+            exact
+            path={RouteName.HasilJurusan}
+            component={HasilRekomendasi}
+          />
           <Route path={RouteName.authAction} component={EmailActionHandle} />
           <Route exact path={RouteName.home} component={Home} />
         </Switch>

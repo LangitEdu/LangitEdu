@@ -60,7 +60,16 @@ export default function Dashboard() {
       .then((res) => {
         setKuisCard(res.docs);
       });
-    Promise.all([Topik, Komunitas, Kuis])
+
+    const Jurusan = db
+      .collection("ListHasilRekomendasi")
+      .where("uid", "==", currentUser.uid)
+      .get()
+      .then((res) => {
+        setsavedJurusan(res.docs);
+      });
+
+    Promise.all([Topik, Komunitas, Kuis, Jurusan])
       .then(() => {
         setLoading(false);
       })
@@ -211,13 +220,31 @@ export default function Dashboard() {
                   ></div>
                 </div>
               ) : savedJurusan.length > 0 ? (
-                savedJurusan.map((jurusan, i) => {
+                savedJurusan.map((doc, i) => {
+                  const { jurusan, univ, KampusCode } = doc.data();
+                  const slugJurusan = jurusan.replace(/\s/g, "-");
+                  const slugUniv = univ.replace(/\s/g, "-");
                   return (
                     <div key={i} className="jurusan-card card p-4 mt-4">
-                      <p>{jurusan.nama}</p>
-                      <Link to={RouteName.RekomendasiJurusan}>
-                        Jelajahi Jurusan <i className="fas fa-angle-right"></i>
-                      </Link>
+                      <p>
+                        {jurusan} | {univ}
+                      </p>
+                      <div className="d-flex justify-content-between">
+                        <Link
+                          className="text-warning font-weight-bold"
+                          to={routeSet.HasilJurusan({
+                            univ: slugUniv,
+                            jurusan: slugJurusan,
+                            KampusCode: KampusCode,
+                          })}
+                        >
+                          Detail <i className="fas fa-angle-right"></i>
+                        </Link>
+                        <Link to={RouteName.RekomendasiJurusan}>
+                          Jelajahi Jurusan Lain
+                          <i className="ml-2 fas fa-angle-right"></i>
+                        </Link>
+                      </div>
                     </div>
                   );
                 })

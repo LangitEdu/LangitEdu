@@ -1,85 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Styled from "@emotion/styled";
-import BackButton from "./BackButton";
-import { useAuth } from "../../contexts/AuthContext";
 import { db } from "../../config/Firebase";
 
-const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
-  const [savedJurusan, setsavedJurusan] = useState(null);
-  const [KampusCode, setKampusCode] = useState(0);
+const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   const [Loading, setLoading] = useState(true);
-  const [SaveLoading, setSaveLoading] = useState(true);
-  const { currentUser } = useAuth();
   const [ProdiDetail, setProdiDetail] = useState({});
+  const SlugRemovedUniv = univ.replace(/-/g, " ");
 
   useEffect(() => {
-    async function getProdiData() {
-      setLoading(true);
-      const resUniv = await db
-        .collection("University")
-        .where("nama", "==", univ)
-        .limit(1)
-        .get()
-        .then((res) => {
-          return res.docs[0].data();
-        });
-      setKampusCode(resUniv.code);
-      const DetailProdi = await db
-        .collection("Jurusans")
-        .where("Campus_Code", "==", resUniv.code)
-        .where("Study_Program", "==", jurusan)
-        .get()
-        .then((res) => {
-          return res.docs[0].data();
-        });
-      setProdiDetail(DetailProdi);
-      setLoading(false);
-    }
-    async function CheckedSavedJurusan() {
-      const hasilSavedJurusan = await db
-        .collection("ListHasilRekomendasi")
-        .where("uid", "==", currentUser.uid)
-        .where("jurusan", "==", jurusan)
-        .where("univ", "==", univ)
-        .limit(1)
-        .get()
-        .then((res) => {
-          if (res.empty) {
-            return {
-              jurusan: "initial",
-            };
-          }
-          return res.docs[0].data();
-        });
-      setsavedJurusan(hasilSavedJurusan.jurusan);
-      setSaveLoading(false);
-    }
-    CheckedSavedJurusan();
-    getProdiData();
+    const SlugRemovedJurusan = jurusan.replace(/-/g, " ");
+    setLoading(true);
+    db.collection("Jurusans")
+      .where("Study_Program", "==", SlugRemovedJurusan)
+      .where("Campus_Code", "==", KampusCode)
+      .limit(1)
+      .get()
+      .then((res) => {
+        const data = res.docs[0].data();
+        setProdiDetail(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
     return () => {
       setLoading(false);
     };
-  }, [univ, jurusan, currentUser]);
-
-  const handleSaveJurusan = async () => {
-    setSaveLoading(true);
-    try {
-      await db.collection("ListHasilRekomendasi").add({
-        uid: currentUser.uid,
-        area: area,
-        kluster: kluster,
-        jurusan: jurusan,
-        univ: univ,
-        nilai: nilai,
-        KampusCode: KampusCode,
-      });
-      setsavedJurusan(jurusan);
-      setSaveLoading(false);
-    } catch (err) {
-      setSaveLoading(false);
-      console.log(err);
-    }
-  };
+  }, [KampusCode, jurusan]);
 
   return (
     <Wrapper>
@@ -97,7 +45,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
                 background: `url('/img/jurusan/univ.svg'), ${"#676726"}`,
               }}
             ></div>
-            <p>{univ}</p>
+            <p>{SlugRemovedUniv}</p>
           </div>
           <div className="data-basic">
             <p>Status</p>
@@ -136,28 +84,6 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
           </div>
         </>
       )}
-
-      <div className="back">
-        <BackButton tostep={4} setstep={setstep} />
-        <button
-          className={`btn-bordered${savedJurusan === jurusan ? "-gray" : ""}`}
-          onClick={handleSaveJurusan}
-        >
-          {SaveLoading ? (
-            <>
-              <div
-                className="spinner-border text-light mr-2 spinner-border-sm"
-                role="status"
-              ></div>
-              {"Loading"}
-            </>
-          ) : savedJurusan !== jurusan ? (
-            "SIMPAN JURUSAN"
-          ) : (
-            "TERSIMPAN"
-          )}
-        </button>
-      </div>
     </Wrapper>
   );
 };
@@ -400,4 +326,4 @@ const Wrapper = Styled.div(`
     }
 `);
 
-export default HasilJurusan;
+export default HasilJurusanSaved;

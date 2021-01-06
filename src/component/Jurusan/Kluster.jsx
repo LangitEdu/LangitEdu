@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Styled from "@emotion/styled";
 import useResize from "use-resizing";
 
-const Kluster = ({ kluster, setkluster, setstep }) => {
-  const [nilai, setnilai] = useState(["", "", "", "", "", ""])
+const Kluster = ({ kluster, setkluster, setstep, setnilai, nilai }) => {
   const screen = useResize().width;
 
   const subjects = {
@@ -25,30 +24,36 @@ const Kluster = ({ kluster, setkluster, setstep }) => {
     ],
   };
 
-  const handleInput = (value, index) => {
+  const handleInput = (e, index) => {
+    const { value } = e.target;
     let data = nilai;
-    data[index] = value;
-    if (value <= 100 && value >= 0) setnilai([...data]);
+    if (
+      value <= 100 &&
+      value >= 0 &&
+      (!isNaN(parseInt(value)) || value === "")
+    ) {
+      data[subjects[kluster][index].replace(/\W/, "")] = isNaN(parseInt(value))
+        ? "-"
+        : parseInt(value);
+      setnilai(data);
+    } else {
+      e.target.value = 100;
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (Object.keys(nilai).length !== subjects[kluster].length) {
+      console.log("err ga sama");
+      return;
+    }
     setstep(1);
   };
 
   const handleKlusterChange = (selected) => {
+    setnilai({});
     setkluster(selected);
   };
-
-  useEffect(() => {
-    const fromFirebase = {
-      nilai: [100,90,70,60,50,40],
-      kluster: 'saintek'
-    }
-
-    setnilai(fromFirebase.nilai)
-    setkluster(fromFirebase.kluster)
-  }, [])
 
   return (
     <Wrapper screen={screen}>
@@ -104,10 +109,7 @@ const Kluster = ({ kluster, setkluster, setstep }) => {
                 />
               ))}
               <div className="action">
-                <button
-                  type="reset"
-                  onClick={() => setnilai(["", "", "", "", "", ""])}
-                >
+                <button type="reset" onClick={() => setnilai([])}>
                   Reset Form
                 </button>
               </div>
@@ -133,8 +135,8 @@ const InputNilai = ({ subject, index, nilai, handleInput }) => {
       <input
         type="number"
         id={index}
-        value={nilai[index]}
-        onChange={(e) => handleInput(e.target.value, index)}
+        value={nilai[subject.replace(/\W/g, "")]}
+        onChange={(e) => handleInput(e, index)}
         min="0"
         max="100"
         placeholder="-"

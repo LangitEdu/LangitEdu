@@ -20,7 +20,7 @@ const RekomendasiJurusan = () => {
   const [klasifikasi, setklasifikasi] = useState("initial");
   const [jurusan, setjurusan] = useState("initial");
   const [univ, setuniv] = useState("initial");
-
+  const [nilai, setnilai] = useState({});
   useEffect(() => {
     if (step < 4) setuniv("initial");
     if (step < 3) setjurusan("initial");
@@ -36,6 +36,8 @@ const RekomendasiJurusan = () => {
             kluster={kluster}
             setkluster={setkluster}
             setstep={setstep}
+            nilai={nilai}
+            setnilai={setnilai}
           />
         );
       case 1:
@@ -85,6 +87,7 @@ const RekomendasiJurusan = () => {
             jurusan={jurusan}
             univ={univ}
             setstep={setstep}
+            nilai={nilai}
           />
         );
       default:
@@ -93,6 +96,8 @@ const RekomendasiJurusan = () => {
             kluster={kluster}
             setkluster={setkluster}
             setstep={setstep}
+            nilai={nilai}
+            setnilai={setnilai}
           />
         );
     }
