@@ -19,7 +19,7 @@ import { Helmet } from "react-helmet";
 export default function Dashboard() {
   const { currentUser, SendEmailVerification } = useAuth();
   const [savedJurusan, setsavedJurusan] = useState([]);
-
+  const [Loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [topikCard, setTopikCard] = useState([]);
   const [KomunitasCard, setKomunitasCard] = useState([]);
@@ -60,7 +60,16 @@ export default function Dashboard() {
       .then((res) => {
         setKuisCard(res.docs);
       });
-    Promise.all([Topik, Komunitas, Kuis]);
+    Promise.all([Topik, Komunitas, Kuis])
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return () => {
+      setLoading(true);
+    };
   }, [currentUser]);
 
   return (
@@ -126,7 +135,16 @@ export default function Dashboard() {
               </h2>
 
               <div className="listTopik my-4">
-                {topikCard.length > 0 &&
+                {Loading ? (
+                  <div className="text-center mb-4">
+                    <div
+                      className="spinner-border mx-auto"
+                      role="status"
+                      style={{ width: "3rem", height: "3rem" }}
+                    ></div>
+                  </div>
+                ) : (
+                  topikCard.length > 0 &&
                   topikCard.map((doc) => {
                     const data = doc.data();
                     return (
@@ -138,7 +156,8 @@ export default function Dashboard() {
                         thumb={data.thumbnail}
                       />
                     );
-                  })}
+                  })
+                )}
 
                 <Plus
                   link={RouteName.topik}
@@ -150,7 +169,16 @@ export default function Dashboard() {
                 <strong>Komunitas dan Diskusi</strong>
               </h2>
               <div className="listKomunitas my-4">
-                {KomunitasCard.length > 0 &&
+                {Loading ? (
+                  <div className="text-center mb-4">
+                    <div
+                      className="spinner-border mx-auto"
+                      role="status"
+                      style={{ width: "3rem", height: "3rem" }}
+                    ></div>
+                  </div>
+                ) : (
+                  KomunitasCard.length > 0 &&
                   KomunitasCard.map((doc) => {
                     const data = doc.data();
                     return (
@@ -161,7 +189,8 @@ export default function Dashboard() {
                         thumb={data.photoUrl}
                       />
                     );
-                  })}
+                  })
+                )}
 
                 <Plus
                   link={RouteName.listKomunitas}
@@ -173,21 +202,44 @@ export default function Dashboard() {
               <h2>
                 <strong>Jurusan Tersimpan</strong>
               </h2>
-              {savedJurusan.map((jurusan, i) => {
-                <div key={i} className="jurusan-card card p-4 mt-4">
-                  <p>{jurusan.nama}</p>
-                  <Link to={RouteName.RekomendasiJurusan}>
-                    Jelajahi Jurusan <i className="fas fa-angle-right"></i>
-                  </Link>
-                </div>;
-              })}
+              {Loading ? (
+                <div className="text-center mb-4">
+                  <div
+                    className="spinner-border mx-auto"
+                    role="status"
+                    style={{ width: "3rem", height: "3rem" }}
+                  ></div>
+                </div>
+              ) : savedJurusan.length > 0 ? (
+                savedJurusan.map((jurusan, i) => {
+                  return (
+                    <div key={i} className="jurusan-card card p-4 mt-4">
+                      <p>{jurusan.nama}</p>
+                      <Link to={RouteName.RekomendasiJurusan}>
+                        Jelajahi Jurusan <i className="fas fa-angle-right"></i>
+                      </Link>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="jurusan-card card p-4 mt-4">Belum ada</div>
+              )}
               <br />
 
               <h2>
                 <strong>Hasil Kuis Terbaru</strong>
               </h2>
               <div className="listHasilKuis my-4">
-                {KuisCard.length > 0 &&
+                {Loading ? (
+                  <div className="text-center mb-4">
+                    <div
+                      className="spinner-border mx-auto"
+                      role="status"
+                      style={{ width: "3rem", height: "3rem" }}
+                    ></div>
+                  </div>
+                ) : (
+                  KuisCard.length > 0 &&
                   KuisCard.map((doc) => {
                     const data = doc.data();
                     return (
@@ -199,7 +251,8 @@ export default function Dashboard() {
                         link={routeSet.kuisresult({ kuisID: data.kuisID })}
                       />
                     );
-                  })}
+                  })
+                )}
                 <div className="card plus">
                   <div className="card-body text-center">
                     {"LIHAT RIWAYAT KUIS LAINNYA MELALUI JOURNEY"}

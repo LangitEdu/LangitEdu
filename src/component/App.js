@@ -74,11 +74,14 @@ function App() {
           />
           <UserRoute exact path={RouteName.kuis} component={Kuis} />
           <UserRoute exact path={RouteName.kuisresult} component={KuisResult} />
-          <UserRoute exact path={RouteName.RekomendasiJurusan} component={RekomendasiJurusan} />
+          <UserRoute
+            exact
+            path={RouteName.RekomendasiJurusan}
+            component={RekomendasiJurusan}
+          />
 
           <Route path={RouteName.authAction} component={EmailActionHandle} />
           <Route exact path={RouteName.home} component={Home} />
-          <Route exact path={RouteName.coba} component={MultipleMenus} />
         </Switch>
       </Router>
     </AuthProvider>
