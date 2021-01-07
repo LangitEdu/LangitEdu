@@ -36,7 +36,37 @@ export default function Dashboard() {
     }
     setSuccess(true);
   };
-
+  async function HapusSavedJurusan(docId) {
+    setLoading(true);
+    const deleteStatus = await db
+      .collection("ListHasilRekomendasi")
+      .doc(docId)
+      .delete()
+      .then(() => {
+        return true;
+      })
+      .catch((err) => {
+        console.log(err);
+        return false;
+      });
+    if (!deleteStatus) {
+      setLoading(false);
+      console.log("gagal");
+      return;
+    }
+    return await db
+      .collection("ListHasilRekomendasi")
+      .where("uid", "==", currentUser.uid)
+      .get()
+      .then((res) => {
+        setsavedJurusan(res.docs);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }
   useEffect(() => {
     const Topik = db
       .collection("Topik")
@@ -220,15 +250,26 @@ export default function Dashboard() {
                   ></div>
                 </div>
               ) : savedJurusan.length > 0 ? (
-                savedJurusan.map((doc, i) => {
+                savedJurusan.map((doc) => {
                   const { jurusan, univ, KampusCode } = doc.data();
                   const slugJurusan = jurusan.replace(/\s/g, "-");
                   const slugUniv = univ.replace(/\s/g, "-");
                   return (
-                    <div key={i} className="jurusan-card card p-4 mt-4">
-                      <p>
-                        {jurusan} | {univ}
-                      </p>
+                    <div key={doc.id} className="jurusan-card card p-4 mt-4">
+                      <div className="jurusan-header d-flex justify-content-between align-items-center mb-4">
+                        <div className="judul">
+                          <h3 className="font-weight-bold">{jurusan}</h3>
+                          <h6>{univ}</h6>
+                        </div>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => {
+                            HapusSavedJurusan(doc.id);
+                          }}
+                        >
+                          X
+                        </button>
+                      </div>
                       <div className="d-flex justify-content-between">
                         <Link
                           className="text-warning font-weight-bold"

@@ -6,7 +6,7 @@ const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   const [Loading, setLoading] = useState(true);
   const [ProdiDetail, setProdiDetail] = useState({});
   const SlugRemovedUniv = univ.replace(/-/g, " ");
-
+  const SlugRemovedJurusan = jurusan.replace(/-/g, " ");
   useEffect(() => {
     const SlugRemovedJurusan = jurusan.replace(/-/g, " ");
     setLoading(true);
@@ -32,7 +32,7 @@ const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   return (
     <Wrapper>
       <div className="header-detail">
-        <h2>{jurusan}</h2>
+        <h2>{SlugRemovedJurusan}</h2>
       </div>
       {Loading ? (
         <div className="spinner-border" role="status"></div>
