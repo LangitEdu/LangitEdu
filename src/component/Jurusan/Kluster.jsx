@@ -109,7 +109,7 @@ const Kluster = ({ kluster, setkluster, setstep, setnilai, nilai }) => {
                 />
               ))}
               <div className="action">
-                <button type="reset" onClick={() => setnilai([])}>
+                <button type="reset" onClick={() => setnilai({})}>
                   Reset Form
                 </button>
               </div>

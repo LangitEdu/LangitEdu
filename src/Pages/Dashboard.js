@@ -249,7 +249,12 @@ export default function Dashboard() {
                   );
                 })
               ) : (
-                <div className="jurusan-card card p-4 mt-4">Belum ada</div>
+                <div className="jurusan-card card p-4 mt-4">
+                  <Link to={RouteName.RekomendasiJurusan}>
+                    Jelajahi Jurusan
+                    <i className="ml-2 fas fa-angle-right"></i>
+                  </Link>
+                </div>
               )}
               <br />
 
