@@ -11,6 +11,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
   const [SaveLoading, setSaveLoading] = useState(true);
   const { currentUser } = useAuth();
   const [ProdiDetail, setProdiDetail] = useState({});
+  const [popError, setpopError] = useState('');
 
   useEffect(() => {
     async function getProdiData() {
@@ -78,6 +79,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
     } catch (err) {
       setSaveLoading(false);
       console.log(err);
+      setpopError(err.message)
     }
   };
 
@@ -158,9 +160,21 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
           )}
         </button>
       </div>
+      {popError !== '' && <ErrorPop message={popError} setpopError={setpopError}/>}
     </Wrapper>
   );
 };
+
+const ErrorPop = ({message, setpopError}) => {
+  return (
+    <div className="error-pop">
+      <p>{message}</p>
+      <div onClick={() => setpopError('')}>
+        <i className="fas fa-plus"></i>
+      </div>
+    </div>
+  )
+}
 
 const Wrapper = Styled.div(`
     display: flex;
@@ -168,6 +182,31 @@ const Wrapper = Styled.div(`
     align-items: center;
     flex-direction: column;
     padding: 24px 0;
+
+    .error-pop{
+      max-width: 553px;
+      width: 90%;
+      min-width: 320px;
+      background: #FFCB1144;
+      border: 1px solid red;
+      margin-top: 32px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      
+      p{
+        padding: 12px 24px;
+      }
+      div{
+        cursor: pointer;
+        padding-top: 4px;
+        i{
+          padding: 12px;
+          transform: rotate(45deg);
+        }
+      }
+    }
 
     .rasio-cont{
         max-width: 553px;
