@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Styled from "@emotion/styled";
 import { Helmet } from "react-helmet";
 import Navbar from "../component/Navbar/Navbar";
@@ -9,8 +9,6 @@ import { useParams } from "react-router-dom";
 
 const HasilRekomendasi = () => {
   const { jurusan, univ, KampusCode } = useParams();
-
-  useEffect(() => {}, []);
 
   return (
     <Wrapper>
