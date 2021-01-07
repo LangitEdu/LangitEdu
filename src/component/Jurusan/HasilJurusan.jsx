@@ -26,7 +26,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
       setKampusCode(resUniv.code);
       const DetailProdi = await db
         .collection("Jurusans")
-        .where("Campus_Code", "==", resUniv.code)
+        .where("Campus_Code", "==", resUniv.Code)
         .where("Study_Program", "==", jurusan)
         .get()
         .then((res) => {

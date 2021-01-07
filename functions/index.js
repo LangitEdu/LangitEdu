@@ -184,7 +184,7 @@ app.get("/halo", (req, res) => {
   });
 });
 
-app.get("/list-prodi", async (req, res) => {
+app.get("/klasifikasi-prodi", async (req, res) => {
   let results = [];
   fs.createReadStream("DataKampus/KlasifikasiJurusan.csv")
     .pipe(csv())
@@ -208,28 +208,77 @@ app.get("/list-prodi", async (req, res) => {
     });
 });
 
+app.get("/input-univ", async (req, res) => {
+  let results = [];
+  fs.createReadStream("DataKampus/campus.csv")
+    .pipe(csv())
+    .on("data", (data) => {
+      if (data.Code !== "") results.push(data);
+    })
+    .on("end", async () => {
+      results.forEach(async (data) => {
+        await db
+          .collection("University")
+          .doc(data.Code)
+          .set({
+            nama: data.University_Name,
+            code: data.Code,
+            Status: data.Status,
+            Date_of_Establishment: data.Date_of_Establishment,
+            Number_SK: data.Number_SK,
+            Date_SK: data.Date_SK,
+            Address: data.Address,
+            City: data.City,
+            Province: data.Province,
+            Postal_Code: data.Postal_Code,
+            Telephone: data.Telephone,
+            Faximile: data.Faximile,
+            Email: data.Email,
+            Rank: data.Ranking_Web_Indonesia,
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+          });
+      });
+      res.json(results);
+    });
+});
+
 app.get("/masukin-data-prodi", async (req, res) => {
   let results = [];
-  fs.createReadStream("DataKampus/KAMPUS/UT.csv")
+  fs.createReadStream("DataKampus/KAMPUS/SemuaKampus.csv")
     .pipe(csv())
     .on("data", (data) => {
       if (data.Code !== "" && data.Study_Program_Area !== "#N/A")
         results.push(data);
     })
     .on("end", () => {
-      let KampusCode;
-      let listProdi = [];
+      let KampusCode = new Set();
+      let arrayOfKampusCode = [];
+      let listProdi = {};
       results.forEach(async (prodi) => {
-        KampusCode = prodi.Campus_Code;
-        listProdi.push(prodi.Study_Program);
+        KampusCode.add(prodi.Campus_Code);
+        if (listProdi[prodi.Campus_Code] === undefined) {
+          listProdi[prodi.Campus_Code] = [];
+        }
+        listProdi[prodi.Campus_Code].push(prodi.Study_Program);
         await db.collection("Jurusans").add({
           ...prodi,
         });
       });
-      db.collection("University").doc(KampusCode).update({
-        listProdi,
-      });
-      res.json(listProdi);
+      arrayOfKampusCode = Array.from(KampusCode);
+      for (const kode of arrayOfKampusCode) {
+        db.collection("University")
+          .doc(kode)
+          .update({
+            listProdi: listProdi[kode],
+          })
+          .then(() => {
+            console.log("Berhail Menambahkan ", kode);
+          });
+      }
+      res.json(arrayOfKampusCode);
     });
 });
 
