@@ -8,6 +8,7 @@ export default function Error404() {
   return (
     <Wrapper>
       <Navbar />
+
       <div className="main d-flex flex-column align-items-center vh-100">
         <div className="d-block">
           <svg
