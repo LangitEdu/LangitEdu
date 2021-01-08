@@ -28,6 +28,7 @@ import AdminJourney from "../Pages/Admin/AdminJourney";
 import TambahSoal from "../Pages/Admin/TambahSoal";
 import EmailActionHandle from "../Pages/EmailActionHandle";
 import HasilKuis from "../Pages/Admin/HasilKuis";
+import Error404 from "../Pages/Error404";
 
 function App() {
   return (
@@ -86,6 +87,7 @@ function App() {
           />
           <Route path={RouteName.authAction} component={EmailActionHandle} />
           <Route exact path={RouteName.home} component={Home} />
+          <Route path={RouteName.Error404} component={Error404} />
         </Switch>
       </Router>
     </AuthProvider>
