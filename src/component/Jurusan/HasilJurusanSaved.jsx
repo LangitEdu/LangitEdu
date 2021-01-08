@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Styled from "@emotion/styled";
 import { db } from "../../config/Firebase";
+import useResize from 'use-resizing'
 
 const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   const [Loading, setLoading] = useState(true);
   const [ProdiDetail, setProdiDetail] = useState({});
   const SlugRemovedUniv = univ.replace(/-/g, " ");
   const SlugRemovedJurusan = jurusan.replace(/-/g, " ");
+
+  const screen = useResize().width
+
   useEffect(() => {
     const SlugRemovedJurusan = jurusan.replace(/-/g, " ");
     setLoading(true);
@@ -30,7 +34,7 @@ const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   }, [KampusCode, jurusan]);
 
   return (
-    <Wrapper>
+    <Wrapper screen={screen}>
       <div className="header-detail">
         <h2>{SlugRemovedJurusan}</h2>
       </div>
@@ -88,7 +92,7 @@ const HasilJurusanSaved = ({ jurusan, univ, KampusCode }) => {
   );
 };
 
-const Wrapper = Styled.div(`
+const Wrapper = Styled.div(({screen}) => `
     display: flex;
     justify-content: center;
     align-items: center;
@@ -133,14 +137,13 @@ const Wrapper = Styled.div(`
         display: flex;
         justify-content: center;
         align-items: center;
-
+        flex-direction: ${screen > 700 ? 'row' : 'column'};
         padding: 0 -8px;
 
         .box{
             margin: 8px;
             width: 264px;
             height: 158px;
-
             background: #FFFFFF;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2), 0px 0px 2px rgba(0, 0, 0, 0.5);
             border-radius: 8px;
@@ -199,6 +202,8 @@ const Wrapper = Styled.div(`
         display: flex;
         justify-content: space-between;
         align-items: center;
+        
+        flex-direction: ${screen > 700 ? 'row' : 'column'};
 
         font-family: Raleway;
         font-style: normal;
@@ -210,9 +215,11 @@ const Wrapper = Styled.div(`
 
         color: #1D1D1D;
 
-        .box{
-            width: 173px;
+        .box{          
             height: 84px;
+              
+            width: ${screen > 700 ? '173px' : '100%'};
+            margin-top: ${screen > 700 ? '0px' : '12px'};
 
             display: flex;
             justify-content: center;

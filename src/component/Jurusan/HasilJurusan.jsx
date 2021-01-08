@@ -3,6 +3,7 @@ import Styled from "@emotion/styled";
 import BackButton from "./BackButton";
 import { useAuth } from "../../contexts/AuthContext";
 import { db } from "../../config/Firebase";
+import useResize from 'use-resizing'
 
 const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
   const [savedJurusan, setsavedJurusan] = useState(null);
@@ -12,6 +13,8 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
   const { currentUser } = useAuth();
   const [ProdiDetail, setProdiDetail] = useState({});
   const [popError, setpopError] = useState('');
+
+  const screen = useResize().width
 
   useEffect(() => {
     async function getProdiData() {
@@ -84,7 +87,7 @@ const HasilJurusan = ({ jurusan, univ, setstep, area, kluster, nilai }) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper screen={screen}>
       <div className="header-detail">
         <h2>{jurusan}</h2>
       </div>
@@ -176,7 +179,7 @@ const ErrorPop = ({message, setpopError}) => {
   )
 }
 
-const Wrapper = Styled.div(`
+const Wrapper = Styled.div(({screen}) => `
     display: flex;
     justify-content: center;
     align-items: center;
@@ -246,6 +249,7 @@ const Wrapper = Styled.div(`
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: ${screen > 700 ? 'row' : 'column'};
 
         padding: 0 -8px;
 
@@ -312,6 +316,7 @@ const Wrapper = Styled.div(`
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-direction: ${screen > 700 ? 'row' : 'column'};
 
         font-family: Raleway;
         font-style: normal;
@@ -324,16 +329,18 @@ const Wrapper = Styled.div(`
         color: #1D1D1D;
 
         .box{
-            width: 173px;
-            height: 84px;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            border: 1px solid #C7C7C7;
-            box-sizing: border-box;
-            border-radius: 8px;
+          height: 84px;
+          
+          width: ${screen > 700 ? '173px' : '100%'};
+          margin-top: ${screen > 700 ? '0px' : '12px'};
+          
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          
+          border: 1px solid #C7C7C7;
+          box-sizing: border-box;
+          border-radius: 8px;
 
             font-family: Raleway;
             font-style: normal;
@@ -416,7 +423,9 @@ const Wrapper = Styled.div(`
 
         div.img{
             height: 74px;
+            min-height: 74px;
             width: 74px;
+            min-width: 74px;
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
