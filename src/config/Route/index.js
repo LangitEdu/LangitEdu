@@ -18,6 +18,7 @@ const RouteName = {
   lihatHasilKuis: "/admin/lihat-hasil-kuis/:kuisID",
   RekomendasiJurusan: "/rekomendasi-jurusan",
   HasilJurusan: "/hasil/:univ/:jurusan/:KampusCode",
+  Error404: "*",
 };
 
 const generateUrlWithParams = (data, oldUrl) => {

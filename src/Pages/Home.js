@@ -1,162 +1,271 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import Navbar from '../component/Navbar/NavbarBig'
-import RouteName from '../config/Route'
-import Styled from '@emotion/styled'
-import useResize from "use-resize"
-import FooterCopyright from '../component/FooterCopyright'
-import { Helmet } from 'react-helmet'
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../component/Navbar/NavbarBig";
+import RouteName from "../config/Route";
+import Styled from "@emotion/styled";
+import useResize from "use-resize";
+import FooterCopyright from "../component/FooterCopyright";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
-    const [showCredits, setshowCredits] = useState(false)
-    const [screen, setScreen] = useState()
-    const size = useResize()
-    
-    useEffect(()=>{
+  const [showCredits, setshowCredits] = useState(false);
+  const [screen, setScreen] = useState();
+  const size = useResize();
 
-        const width = size.width
-        const handleWindowSizeChange = () => {
-            setScreen(width )
-        }
-        setScreen(width)
-        window.addEventListener('resize', handleWindowSizeChange)
+  useEffect(() => {
+    const width = size.width;
+    const handleWindowSizeChange = () => {
+      setScreen(width);
+    };
+    setScreen(width);
+    window.addEventListener("resize", handleWindowSizeChange);
 
-        return () => {
-            window.removeEventListener('resize',handleWindowSizeChange )
-        }
-    },[size])
-    
-    return (
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, [size]);
+
+  return (
     <>
-        <Navbar />
-        <Helmet>
-            <title>Langit Edu</title>
-        </Helmet>
-        <Wrapper screen={screen} >
+      <Navbar />
+      <Helmet>
+        <title>Langit Edu</title>
+      </Helmet>
+      <Wrapper screen={screen}>
+        <div className="supertron">
+          <div className="contain-size">
+            <img
+              className={`img-fluid ${screen < 768 ? "mb-4" : ""}`}
+              src="/img/ilus/study.svg"
+              alt=""
+            />
+            <div className="telling-cont">
+              <h1>
+                Belajar dimanapun <br />
+                dan kapanpun{" "}
+              </h1>
+              <Link className="btn-bordered" to={RouteName.register}>
+                MULAI BELAJAR
+              </Link>
+            </div>
+          </div>
+        </div>
 
-            <div className="supertron">
-                <div className="contain-size">
-                    <img className={`img-fluid ${screen < 768 ? 'mb-4' : ''}`} src="/img/ilus/study.svg" alt=""/>
-                    <div className="telling-cont">
-                        <h1>Belajar dimanapun <br/>dan kapanpun </h1>
-                        <Link className="btn-bordered" to={RouteName.register}>MULAI BELAJAR</Link>
-                    </div>
+        <div className="supersecond">
+          <div className="contain-size">
+            <h2 className="tosca-text">
+              Membuat belajar bersama teman lebih menyenangkan
+            </h2>
+            <img
+              className={`img-fluid ${screen < 768 ? "mb-4" : ""}`}
+              src="/img/ilus/bersama.svg"
+              alt=""
+            />
+          </div>
+        </div>
+
+        <section className="container jelajah pb-5">
+          <div className="header-section d-flex justify-content-md-between justify-content-center flex-sm-row flex-column">
+            <h2 className="tosca-text text-center">Jelajahi</h2>
+            <div className="mt-3 d-flex d-md-block justify-content-center">
+              <Link
+                className="btn btn-outline-dark font-weight-bold mr-3"
+                to={RouteName.listKomunitas}
+              >
+                KOMUNITAS
+              </Link>
+              <Link
+                className="btn btn-outline-dark font-weight-bold"
+                to={RouteName.topik}
+              >
+                TOPIK
+              </Link>
+            </div>
+          </div>
+          <hr />
+
+          <div className="class-wrapper px-5 py-3 mt-4">
+            <div className="post-item row mb-5">
+              <div className="col-md-4">
+                <div className={`thumbnail ${screen < 768 ? "mb-4" : ""}`}>
+                  <img
+                    className="img-fluid"
+                    src="/img/thumbnail1.svg"
+                    alt="thumbnail.png"
+                  />
                 </div>
+              </div>
+              <div className="col-md-8">
+                <div className="detail py-md-3">
+                  <h3 className="mb-3">Diskusi dengan komunitas belajarmu</h3>
+                  <p>
+                    Kamu dapat dengan langsung bertanya dan berdiskusi tentang
+                    topik terkait bersama member lainnya
+                  </p>
+                  <br />
+                  <Link
+                    className="btn btn-outline-dark font-weight-bold mr-3"
+                    to={RouteName.listKomunitas}
+                  >
+                    CARI KOMUNITASMU <i className="ml-2 fas fa-search"></i>{" "}
+                  </Link>
+                </div>
+              </div>
             </div>
 
-            <div className="supersecond">
-                <div className="contain-size">
-                    <h2 className="tosca-text">Membuat belajar bersama teman lebih menyenangkan</h2>
-                    <img className={`img-fluid ${screen < 768 ? 'mb-4' : ''}`} src="/img/ilus/bersama.svg" alt=""/>
+            <div className="post-item row mb-5">
+              <div className="col-md-4">
+                <div className={`thumbnail ${screen < 768 ? "mb-4" : ""}`}>
+                  <img
+                    className="img-fluid"
+                    src="/img/thumbnail2.svg"
+                    alt="thumbnail.png"
+                  />
                 </div>
+              </div>
+              <div className="col-md-8">
+                <div className="detail py-md-3">
+                  <h3 className="mb-3">Temukan topik belajar untukmu</h3>
+                  <p>
+                    Beragam topik belajar tersedia di langit edu dan siap untuk
+                    kamu pelajari sekarang juga
+                  </p>
+                  <br />
+                  <Link
+                    className=" btn btn-outline-dark font-weight-bold mr-3"
+                    to={RouteName.topik}
+                  >
+                    Jelajahi topik <i className="ml-2 fas fa-search"></i>
+                  </Link>
+                </div>
+              </div>
             </div>
 
-            <section className="container jelajah pb-5">
-                <div className="header-section d-flex justify-content-md-between justify-content-center flex-sm-row flex-column">
-                    <h2 className="tosca-text text-center">Jelajahi</h2>
-                    <div className="mt-3 d-flex d-md-block justify-content-center">
-                        <Link className="btn btn-outline-dark font-weight-bold mr-3" to={RouteName.listKomunitas} >KOMUNITAS</Link>
-                        <Link className="btn btn-outline-dark font-weight-bold" to={RouteName.topik} >TOPIK</Link>
-                    </div>
+            <div className="post-item row mb-5">
+              <div className="col-md-4">
+                <div className={`thumbnail ${screen < 768 ? "mb-4" : ""}`}>
+                  <img
+                    className="img-fluid"
+                    src="/img/thumbnail3.svg"
+                    alt="thumbnail.png"
+                  />
                 </div>
-                <hr/>
-
-                <div className="class-wrapper px-5 py-3 mt-4">
-
-                    <div className="post-item row mb-5">
-                        <div className="col-md-4">
-                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
-                                <img className="img-fluid" src="/img/thumbnail1.svg" alt="thumbnail.png"/>
-                            </div>
-                        </div>
-                        <div className="col-md-8">
-                            <div className="detail py-md-3">
-                                <h3 className="mb-3" >Diskusi dengan komunitas belajarmu</h3>
-                                <p>Kamu dapat dengan langsung bertanya dan berdiskusi tentang topik terkait bersama member lainnya</p>
-                                <br/>
-                                <Link className="btn btn-outline-dark font-weight-bold mr-3" to={RouteName.listKomunitas} >CARI KOMUNITASMU <i className="ml-2 fas fa-search"></i> </Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="post-item row mb-5">
-                        <div className="col-md-4">
-                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
-                                <img className="img-fluid" src="/img/thumbnail2.svg" alt="thumbnail.png"/>
-                            </div>
-                        </div>
-                        <div className="col-md-8">
-                            <div className="detail py-md-3">
-                                <h3 className="mb-3" >Temukan topik belajar untukmu</h3>
-                                <p>Beragam topik belajar tersedia di langit edu dan siap untuk kamu pelajari sekarang juga</p>
-                                <br/>
-                                <Link className=" btn btn-outline-dark font-weight-bold mr-3" to={RouteName.topik} >Jelajahi topik <i className="ml-2 fas fa-search"></i></Link>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="post-item row mb-5">
-                        <div className="col-md-4">
-                            <div className={`thumbnail ${screen < 768 ? 'mb-4' : ''}`}>
-                                <img className="img-fluid" src="/img/thumbnail3.svg" alt="thumbnail.png"/>
-                            </div>
-                        </div>
-                        <div className="col-md-8">
-                            <div className="detail py-md-3">
-                                <h3 className="mb-3" >Sistem Rekomendasi</h3>
-                                <p>Informasi lengkap terkait pendidikan yang sesuai dengan kemampuan dan hasil pembelajaran kamu dapat didapatkan disini</p>
-                                <br/>
-                            </div>
-                        </div>
-                    </div>
+              </div>
+              <div className="col-md-8">
+                <div className="detail py-md-3">
+                  <h3 className="mb-3">Sistem Rekomendasi</h3>
+                  <p>
+                    Informasi lengkap terkait pendidikan yang sesuai dengan
+                    kemampuan dan hasil pembelajaran kamu dapat didapatkan
+                    disini
+                  </p>
+                  <br />
                 </div>
-
-            </section>
-            <section className="footer py-2">
-                <div className="container mt-5 mb-5">
-                    <div className="row">
-                        <div className="col-md-4 mb-4">
-                            <img className="img-fluid" src="/img/logo-blue.png" alt="Logo"/>
-                            <h4 className="mt-4 mb-3" >Tentang kami</h4>
-                            <p>Dengan konsep berbeda, di langitedu membawakan menciptakan sebuah social education platform yang dapat memberikan rekomendasi pendidikan, informasi seputar dunia pendidikan, dan analisis karakter</p>
-                        </div>
-                        <div className="col-md-4 mb-4">
-                            <h4 className="mb-3" >Kontak Kami</h4>
-                            <ul>
-                                <li><i className="fas fa-envelope mr-2"></i>Info@langitedu.com</li>
-                                <li><i className="fab fa-whatsapp mr-2"></i>089889883637</li>
-                            </ul>
-                            <button onClick={() => setshowCredits(!showCredits)} className="typical-button img-credits">{showCredits ? 'Close' : 'Image'} Credits</button>
-                        </div>
-                        <div className="col-md-4">
-                            <h4 className="mb-3">Sosial Media</h4>
-                            <ul>
-                                <li><i className="fab fa-twitter mr-2"></i><a href="http://twitter.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
-                                <li><i className="fab fa-instagram mr-2"></i><a href="http://instagram.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
-                                <li><i className="fab fa-facebook mr-2"></i><a href="http://facebook.com" target="_blank" rel="noopener noreferrer">langit.edu</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            {showCredits &&
-                <section className="credits">
-                    <div className="credits-cont">
-                        <a href="https://www.freepik.com/vectors/people">People vector created by pch.vector - www.freepik.com</a>
-                        <a href="https://www.freepik.com/vectors/school">School vector created by pch.vector - www.freepik.com</a>
-                        <a href="https://www.freepik.com/vectors/medical">Medical vector created by freepik - www.freepik.com</a>
-                        <a href="https://www.freepik.com/vectors/school">School vector created by pch.vector - www.freepik.com</a>
-                        <a href="https://www.freepik.com/vectors/background">Background vector created by freepik - www.freepik.com</a>
-                    </div>
-                </section>
-            }
-            <FooterCopyright />
-        </Wrapper>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="footer py-2">
+          <div className="container mt-5 mb-5">
+            <div className="row">
+              <div className="col-md-4 mb-4">
+                <img
+                  className="img-fluid"
+                  src="/img/logo-blue.png"
+                  alt="Logo"
+                />
+                <h4 className="mt-4 mb-3">Tentang kami</h4>
+                <p>
+                  Dengan konsep berbeda, di langitedu membawakan menciptakan
+                  sebuah social education platform yang dapat memberikan
+                  rekomendasi pendidikan, informasi seputar dunia pendidikan,
+                  dan analisis karakter
+                </p>
+              </div>
+              <div className="col-md-4 mb-4">
+                <h4 className="mb-3">Kontak Kami</h4>
+                <ul>
+                  <li>
+                    <i className="fas fa-envelope mr-2"></i>Info@langitedu.com
+                  </li>
+                  <li>
+                    <i className="fab fa-whatsapp mr-2"></i>089889883637
+                  </li>
+                </ul>
+                <button
+                  onClick={() => setshowCredits(!showCredits)}
+                  className="typical-button img-credits"
+                >
+                  {showCredits ? "Close" : "Image"} Credits
+                </button>
+              </div>
+              <div className="col-md-4">
+                <h4 className="mb-3">Sosial Media</h4>
+                <ul>
+                  <li>
+                    <i className="fab fa-twitter mr-2"></i>
+                    <a
+                      href="http://twitter.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      langit.edu
+                    </a>
+                  </li>
+                  <li>
+                    <i className="fab fa-instagram mr-2"></i>
+                    <a
+                      href="http://instagram.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      langit.edu
+                    </a>
+                  </li>
+                  <li>
+                    <i className="fab fa-facebook mr-2"></i>
+                    <a
+                      href="http://facebook.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      langit.edu
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+        {showCredits && (
+          <section className="credits">
+            <div className="credits-cont">
+              <a href="https://www.freepik.com/vectors/people">
+                People vector created by pch.vector - www.freepik.com
+              </a>
+              <a href="https://www.freepik.com/vectors/school">
+                School vector created by pch.vector - www.freepik.com
+              </a>
+              <a href="https://www.freepik.com/vectors/medical">
+                Medical vector created by freepik - www.freepik.com
+              </a>
+              <a href="https://www.freepik.com/vectors/school">
+                School vector created by pch.vector - www.freepik.com
+              </a>
+              <a href="https://www.freepik.com/vectors/background">
+                Background vector created by freepik - www.freepik.com
+              </a>
+            </div>
+          </section>
+        )}
+        <FooterCopyright />
+      </Wrapper>
     </>
-    );
-}
+  );
+};
 
-const Wrapper = Styled.div(({screen}) =>`
+const Wrapper = Styled.div(
+  ({ screen }) => `
 
     .img-credits{
         font-size: 16px;
@@ -213,7 +322,7 @@ const Wrapper = Styled.div(({screen}) =>`
 
         .detail{
             h3{
-                font-size:3rem;
+                font-size: ${screen < 769 ? "2.3rem" : "3rem"};
             }
             p{
                 font-size: 1.2rem;
@@ -276,7 +385,7 @@ const Wrapper = Styled.div(({screen}) =>`
         align-items: center;
 
         .contain-size{
-            flex-direction : ${screen < 769 ? 'column-reverse' : 'row' } ;
+            flex-direction : ${screen < 769 ? "column-reverse" : "row"} ;
 
         }
 
@@ -284,7 +393,7 @@ const Wrapper = Styled.div(({screen}) =>`
 
     .supertron{
         width: 100%;
-        height: ${screen < 769 ? 'fit-content' : '454px'};
+        height: ${screen < 769 ? "fit-content" : "454px"};
         background-image: url('/img/bg-jumbotron.svg');
         background-size: cover;
         background-position: bottom;
@@ -301,12 +410,13 @@ const Wrapper = Styled.div(({screen}) =>`
 
         .contain-size{
             display: flex;
-            flex-direction : ${screen < 769 ? 'column' : 'row' } ;
+            flex-direction : ${screen < 769 ? "column" : "row"} ;
             justify-content: space-between;
             align-items: center;
 
             a{                
                 z-index: 0; 
+                font-size: ${screen < 769 ? "1rem" : "1.2rem"};
             }
 
             img{
@@ -318,8 +428,8 @@ const Wrapper = Styled.div(({screen}) =>`
                 font-family: Raleway;
                 font-style: normal;
                 font-weight: 800;
-                font-size: 4rem;
-                line-height: 60px;
+                font-size: ${screen < 769 ? "2.3rem" : "4rem"};
+                line-height: ${screen < 769 ? "normal" : "60px"};
                 margin-bottom: 48px;
                 /* white */
 
@@ -329,6 +439,7 @@ const Wrapper = Styled.div(({screen}) =>`
     }    
 
  
-`)
-    
-export default Home
+`
+);
+
+export default Home;
