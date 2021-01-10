@@ -1,753 +1,941 @@
 // Starter
-import React, { useEffect, useRef, useState } from 'react'
-import { db, FieldValue, storage } from '../config/Firebase';
-import {useAuth} from '../contexts/AuthContext'
+import React, { useEffect, useRef, useState } from "react";
+import { db, FieldValue, storage } from "../config/Firebase";
+import { useAuth } from "../contexts/AuthContext";
 
 // Komponen
-import ChatBubble from '../component/Chat/ChatBubble';
-import Komunitas from '../component/Chat/Komunitas';
-import ModalKomunitas from '../component/Chat/ModalKomunitas';
-import Navbar from '../component/Navbar/Navbar'
-import RichForm from '../component/Chat/RichForm';
-import ModalEditKomunitas from '../component/Chat/ModalEditKomunitas';
-import FooterCopyright from '../component/FooterCopyright';
+import ChatBubble from "../component/Chat/ChatBubble";
+import Komunitas from "../component/Chat/Komunitas";
+import ModalKomunitas from "../component/Chat/ModalKomunitas";
+import Navbar from "../component/Navbar/Navbar";
+import RichForm from "../component/Chat/RichForm";
+import ModalEditKomunitas from "../component/Chat/ModalEditKomunitas";
+import FooterCopyright from "../component/FooterCopyright";
 
 // Head
-import { Helmet } from 'react-helmet';
+import { Helmet } from "react-helmet";
 
 // Size
-import useResize from 'use-resize'
+import useResize from "use-resize";
 
 // CSS
-import Styled from '@emotion/styled'
-import ModalMember from '../component/Chat/ModalMember';
+import Styled from "@emotion/styled";
+import ModalMember from "../component/Chat/ModalMember";
 
 export default function ListKomunitas() {
+  const [Error, setError] = useState(false);
+  const { currentUser, IsAdmin } = useAuth();
+  const [ListKomunitas, setListKomunitas] = useState("Loading...");
+  const [bakcupListKomunitas, setBakcupListKomunitas] = useState();
+  const [Chat, setChat] = useState("Loading...");
+  const [onChat, setOnChat] = useState(false);
+  const [chatAble, setChatAble] = useState(false);
+  const [pesan, setPesan] = useState("");
+  const [CurrentKomunitas, setCurrentKomunitas] = useState();
+  const [onSerach, setOnSearch] = useState(false);
+  const [CanSearch, setCanSearch] = useState(false);
+  const [ShowModalAddKomunitas, setShowModalAddKomunitas] = useState(false);
+  const [ShowModalEditKomunitas, setShowModalEditKomunitas] = useState(false);
+  const [ShowModalMember, setShowModalMember] = useState(false);
+  const [DataMember, setDataMember] = useState([]);
+  const [ListBanUser, setListBanUser] = useState([]);
+  const screen = useResize().width;
 
-    const [Error, setError] = useState(false)
-    const {currentUser, IsAdmin} = useAuth()
-    const [ListKomunitas, setListKomunitas] = useState("Loading...")
-    const [bakcupListKomunitas, setBakcupListKomunitas] = useState()
-    const [Chat, setChat] = useState('Loading...')
-    const [onChat, setOnChat] = useState(false)
-    const [chatAble, setChatAble] = useState(false)
-    const [pesan, setPesan] = useState('')
-    const [CurrentKomunitas, setCurrentKomunitas] = useState()
-    const [onSerach, setOnSearch] = useState(false)
-    const [CanSearch, setCanSearch] = useState(false)
-    const [ShowModalAddKomunitas, setShowModalAddKomunitas] = useState(false)
-    const [ShowModalEditKomunitas, setShowModalEditKomunitas] = useState(false)
-    const [ShowModalMember, setShowModalMember] = useState(false)
-    const [DataMember, setDataMember] = useState([])
-    const [ListBanUser, setListBanUser] = useState([])
-    const screen = useResize().width
+  // const [LoadiedChat, setLoadiedChat] = useState()
+  const searchKomunitas = useRef();
+  const dummy = useRef();
+  const PesanRef = useRef();
+  const namaKomunitasRef = useRef();
+  const idKomunitasRef = useRef();
+  const deskripsiKomunitasRef = useRef();
+  const ProfileKomPicRef = useRef();
+  const [Loading, setLoading] = useState(false);
 
-    // const [LoadiedChat, setLoadiedChat] = useState()
-    const searchKomunitas = useRef()
-    const dummy = useRef()
-    const PesanRef = useRef()
-    const namaKomunitasRef = useRef()
-    const idKomunitasRef = useRef()
-    const deskripsiKomunitasRef = useRef()
-    const ProfileKomPicRef = useRef()
-    const [Loading, setLoading] = useState(false)
+  useEffect(() => {
+    const handleScrollChat = (e) => {
+      let triggerHeight = e.target.scrollTop - e.target.offsetHeight;
+      if (1 - e.target.scrollHeight >= triggerHeight) {
+        console.log("udah di puncak", e.target.scrollHeight, triggerHeight);
+      }
+    };
+    document
+      .getElementById("container")
+      .addEventListener("scroll", handleScrollChat);
 
+    return () => {
+      if (document.getElementById("container") !== null) {
+        document
+          .getElementById("container")
+          .removeEventListener("scroll", handleScrollChat);
+      }
+    };
+  }, [onChat]);
 
-    useEffect(()=>{
-        const handleScrollChat = (e)=>{
-            let triggerHeight = e.target.scrollTop - e.target.offsetHeight;
-            if(1-e.target.scrollHeight >= triggerHeight){
-                console.log('udah di puncak',e.target.scrollHeight,triggerHeight);
-            }
-        }
-        document.getElementById('container').addEventListener('scroll', handleScrollChat)
-        
-        return ()=>{
-            if(document.getElementById('container') !== null){
-                document.getElementById('container').removeEventListener('scroll',handleScrollChat)
-            }
-        }
-        
-    }, [onChat])
+  async function LiatChat(e, langsungUID = false, komUid = null) {
+    setChat("loading..");
+    document.getElementById("idRoom").innerHTML = "Loading...";
+    document.getElementById("JudulRoom").innerHTML = "Loading...";
+    searchKomunitas.current.value = "";
+    let dataMember = [];
+    function getKomunitasUID(target) {
+      let currentKom;
+      if (target.dataset.chat === undefined) {
+        currentKom = getKomunitasUID(target.parentNode);
+      } else {
+        currentKom = target.dataset.chat;
+      }
 
-    async function LiatChat(e, langsungUID=false, komUid=null){
-        setChat("loading..")
-        document.getElementById('idRoom').innerHTML = "Loading..."
-        document.getElementById('JudulRoom').innerHTML = "Loading..."
-        searchKomunitas.current.value = ""
-        let dataMember = []
-        function getKomunitasUID(target) {
-            let currentKom;
-            if(target.dataset.chat === undefined){
-                currentKom = getKomunitasUID(target.parentNode)
-            }else{
-                currentKom = target.dataset.chat
-            }
-    
-            return currentKom;
-        }
-
-        let currentKom = langsungUID ? komUid : getKomunitasUID(e.target)
-
-        db.collection('Komunitas').doc(currentKom).onSnapshot(async(currentKomunitas)=>{
-            if(!currentKomunitas.exists){
-                setOnChat(false)
-                return;
-            }
-            const currentKomunitasData = currentKomunitas.data()
-            setListBanUser(currentKomunitasData.listBanUser)
-            setCurrentKomunitas({uid:currentKomunitas.id,...currentKomunitasData, DontRefresh:true})   
-            let {photoUrl, nama, id,member} = currentKomunitasData
-            document.getElementById('JudulRoom').innerHTML = `${nama} (${member.length}) ` 
-            document.getElementById('idRoom').innerHTML = id
-            setOnChat(true)
-            if(document.getElementById('avaGroup') !== null){
-                document.getElementById('avaGroup').src = photoUrl
-            }
-            if(member.length > 0){
-                await db.collection('Profile').where('uid','in',member).get().then(res=>{
-                    res.docs.forEach(doc=>{
-                        dataMember[doc.id] = doc.data()
-                    })
-                    setDataMember(res.docs)
-                    let docRef = db.collection(`Komunitas`).doc(currentKom).collection("Pesan").orderBy("timestamp", "desc")
-                    docRef.onSnapshot((querySnapshot)=>{
-                        if(!querySnapshot.empty){
-                            setChat(querySnapshot.docs.map((doc)=>{
-                                return <ChatBubble {...doc.data({serverTimestamps: 'estimate'})} 
-                                            docid={doc.id} 
-                                            komuniastUID={currentKom} 
-                                            dataMember={dataMember[doc.data().sender_uid]} 
-                                            key={doc.id} />
-                            }))
-                        }else{
-                            setChat("Masih belum ada pesan dari room")
-                        }
-                        
-                    },(err)=>{
-                        console.log(err);
-                    })
-                })
-            }else{
-                setChat("Kamu bukan member dari komunitas")
-            }
-        })
-
+      return currentKom;
     }
 
-    function handleFormPesan(e) {
-        setPesan(e)
-        if(e.length>0){
-            setChatAble(true)
-        }else{
-            setChatAble(false)
-        }
-    }
+    let currentKom = langsungUID ? komUid : getKomunitasUID(e.target);
 
-    async function kirimPesan(e) {
-        let currentKomunitasUID;
-        if(!e.komunitasUID){
-            e.preventDefault();
+    db.collection("Komunitas")
+      .doc(currentKom)
+      .onSnapshot(async (currentKomunitas) => {
+        if (!currentKomunitas.exists) {
+          setOnChat(false);
+          return;
         }
-        currentKomunitasUID = PesanRef.current.dataset.currentkom
-        setError('')
-        if(PesanRef.current.value.length > 0){
-            let PesanYangDikirim = PesanRef.current.value
-            setPesan('')
-            const patt = /((<script.*?>|<script>).*?<\/script>)/
-            if(patt.test(PesanYangDikirim)){
-                setError('Dilarang Mengirimkan script text')
-                return;
-            }
-            const urlPatt = /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/ig
-            const links = PesanYangDikirim.match(urlPatt)
-            if(links && links.length >0 ){
-                links.forEach(link=>{
-                    const httpPatt = /[(http(s)?)://]{7,8}/ig
-                    let newLink
-                    if(!httpPatt.test(link)){
-                        newLink='https://'+link
-                    }else{
-                        newLink = link
-                    }
-                    PesanYangDikirim = PesanYangDikirim.replace(link,`<a href=${newLink} target="_blank" rel="noopener noreferrer">${link}</a>`)
-                })
-                console.log(PesanYangDikirim);
-            }
-            await db.collection('Komunitas').doc(currentKomunitasUID).collection('Pesan').add({
-                sender_uid: currentUser.uid,
-                timestamp: FieldValue.serverTimestamp(),
-                body:PesanYangDikirim
-              });
-            
-            dummy.current.scrollIntoView({behavior : 'smooth'})
-            db.collection('Komunitas').doc(currentKomunitasUID).update({
-                lastChat: FieldValue.serverTimestamp()
-            })
-        }
-    }
-    async function joinKomunitas(e) {
-        e.preventDefault();
-        function getKomunitasUID(target) {
-            let komunitasUID;
-            if(target.dataset.chat === undefined){
-                komunitasUID = getKomunitasUID(target.parentNode)
-            }else{
-                komunitasUID = target.dataset.chat
-            }
-            return komunitasUID;
-        }
-        let NewkomunitasUID = getKomunitasUID(e.target)
-        setCurrentKomunitas({uid:NewkomunitasUID})
-        setChat("Loading....")
-        setOnChat(true)
-        cancelSearch()
-        await db.collection('Komunitas').doc(NewkomunitasUID).update({
-            member: FieldValue.arrayUnion(currentUser.uid)
-        })
-        .then(async () => {
-            await db.collection('Profile').doc(currentUser.uid).update({
-                komunitas: FieldValue.arrayUnion(NewkomunitasUID)
-            }).then(() => {
-                LiatChat(e,true,NewkomunitasUID)
-            }).catch((err) => {
-                console.log(err);
-                return;
-            });
-        }).catch((err) => {
-            console.log(err);
-            return ;
+        const currentKomunitasData = currentKomunitas.data();
+        setListBanUser(currentKomunitasData.listBanUser);
+        setCurrentKomunitas({
+          uid: currentKomunitas.id,
+          ...currentKomunitasData,
+          DontRefresh: true,
         });
-        
-    }
-
-    async function handleExitGroup(){
-        const DocRef = db.collection('Komunitas').doc(CurrentKomunitas.uid)
-        await DocRef.update({
-            member: FieldValue.arrayRemove(currentUser.uid)
-        })
-        .then(async () => {
-            let currentKom = await DocRef.get()
-            const data = currentKom.data()
-            if(data.member.length === 0){
-
-                const batch = db.batch()
-
-                const Pesans = await DocRef.collection('Pesan').get()
-                Pesans.docs.forEach(doc=>{
-                    batch.delete(doc.ref)
-                })
-                await batch.commit()
-
-                if(data.profileRef){
-                    storage.ref().child(data.profileRef).then(res=>{
-                        console.log('berhasil menghapus foto profile');
-                    }).catch(err=>{
-                        console.log(err);
-                    })
-                }
-
-                DocRef.delete()
-                .then(()=>{
-                    console.log("Berhasil menghapus");
-                }).catch((err)=>{
-                    console.log(err);
-                })
-            }
-            await db.collection('Profile').doc(currentUser.uid).update({
-                komunitas: FieldValue.arrayRemove(CurrentKomunitas.uid)
-            }).then(() => {
-                setOnChat(false)
-                let newCurrentKomunitas = CurrentKomunitas
-                newCurrentKomunitas.DontRefresh = false
-                setCurrentKomunitas(newCurrentKomunitas)
-
-                document.getElementById('JudulRoom').innerHTML = ""
-                document.getElementById('idRoom').innerHTML = ""
-            }).catch((err) => {
-                console.log(err);
-                return;
-            });
-        }).catch((err) => {
-            console.log(err);
-            return ;
-        });
-
-    }
-    async function handleSearchTextChange(){
-        if(searchKomunitas.current.value.length > 0){
-            setCanSearch(true)
-        }else{
-            setCanSearch(false)
-            cancelSearch()
+        let { photoUrl, nama, id, member } = currentKomunitasData;
+        document.getElementById(
+          "JudulRoom"
+        ).innerHTML = `${nama} (${member.length}) `;
+        document.getElementById("idRoom").innerHTML = id;
+        setOnChat(true);
+        if (document.getElementById("avaGroup") !== null) {
+          document.getElementById("avaGroup").src = photoUrl;
         }
-    }
-    async function handleSearchKomunitas(e){
-        e.preventDefault()
-        setListKomunitas(<li className="font-weight-bold person tulisan" >Loading....</li>)
-        let KomunitasId = searchKomunitas.current.value
-        if(KomunitasId.length > 0){
-            let docRef = db.collection(`Komunitas`).where('id','==',KomunitasId.toLowerCase())
-            setOnSearch(true)
-            docRef.get().then((querySnapshot)=>{
-                if(querySnapshot.docs.length === 0 ){
-                    setListKomunitas(<li className="font-weight-bold person tulisan" >Komunitas yang kamu cari tidak ada :( </li>)
-                }else{
-                    let newDocs = querySnapshot.docs.filter(doc=>{
-                        const data= doc.data()
-                        return !(data.listBanUser.includes(currentUser.uid))
-                    })
-                    setListKomunitas(newDocs.map(doc=>{
-                        return (
-                            <Komunitas  {...doc.data({serverTimestamps: 'estimate'})} key={doc.id} komunitas_uid={doc.id} onClick={joinKomunitas} join={true} />
-                        )
-                    }))
-                }
-            })
-        }
-        return ;
-    }
-    function cancelSearch() {
-        searchKomunitas.current.value = ''
-        setOnSearch(false)
-        setListKomunitas(bakcupListKomunitas)
-    }
-    useEffect(() => {
-        if(CurrentKomunitas && CurrentKomunitas.member && !CurrentKomunitas.member.includes(currentUser.uid)){
-            setOnChat(false)
-            document.getElementById('JudulRoom').innerHTML = ""
-            document.getElementById('idRoom').innerHTML = ""
-        }
-        let docRef = db.collection("Komunitas").where("member", "array-contains", currentUser.uid).orderBy("lastChat", "desc")
-        let unsub =  docRef.onSnapshot(function(querySnapshot) {
-                
-                if(onSerach || (CurrentKomunitas && CurrentKomunitas.DontRefresh)){
-                    return;
-                }
-
-                if(querySnapshot.docs.length === 0 ){
-                    setListKomunitas(<li className="person tulisan">Kamu belum mengikuti komunitas apapun</li>)
-                    return;
-                }
-                let listKomunitas = querySnapshot.docs.map(doc=>{
-                    const data = doc.data({serverTimestamps: 'estimate'})
-                    if(CurrentKomunitas && CurrentKomunitas.uid === doc.id){
-                        setCurrentKomunitas({...data,uid:doc.id})
-                    }
+        if (member.length > 0) {
+          let arrMembers = [];
+          for (const mem of member) {
+            const doc = await db.collection("Profile").doc(mem).get();
+            arrMembers.push(doc);
+            dataMember[doc.id] = doc.data();
+          }
+          // Start //
+          setDataMember(arrMembers);
+          let docRef = db
+            .collection(`Komunitas`)
+            .doc(currentKom)
+            .collection("Pesan")
+            .orderBy("timestamp", "desc");
+          docRef.onSnapshot(
+            (querySnapshot) => {
+              if (!querySnapshot.empty) {
+                setChat(
+                  querySnapshot.docs.map((doc) => {
                     return (
-                        <Komunitas  {...data} key={doc.id} komunitas_uid={doc.id} onClick={LiatChat} />
-                    )
-                })
-                setListKomunitas(listKomunitas)
-                setBakcupListKomunitas(listKomunitas)
-            },(err)=>{
-                console.log(err);
-                setListKomunitas(<li className="person tulisan"><span className="font-weight-bold text-danger" >Error X_x</span></li>)
-            })
-        return unsub
-    }, [currentUser,CurrentKomunitas, onSerach])
-
-    function makeid(length) {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-     }
-
-    const handleDeleteKomunitas = async (komUid)=>{
-        setLoading(true)
-        const DocRef = db.collection('Komunitas').doc(komUid)
-        let currentKom = await DocRef.get()
-        const data = currentKom.data()
-        const batch = db.batch()
-
-        const Pesans = await DocRef.collection('Pesan').get()
-        Pesans.docs.forEach(doc=>{
-            batch.delete(doc.ref)
-        })
-        await batch.commit()
-
-        if(data.profileRef){
-            storage.ref().child(data.profileRef).then(res=>{
-                console.log('berhasil menghapus foto profile');
-            }).catch(err=>{
-                console.log(err);
-            })
-        }
-
-        DocRef.delete()
-        .then(()=>{
-            console.log("Berhasil menghapus");
-            setLoading(true)
-            setShowModalEditKomunitas(false)
-            if(CurrentKomunitas){
-                let newCurrentKomunitas = CurrentKomunitas
-                newCurrentKomunitas.DontRefresh = false
-                setCurrentKomunitas(newCurrentKomunitas)
-            }else{
-                setCurrentKomunitas({})
+                      <ChatBubble
+                        {...doc.data({ serverTimestamps: "estimate" })}
+                        docid={doc.id}
+                        komuniastUID={currentKom}
+                        dataMember={dataMember[doc.data().sender_uid]}
+                        key={doc.id}
+                      />
+                    );
+                  })
+                );
+              } else {
+                setChat("Masih belum ada pesan dari room");
+              }
+            },
+            (err) => {
+              console.log(err);
             }
-            document.getElementById('JudulRoom').innerHTML = ""
-            document.getElementById('idRoom').innerHTML = ""
-        }).catch((err)=>{
+          );
+          // end //
+        } else {
+          setChat("Kamu bukan member dari komunitas");
+        }
+      });
+  }
+
+  function handleFormPesan(e) {
+    setPesan(e);
+    if (e.length > 0) {
+      setChatAble(true);
+    } else {
+      setChatAble(false);
+    }
+  }
+
+  async function kirimPesan(e) {
+    let currentKomunitasUID;
+    if (!e.komunitasUID) {
+      e.preventDefault();
+    }
+    currentKomunitasUID = PesanRef.current.dataset.currentkom;
+    setError("");
+    if (PesanRef.current.value.length > 0) {
+      let PesanYangDikirim = PesanRef.current.value;
+      setPesan("");
+      const patt = /((<script.*?>|<script>).*?<\/script>)/;
+      if (patt.test(PesanYangDikirim)) {
+        setError("Dilarang Mengirimkan script text");
+        return;
+      }
+      const urlPatt = /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gi;
+      const links = PesanYangDikirim.match(urlPatt);
+      if (links && links.length > 0) {
+        links.forEach((link) => {
+          const httpPatt = /[(http(s)?)://]{7,8}/gi;
+          let newLink;
+          if (!httpPatt.test(link)) {
+            newLink = "https://" + link;
+          } else {
+            newLink = link;
+          }
+          PesanYangDikirim = PesanYangDikirim.replace(
+            link,
+            `<a href=${newLink} target="_blank" rel="noopener noreferrer">${link}</a>`
+          );
+        });
+        console.log(PesanYangDikirim);
+      }
+      await db
+        .collection("Komunitas")
+        .doc(currentKomunitasUID)
+        .collection("Pesan")
+        .add({
+          sender_uid: currentUser.uid,
+          timestamp: FieldValue.serverTimestamp(),
+          body: PesanYangDikirim,
+        });
+
+      dummy.current.scrollIntoView({ behavior: "smooth" });
+      db.collection("Komunitas").doc(currentKomunitasUID).update({
+        lastChat: FieldValue.serverTimestamp(),
+      });
+    }
+  }
+  async function joinKomunitas(e) {
+    e.preventDefault();
+    function getKomunitasUID(target) {
+      let komunitasUID;
+      if (target.dataset.chat === undefined) {
+        komunitasUID = getKomunitasUID(target.parentNode);
+      } else {
+        komunitasUID = target.dataset.chat;
+      }
+      return komunitasUID;
+    }
+    let NewkomunitasUID = getKomunitasUID(e.target);
+    setCurrentKomunitas({ uid: NewkomunitasUID });
+    setChat("Loading....");
+    setOnChat(true);
+    cancelSearch();
+    await db
+      .collection("Komunitas")
+      .doc(NewkomunitasUID)
+      .update({
+        member: FieldValue.arrayUnion(currentUser.uid),
+      })
+      .then(async () => {
+        await db
+          .collection("Profile")
+          .doc(currentUser.uid)
+          .update({
+            komunitas: FieldValue.arrayUnion(NewkomunitasUID),
+          })
+          .then(() => {
+            LiatChat(e, true, NewkomunitasUID);
+          })
+          .catch((err) => {
             console.log(err);
-            setLoading(true)
-            setShowModalEditKomunitas(false)
+            return;
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
+      });
+  }
+
+  async function handleExitGroup() {
+    const DocRef = db.collection("Komunitas").doc(CurrentKomunitas.uid);
+    await DocRef.update({
+      member: FieldValue.arrayRemove(currentUser.uid),
+    })
+      .then(async () => {
+        let currentKom = await DocRef.get();
+        const data = currentKom.data();
+        if (data.member.length === 0) {
+          const batch = db.batch();
+
+          const Pesans = await DocRef.collection("Pesan").get();
+          Pesans.docs.forEach((doc) => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+
+          if (data.profileRef) {
+            storage
+              .ref()
+              .child(data.profileRef)
+              .then((res) => {
+                console.log("berhasil menghapus foto profile");
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+
+          DocRef.delete()
+            .then(() => {
+              console.log("Berhasil menghapus");
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        await db
+          .collection("Profile")
+          .doc(currentUser.uid)
+          .update({
+            komunitas: FieldValue.arrayRemove(CurrentKomunitas.uid),
+          })
+          .then(() => {
+            setOnChat(false);
+            let newCurrentKomunitas = CurrentKomunitas;
+            newCurrentKomunitas.DontRefresh = false;
+            setCurrentKomunitas(newCurrentKomunitas);
+
+            document.getElementById("JudulRoom").innerHTML = "";
+            document.getElementById("idRoom").innerHTML = "";
+          })
+          .catch((err) => {
+            console.log(err);
+            return;
+          });
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
+      });
+  }
+  async function handleSearchTextChange() {
+    if (searchKomunitas.current.value.length > 0) {
+      setCanSearch(true);
+    } else {
+      setCanSearch(false);
+      cancelSearch();
+    }
+  }
+  async function handleSearchKomunitas(e) {
+    e.preventDefault();
+    setListKomunitas(
+      <li className="font-weight-bold person tulisan">Loading....</li>
+    );
+    let KomunitasId = searchKomunitas.current.value;
+    if (KomunitasId.length > 0) {
+      let docRef = db
+        .collection(`Komunitas`)
+        .where("id", "==", KomunitasId.toLowerCase());
+      setOnSearch(true);
+      docRef.get().then((querySnapshot) => {
+        if (querySnapshot.docs.length === 0) {
+          setListKomunitas(
+            <li className="font-weight-bold person tulisan">
+              Komunitas yang kamu cari tidak ada :({" "}
+            </li>
+          );
+        } else {
+          let newDocs = querySnapshot.docs.filter((doc) => {
+            const data = doc.data();
+            return !data.listBanUser.includes(currentUser.uid);
+          });
+          setListKomunitas(
+            newDocs.map((doc) => {
+              return (
+                <Komunitas
+                  {...doc.data({ serverTimestamps: "estimate" })}
+                  key={doc.id}
+                  komunitas_uid={doc.id}
+                  onClick={joinKomunitas}
+                  join={true}
+                />
+              );
+            })
+          );
+        }
+      });
+    }
+    return;
+  }
+  function cancelSearch() {
+    searchKomunitas.current.value = "";
+    setOnSearch(false);
+    setListKomunitas(bakcupListKomunitas);
+  }
+  useEffect(() => {
+    if (
+      CurrentKomunitas &&
+      CurrentKomunitas.member &&
+      !CurrentKomunitas.member.includes(currentUser.uid)
+    ) {
+      setOnChat(false);
+      document.getElementById("JudulRoom").innerHTML = "";
+      document.getElementById("idRoom").innerHTML = "";
+    }
+    let docRef = db
+      .collection("Komunitas")
+      .where("member", "array-contains", currentUser.uid)
+      .orderBy("lastChat", "desc");
+    let unsub = docRef.onSnapshot(
+      function (querySnapshot) {
+        if (onSerach || (CurrentKomunitas && CurrentKomunitas.DontRefresh)) {
+          return;
+        }
+
+        if (querySnapshot.docs.length === 0) {
+          setListKomunitas(
+            <li className="person tulisan">
+              Kamu belum mengikuti komunitas apapun
+            </li>
+          );
+          return;
+        }
+        let listKomunitas = querySnapshot.docs.map((doc) => {
+          const data = doc.data({ serverTimestamps: "estimate" });
+          if (CurrentKomunitas && CurrentKomunitas.uid === doc.id) {
+            setCurrentKomunitas({ ...data, uid: doc.id });
+          }
+          return (
+            <Komunitas
+              {...data}
+              key={doc.id}
+              komunitas_uid={doc.id}
+              onClick={LiatChat}
+            />
+          );
+        });
+        setListKomunitas(listKomunitas);
+        setBakcupListKomunitas(listKomunitas);
+      },
+      (err) => {
+        console.log(err);
+        setListKomunitas(
+          <li className="person tulisan">
+            <span className="font-weight-bold text-danger">Error X_x</span>
+          </li>
+        );
+      }
+    );
+    return unsub;
+  }, [currentUser, CurrentKomunitas, onSerach]);
+
+  function makeid(length) {
+    var result = "";
+    var characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  const handleDeleteKomunitas = async (komUid) => {
+    setLoading(true);
+    const DocRef = db.collection("Komunitas").doc(komUid);
+    let currentKom = await DocRef.get();
+    const data = currentKom.data();
+    const batch = db.batch();
+
+    const Pesans = await DocRef.collection("Pesan").get();
+    Pesans.docs.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+    if (data.profileRef) {
+      storage
+        .ref()
+        .child(data.profileRef)
+        .then((res) => {
+          console.log("berhasil menghapus foto profile");
         })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
-    async function EditKomunitas(e){
-        e.preventDefault()
-        setError()
-        setLoading(true)
-        let KomProfilePicUrl ;
-        let file;
-        let extention;
-        let FileUID;
-        if(ProfileKomPicRef.current.files.length >0){
-            console.log('update profile pic');
-            if(CurrentKomunitas.profileRef){
-                storage.ref().child(CurrentKomunitas.profileRef).delete().then(()=>{
-                    console.log('berhasil menghapus foto profile');
-                }).catch(err=>{
-                    console.log(err);
-                })
-            }
-            file = ProfileKomPicRef.current.files[0]
-            extention = file.name.split('.').pop();
-            FileUID = makeid(20)
-            await storage.ref('Komunitas').child(FileUID+"."+extention).put(file)
-                        .then((res)=>{
-                            return res.ref.getDownloadURL()
-                        })
-                        .then(res=>{
-                            KomProfilePicUrl = res
-                        })
-                        .catch(err=>{
-                            setError(err)
-                            return;
-                        })
+    DocRef.delete()
+      .then(() => {
+        console.log("Berhasil menghapus");
+        setLoading(true);
+        setShowModalEditKomunitas(false);
+        if (CurrentKomunitas) {
+          let newCurrentKomunitas = CurrentKomunitas;
+          newCurrentKomunitas.DontRefresh = false;
+          setCurrentKomunitas(newCurrentKomunitas);
+        } else {
+          setCurrentKomunitas({});
         }
-        let data = {
-            deskripsi: deskripsiKomunitasRef.current.value,
-            id: '@'+idKomunitasRef.current.value.toLowerCase(),
-            lastChat : FieldValue.serverTimestamp(),
-            nama:namaKomunitasRef.current.value,
-        }
-        if(KomProfilePicUrl){
-            data.photoUrl = KomProfilePicUrl
-            data.profileRef = 'Komunitas/'+FileUID+"."+extention
+        document.getElementById("JudulRoom").innerHTML = "";
+        document.getElementById("idRoom").innerHTML = "";
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(true);
+        setShowModalEditKomunitas(false);
+      });
+  };
 
-        }
-
-        document.getElementById('JudulRoom').innerHTML = data.nama
-        document.getElementById('idRoom').innerHTML = data.id
-
-        return await db.collection('Komunitas').doc(CurrentKomunitas.uid).update(data)
-        .then((res)=>{
-            console.log('Berhasil update', res);
-            setLoading(false)
-            setShowModalEditKomunitas(false)
-            let newCurrentKomunitas = CurrentKomunitas
-            newCurrentKomunitas.DontRefresh = false
-            setCurrentKomunitas(newCurrentKomunitas)
-            return;
+  async function EditKomunitas(e) {
+    e.preventDefault();
+    setError();
+    setLoading(true);
+    let KomProfilePicUrl;
+    let file;
+    let extention;
+    let FileUID;
+    if (ProfileKomPicRef.current.files.length > 0) {
+      console.log("update profile pic");
+      if (CurrentKomunitas.profileRef) {
+        storage
+          .ref()
+          .child(CurrentKomunitas.profileRef)
+          .delete()
+          .then(() => {
+            console.log("berhasil menghapus foto profile");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      file = ProfileKomPicRef.current.files[0];
+      extention = file.name.split(".").pop();
+      FileUID = makeid(20);
+      await storage
+        .ref("Komunitas")
+        .child(FileUID + "." + extention)
+        .put(file)
+        .then((res) => {
+          return res.ref.getDownloadURL();
         })
-        .catch(err=>{
-            setError(err)
-            setShowModalEditKomunitas(false)
-            return;
+        .then((res) => {
+          KomProfilePicUrl = res;
         })
+        .catch((err) => {
+          setError(err);
+          return;
+        });
     }
-    
-    async function AddKomunitas(e) {
-        e.preventDefault()
-        setError()
-        setLoading(true)
-        let idKomunitas = idKomunitasRef.current.value
-        let namaKomunitas = namaKomunitasRef.current.value
-        let dekskripsiKomunitas = deskripsiKomunitasRef.current.value
-        
-        // Data ga boleh kosong
-        if(idKomunitas.length <= 0 || namaKomunitas.length <=0){
-            setError("Data tidak boleh ada yang kosong")
-            setShowModalAddKomunitas(false)
-            setLoading(false)
+    let data = {
+      deskripsi: deskripsiKomunitasRef.current.value,
+      id: "@" + idKomunitasRef.current.value.toLowerCase(),
+      lastChat: FieldValue.serverTimestamp(),
+      nama: namaKomunitasRef.current.value,
+    };
+    if (KomProfilePicUrl) {
+      data.photoUrl = KomProfilePicUrl;
+      data.profileRef = "Komunitas/" + FileUID + "." + extention;
+    }
+
+    document.getElementById("JudulRoom").innerHTML = data.nama;
+    document.getElementById("idRoom").innerHTML = data.id;
+
+    return await db
+      .collection("Komunitas")
+      .doc(CurrentKomunitas.uid)
+      .update(data)
+      .then((res) => {
+        console.log("Berhasil update", res);
+        setLoading(false);
+        setShowModalEditKomunitas(false);
+        let newCurrentKomunitas = CurrentKomunitas;
+        newCurrentKomunitas.DontRefresh = false;
+        setCurrentKomunitas(newCurrentKomunitas);
+        return;
+      })
+      .catch((err) => {
+        setError(err);
+        setShowModalEditKomunitas(false);
+        return;
+      });
+  }
+
+  async function AddKomunitas(e) {
+    e.preventDefault();
+    setError();
+    setLoading(true);
+    let idKomunitas = idKomunitasRef.current.value;
+    let namaKomunitas = namaKomunitasRef.current.value;
+    let dekskripsiKomunitas = deskripsiKomunitasRef.current.value;
+
+    // Data ga boleh kosong
+    if (idKomunitas.length <= 0 || namaKomunitas.length <= 0) {
+      setError("Data tidak boleh ada yang kosong");
+      setShowModalAddKomunitas(false);
+      setLoading(false);
+      return;
+    }
+
+    let checkId = await db
+      .collection("Komunitas")
+      .where("id", "==", "@" + idKomunitas.toLowerCase())
+      .get();
+    if (checkId.empty) {
+      let KomProfilePicUrl;
+      let file;
+      let extention;
+      let FileUID;
+      if (ProfileKomPicRef.current.files.length > 0) {
+        file = ProfileKomPicRef.current.files[0];
+        extention = file.name.split(".").pop();
+        FileUID = makeid(20);
+        await storage
+          .ref("Komunitas")
+          .child(FileUID + "." + extention)
+          .put(file)
+          .then((res) => {
+            return res.ref.getDownloadURL();
+          })
+          .then((res) => {
+            KomProfilePicUrl = res;
+          })
+          .catch((err) => {
+            setError(err);
             return;
-        }
+          });
+      }
+      let data = {
+        deskripsi: dekskripsiKomunitas,
+        id: "@" + idKomunitas.toLowerCase(),
+        lastChat: FieldValue.serverTimestamp(),
+        nama: namaKomunitas,
+        photoUrl: KomProfilePicUrl
+          ? KomProfilePicUrl
+          : `https://avatars.dicebear.com/api/identicon/${new Date().getTime()}.svg`,
+        member: [currentUser.uid],
+        listBanUser: [],
+      };
+      if (KomProfilePicUrl) {
+        data.profileRef = "Komunitas/" + FileUID + "." + extention;
+      }
+      await db
+        .collection("Komunitas")
+        .add(data)
+        .then((res) => {
+          console.log(res);
+          if (CurrentKomunitas) {
+            let newCurrentKomunitas = CurrentKomunitas;
+            newCurrentKomunitas.DontRefresh = false;
+            setCurrentKomunitas(newCurrentKomunitas);
+          }
+        })
+        .catch((err) => {
+          setError(err);
+          setShowModalAddKomunitas(false);
+          setLoading(false);
+          return;
+        });
+    } else {
+      console.log("udah ga bisa");
+      setError("id komunitas sudah dipakai");
+      setShowModalAddKomunitas(false);
+      setLoading(false);
+      return;
+    }
+    setShowModalAddKomunitas(false);
+    setLoading(false);
+  }
+  return (
+    <Wrapper IsAdmin={IsAdmin} OnChat={onChat}>
+      <Navbar />
+      <Helmet>
+        <title>Komunitas | Langit Edu</title>
+      </Helmet>
+      <div className="container mt-5">
+        {Error && <div className="alert alert-danger">{Error}</div>}
 
-        let checkId = await db.collection("Komunitas").where("id", "==", '@'+idKomunitas.toLowerCase()).get()
-        if(checkId.empty){
-            let KomProfilePicUrl ;
-            let file;
-            let extention;
-            let FileUID;
-            if(ProfileKomPicRef.current.files.length > 0){
-                file = ProfileKomPicRef.current.files[0]
-                extention = file.name.split('.').pop();
-                FileUID = makeid(20)
-                await storage.ref('Komunitas').child(FileUID+"."+extention).put(file)
-                            .then((res)=>{
-                                return res.ref.getDownloadURL()
-                            })
-                            .then(res=>{
-                                KomProfilePicUrl = res
-                            })
-                            .catch(err=>{
-                                setError(err)
-                                return;
-                            })
-                
-            }
-            let data = {
-                deskripsi: dekskripsiKomunitas,
-                id: '@'+idKomunitas.toLowerCase(),
-                lastChat : FieldValue.serverTimestamp(),
-                nama:namaKomunitas,
-                photoUrl : KomProfilePicUrl ? KomProfilePicUrl : `https://avatars.dicebear.com/api/identicon/${new Date().getTime()}.svg`,
-                member : [currentUser.uid],
-                listBanUser : []
-            }
-            if(KomProfilePicUrl){
-                data.profileRef = 'Komunitas/'+FileUID+"."+extention
-            }
-            await db.collection("Komunitas").add(data)
-            .then(res=>{
-                console.log(res);
-                if(CurrentKomunitas){
-                    let newCurrentKomunitas = CurrentKomunitas
-                    newCurrentKomunitas.DontRefresh = false
-                    setCurrentKomunitas(newCurrentKomunitas)
-                }
-            })
-            .catch(err=>{
-                setError(err)
-                setShowModalAddKomunitas(false)
-                setLoading(false)
-                return
-            })
-
-        }else{
-            console.log("udah ga bisa");
-            setError("id komunitas sudah dipakai")
-            setShowModalAddKomunitas(false)
-            setLoading(false)
-            return
-        }
-        setShowModalAddKomunitas(false)
-        setLoading(false)
-    }  
-    return (
-        <Wrapper IsAdmin={IsAdmin} OnChat={onChat}>
-        <Navbar />
-        <Helmet>
-            <title>Komunitas | Langit Edu</title>
-        </Helmet>
-        <div className="container mt-5">
-            {Error &&
-                <div className="alert alert-danger">
-                {Error}
-                </div>
-            }
-
-            {screen < 769 &&
-            <>
+        {screen < 769 && (
+          <>
             <div className="chat-search-box mt-5 mb-3">
-                <form className="input-group align-items-center" onSubmit={handleSearchKomunitas}>
-                    {onSerach && 
-                    <div className="input-group-btn">
-                        <button type="button" className="btn btn-warning text-white" onClick={cancelSearch} >
-                            <i className="fas fa-times"></i>
-                        </button>
-                    </div>
-                    }
-                    <input ref={searchKomunitas} className="form-control mr-3 py-4" placeholder="Search" onChange={handleSearchTextChange} />
-                    <button type="submit" className="btn btn-info align-self-stretch px-3" id="btnSearch" disabled={!CanSearch}>
-                        <i className="fa fa-search"></i>
+              <form
+                className="input-group align-items-center"
+                onSubmit={handleSearchKomunitas}
+              >
+                {onSerach && (
+                  <div className="input-group-btn">
+                    <button
+                      type="button"
+                      className="btn btn-warning text-white"
+                      onClick={cancelSearch}
+                    >
+                      <i className="fas fa-times"></i>
                     </button>
-                </form>
+                  </div>
+                )}
+                <input
+                  ref={searchKomunitas}
+                  className="form-control mr-3 py-4"
+                  placeholder="Search"
+                  onChange={handleSearchTextChange}
+                />
+                <button
+                  type="submit"
+                  className="btn btn-info align-self-stretch px-3"
+                  id="btnSearch"
+                  disabled={!CanSearch}
+                >
+                  <i className="fa fa-search"></i>
+                </button>
+              </form>
             </div>
-
 
             <div className="accordion" id="accordionKomunitas">
-                <div className="card shadow">
-                    <div className="card-header" id="headingOne">
-                        <h2 className="mb-0">
-                            <button className="btn text-dark font-weight-bold btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                {onSerach ? 'Hasil Search' : 'Komunitas Diikuti'}
+              <div className="card shadow">
+                <div className="card-header" id="headingOne">
+                  <h2 className="mb-0">
+                    <button
+                      className="btn text-dark font-weight-bold btn-block text-left"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapseOne"
+                      aria-expanded="true"
+                      aria-controls="collapseOne"
+                    >
+                      {onSerach ? "Hasil Search" : "Komunitas Diikuti"}
+                    </button>
+                  </h2>
+                </div>
+
+                <div
+                  id="collapseOne"
+                  className="collapse show"
+                  aria-labelledby="headingOne"
+                  data-parent="#accordionKomunitas"
+                >
+                  <div className="card-body">
+                    <ul className="users position-relative">{ListKomunitas}</ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="content-wrapper">
+          <div className="row gutters">
+            <div className="col-12">
+              <div className="card bg-transparent m-0">
+                <div className="row no-gutters">
+                  {screen > 768 && (
+                    <div className="col-md-4 col-3">
+                      <div className="users-container">
+                        <div className="chat-search-box">
+                          <form
+                            className="input-group align-items-center"
+                            onSubmit={handleSearchKomunitas}
+                          >
+                            {onSerach && (
+                              <div className="input-group-btn">
+                                <button
+                                  type="button"
+                                  className="btn btn-warning text-white"
+                                  onClick={cancelSearch}
+                                >
+                                  <i className="fas fa-times"></i>
+                                </button>
+                              </div>
+                            )}
+                            <input
+                              ref={searchKomunitas}
+                              className="form-control mr-3 py-4"
+                              placeholder="Search"
+                              onChange={handleSearchTextChange}
+                            />
+                            <button
+                              type="submit"
+                              className="btn btn-info align-self-stretch px-3"
+                              id="btnSearch"
+                              disabled={!CanSearch}
+                            >
+                              <i className="fa fa-search"></i>
                             </button>
-                        </h2>
-                    </div>
-
-                    <div id="collapseOne" className="collapse show" aria-labelledby="headingOne" data-parent="#accordionKomunitas">
-                    <div className="card-body">
-                        <ul className="users position-relative">
-                            {ListKomunitas}
-                        </ul>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            </>
-            }
-
-            <div className="content-wrapper">
-
-                <div className="row gutters">
-
-                    <div className="col-12">
-
-                        <div className="card bg-transparent m-0">
-
-                            <div className="row no-gutters">
-                                {screen > 768 &&
-                                <div className="col-md-4 col-3">
-                                    <div className="users-container">
-                                        <div className="chat-search-box">
-                                            <form className="input-group align-items-center" onSubmit={handleSearchKomunitas}>
-                                                {onSerach && 
-                                                <div className="input-group-btn">
-                                                    <button type="button" className="btn btn-warning text-white" onClick={cancelSearch} >
-                                                        <i className="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                                }
-                                                <input ref={searchKomunitas} className="form-control mr-3 py-4" placeholder="Search" onChange={handleSearchTextChange} />
-                                                <button type="submit" className="btn btn-info align-self-stretch px-3" id="btnSearch" disabled={!CanSearch}>
-                                                    <i className="fa fa-search"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                        <ul className="users position-relative">
-                                            {!onSerach && <li className="tulisan person font-weight-bold"><span>KOMUNITAS DIIKUTI</span></li>}
-                                            {ListKomunitas}
-                                        </ul>
-                                        <button className="btn btn-success tombolBuat m-auto" onClick={()=>{setShowModalAddKomunitas(true);setError()}}>
-                                            <i className="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>}
-                                <div className=" card shadow col-md-8 ">
-                                    <div className="card-body">
-                                        <div className="selected-user d-flex justify-content-md-between flex-wrap align-items-md-center flex-md-row flex-column">
-                                            <div className="d-flex">
-                                                {onChat && 
-                                                CurrentKomunitas &&
-                                                <div className="chat-avatar d-none d-lg-block mr-3">
-                                                    <img className="img-fluid" src={CurrentKomunitas.photoUrl} alt="Profile Komunitas" id="avaGroup"/>
-                                                </div>
-                                                }
-                                                <div className="d-flex flex-column mt-lg-4" onClick={()=>{
-                                                    if(onChat && IsAdmin){
-                                                        setShowModalMember(true)
-                                                    }
-                                                }} >
-                                                    <span className="name mb-1" id="JudulRoom"></span>
-                                                    <span className="idRoom" id="idRoom"></span>
-                                                </div>
-                                            </div>
-                                            <div className="btn-wrapper" >
-                                            {onChat && 
-                                            <>
-                                                {IsAdmin && 
-                                                    <button className="tombol shadow-sm btn-bordered mr-4" onClick={()=>{setShowModalEditKomunitas(true)}}>
-                                                        Edit 
-                                                    </button>
-                                                }
-                                            <button className="tombol shadow-sm btn-bordered-red" onClick={handleExitGroup}>
-                                                Exit
-                                                </button>
-                                            </>
-                                            }
-                                            </div>
-                                        </div>
-                                        <div className="chat-container">
-                                            <ul id="container" className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start">
-                                                <li ref={dummy}></li>
-                                                {
-                                                onChat ? 
-                                                Chat
-                                                :
-                                                <div className="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
-                                                    <img className="img-fluid mb-4" src="/img/Icon-chat.png" alt="chat"/>
-                                                    <span className="text-black-50 font-weight-bold mb-5" >Pilih komunitas terlebih dahulu untuk memulai diskusi</span>
-                                                </div>
-                                                }
-                                            </ul>
-                                            {onChat &&
-                                                <>
-                                                <form onSubmit={(kirimPesan)} id="formPesan">
-                                                    <div className="">
-                                                    <RichForm 
-                                                        reference={PesanRef}
-                                                        pesan={pesan}
-                                                        onEditorChange={handleFormPesan}
-                                                        kirimPesan={kirimPesan}
-                                                        KomunitasUID={CurrentKomunitas.uid}
-                                                    />
-                                                    <button type="submit" className="btn btn-primary btn-block" disabled={!chatAble} >Kirim</button>
-                                                    </div>
-                                                </form>
-                                                </>
-                                            }
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
+                          </form>
                         </div>
-
+                        <ul className="users position-relative">
+                          {!onSerach && (
+                            <li className="tulisan person font-weight-bold">
+                              <span>KOMUNITAS DIIKUTI</span>
+                            </li>
+                          )}
+                          {ListKomunitas}
+                        </ul>
+                        <button
+                          className="btn btn-success tombolBuat m-auto"
+                          onClick={() => {
+                            setShowModalAddKomunitas(true);
+                            setError();
+                          }}
+                        >
+                          <i className="fas fa-plus"></i>
+                        </button>
+                      </div>
                     </div>
-
+                  )}
+                  <div className=" card shadow col-md-8 ">
+                    <div className="card-body">
+                      <div className="selected-user d-flex justify-content-md-between flex-wrap align-items-md-center flex-md-row flex-column">
+                        <div className="d-flex">
+                          {onChat && CurrentKomunitas && (
+                            <div className="chat-avatar d-none d-lg-block mr-3">
+                              <img
+                                className="img-fluid"
+                                src={CurrentKomunitas.photoUrl}
+                                alt="Profile Komunitas"
+                                id="avaGroup"
+                              />
+                            </div>
+                          )}
+                          <div
+                            className="d-flex flex-column mt-lg-4"
+                            onClick={() => {
+                              if (onChat && IsAdmin) {
+                                setShowModalMember(true);
+                              }
+                            }}
+                          >
+                            <span className="name mb-1" id="JudulRoom"></span>
+                            <span className="idRoom" id="idRoom"></span>
+                          </div>
+                        </div>
+                        <div className="btn-wrapper">
+                          {onChat && (
+                            <>
+                              {IsAdmin && (
+                                <button
+                                  className="tombol shadow-sm btn-bordered mr-4"
+                                  onClick={() => {
+                                    setShowModalEditKomunitas(true);
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                              )}
+                              <button
+                                className="tombol shadow-sm btn-bordered-red"
+                                onClick={handleExitGroup}
+                              >
+                                Exit
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <div className="chat-container">
+                        <ul
+                          id="container"
+                          className="chat-box chatContainerScroll d-flex flex-column-reverse justify-content-start"
+                        >
+                          <li ref={dummy}></li>
+                          {onChat ? (
+                            Chat
+                          ) : (
+                            <div className="w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                              <img
+                                className="img-fluid mb-4"
+                                src="/img/Icon-chat.png"
+                                alt="chat"
+                              />
+                              <span className="text-black-50 font-weight-bold mb-5">
+                                Pilih komunitas terlebih dahulu untuk memulai
+                                diskusi
+                              </span>
+                            </div>
+                          )}
+                        </ul>
+                        {onChat && (
+                          <>
+                            <form onSubmit={kirimPesan} id="formPesan">
+                              <div className="">
+                                <RichForm
+                                  reference={PesanRef}
+                                  pesan={pesan}
+                                  onEditorChange={handleFormPesan}
+                                  kirimPesan={kirimPesan}
+                                  KomunitasUID={CurrentKomunitas.uid}
+                                />
+                                <button
+                                  type="submit"
+                                  className="btn btn-primary btn-block"
+                                  disabled={!chatAble}
+                                >
+                                  Kirim
+                                </button>
+                              </div>
+                            </form>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
-        {ShowModalMember &&
+      {ShowModalMember && (
         <ModalMember
-        hideModal={()=>{setShowModalMember(false)}}
-        dataMember={DataMember}
-        currentUser={currentUser}
-        CurrentKomunitas = {CurrentKomunitas}
-        ListBanUser={ListBanUser}
+          hideModal={() => {
+            setShowModalMember(false);
+          }}
+          dataMember={DataMember}
+          currentUser={currentUser}
+          CurrentKomunitas={CurrentKomunitas}
+          ListBanUser={ListBanUser}
         />
-        }
-        {ShowModalEditKomunitas && 
-            <ModalEditKomunitas 
-                    onClick={()=>{setShowModalEditKomunitas(false)}}
-                    onSubmit={EditKomunitas}
-                    namaKomunitasRef={namaKomunitasRef}
-                    idKomunitasRef = {idKomunitasRef}
-                    deskripsiKomunitasRef={deskripsiKomunitasRef}
-                    ProfileKomPicRef={ProfileKomPicRef}
-                    Loading={Loading}
-                    defaultValue={CurrentKomunitas}
-                    handleDeleteKomunitas={handleDeleteKomunitas}
-            /> 
-        }
-        {ShowModalAddKomunitas && 
-        <ModalKomunitas 
-                onClick={()=>{setShowModalAddKomunitas(false)}}
-                onSubmit={AddKomunitas}
-                namaKomunitasRef={namaKomunitasRef}
-                idKomunitasRef = {idKomunitasRef}
-                deskripsiKomunitasRef={deskripsiKomunitasRef}
-                ProfileKomPicRef={ProfileKomPicRef}
-                Loading={Loading}
-        /> 
-        }
-        <div className="mt-5">
-            <FooterCopyright />
-        </div>
+      )}
+      {ShowModalEditKomunitas && (
+        <ModalEditKomunitas
+          onClick={() => {
+            setShowModalEditKomunitas(false);
+          }}
+          onSubmit={EditKomunitas}
+          namaKomunitasRef={namaKomunitasRef}
+          idKomunitasRef={idKomunitasRef}
+          deskripsiKomunitasRef={deskripsiKomunitasRef}
+          ProfileKomPicRef={ProfileKomPicRef}
+          Loading={Loading}
+          defaultValue={CurrentKomunitas}
+          handleDeleteKomunitas={handleDeleteKomunitas}
+        />
+      )}
+      {ShowModalAddKomunitas && (
+        <ModalKomunitas
+          onClick={() => {
+            setShowModalAddKomunitas(false);
+          }}
+          onSubmit={AddKomunitas}
+          namaKomunitasRef={namaKomunitasRef}
+          idKomunitasRef={idKomunitasRef}
+          deskripsiKomunitasRef={deskripsiKomunitasRef}
+          ProfileKomPicRef={ProfileKomPicRef}
+          Loading={Loading}
+        />
+      )}
+      <div className="mt-5">
+        <FooterCopyright />
+      </div>
     </Wrapper>
-    )
+  );
 }
 
-const Wrapper = Styled.div(({IsAdmin, OnChat}) =>`
+const Wrapper = Styled.div(
+  ({ IsAdmin, OnChat }) => `
 body{
     background : white;
 }
@@ -758,7 +946,7 @@ strong{
     cursor:pointer;
 }
 #JudulRoom{
-    ${IsAdmin? 'cursor: pointer' : '' }
+    ${IsAdmin ? "cursor: pointer" : ""}
 }
 
 .accordion{
@@ -957,7 +1145,7 @@ button#btnSearch, .chat-search-box .input-group .form-control {
         margin:1.5rem 0;
     }
     .selected-user{
-        border-bottom : ${OnChat ? '2px' : '0'} solid #ddd;
+        border-bottom : ${OnChat ? "2px" : "0"} solid #ddd;
         padding: .5rem 1.75rem !important;
     }
     .card-body{
@@ -1164,4 +1352,5 @@ ul {
     margin-bottom: 2rem;
     box-shadow: none;
 }
-`)
+`
+);
